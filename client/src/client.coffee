@@ -1,13 +1,14 @@
 # root = exports ? this
 
 # The main server address
+# My local echo server
 serverAddress = "ws://192.168.1.100:8080/ws"
 serverws = null
 daemonws = null
 
-test = true;
+testing = false;
 testOUT = false;
-testIN = true;
+testIN = false;
 # Ready
 $(document).ready ->
 	init()
@@ -313,103 +314,10 @@ createDaemonWebSocket = (address) ->
 	return daemonws
 
 wsServerOnOpenHandler = () ->
-	if !test
+	if (!testing)
 		sendLoginCheck()
 	else
-		if testOUT
-			# THESE TEST IS DESIGNED FOR ECHO SERVER ONLY!!!
-			# OUTGOING TEST. DON'T PAY ATTENTION TO THE ERRORS - ECHO SERVER GIVES BACK BAD DATA (NOT BAD, BUT THE SAME)
-			console.log "OUTGOING TEST. DON'T PAY ATTENTION TO THE ERRORS - ECHO SERVER GIVES BACK BAD DATA (NOT BAD, BUT THE SAME)"
-			sendLoginCheck()
-			sendLogin "foo", "bar"
-			sendLogout()
-			sendDaemons()
-			sendDaemon("123123123")
-			sendControl("123123123", "DIE")	
-
-		if testIN
-			# INCOMING TEST
-			console.log "INCOMING TEST"
-			loginCheckMessageOK = 
-				type: "loginCheck"
-				data: "status": "OK"
-			trySendMessage loginCheckMessageOK
-
-			loginCheckMessageUNAUTHORIZED = 
-				type: "loginCheck"
-				data: "status": "UNAUTHORIZED"
-			trySendMessage loginCheckMessageUNAUTHORIZED
-
-			loginMessageNOTNULL = 
-				type: "login"
-				data: "session_id": "123123123"
-			trySendMessage loginMessageNOTNULL
-			
-			loginMessageNULL = 
-				type: "login"
-				data: "session_id": null
-			trySendMessage loginMessageNULL
-
-			logoutMessageOK = 
-				type: "logout"
-				data: "status": "OK"
-			trySendMessage logoutMessageOK
-			
-			logoutMessageNOTOK = 
-				type: "logout"
-				data: "status": "NOT_OK"
-			trySendMessage logoutMessageNOTOK
-
-			daemonsMessage = 
-				type: "daemons"
-				data: [
-					{"daemon_id": "123", "daemon_name": "foo", "daemon_state": "RUNNING"},
-					{"daemon_id": "234", "daemon_name": "bar", "daemon_state": "STOPPED"},
-					{"daemon_id": "345", "daemon_name": "foobar", "daemon_state": "NOT_KNOWN"},
-					{"daemon_id": "456", "daemon_name": "Bob", "daemon_state": "EATING A PIZZA"},
-				]
-			trySendMessage daemonsMessage
-
-			daemonMessage = 
-				type: "daemon"
-				data: {"daemon_id": "123", "daemon_address": "123.123.123.123", "daemon_port": "666", "daemon_platform": {"OS": "Linux", "Architecture": "64 bit"}, "daemon_all_parameters": ["CPU", "RAM", "HDD"], "daemon_monitored_parameters": ["CPU"]}
-			trySendMessage daemonMessage
-
-			controlMessageOK = 
-				type: "control"
-				data: {"daemon_id": "123", "status": "OK"}
-			trySendMessage controlMessageOK
-
-			controlMessageNOTOK = 
-				type: "control"
-				data: {"daemon_id": "123", "status": "NOT_OK"}
-			trySendMessage controlMessageNOTOK
-
-			monitoringMessage1 = 
-				type: "monitoring"
-				data: {"daemon_id": "123", "data": {"CPU": "100", "RAM": "111"}}
-			trySendMessage monitoringMessage1
-
-			monitoringMessage2 = 
-				type: "monitoring"
-				data: {"daemon_id": "234", "data": {"CPU": "50", "RAM": "222"}}
-			trySendMessage monitoringMessage2
-
-			monitoringMessage3 = 
-				type: "monitoring"
-				data: {"daemon_id": "345", "data": {"CPU": "25", "RAM": "333"}}
-			trySendMessage monitoringMessage3
-
-
-			not_implementedMessage = 
-				type: "not_implemented"
-				data: {"this": "is a wrong message"}
-			trySendMessage not_implementedMessage
-
-			errorMessage = 
-				type: "error"
-				data: {"error": "error info"}
-			trySendMessage errorMessage
+		test()
 		
 wsServerOnCloseHandler = (event) ->
 	ws = event.target;
@@ -433,3 +341,99 @@ wsDaemonOnErrorHandler = (error) ->
 
 wsDaemonOnMessageHandler = (messageEvent) ->
 	processIncomingMessage messageEvent.data, messageEvent.target, messageEvent
+
+test = () ->
+	if testOUT
+		# THESE TEST IS DESIGNED FOR ECHO SERVER ONLY!!!
+		# OUTGOING TEST. DON'T PAY ATTENTION TO THE ERRORS - ECHO SERVER GIVES BACK BAD DATA (NOT BAD, BUT THE SAME)
+		console.log "OUTGOING TEST. DON'T PAY ATTENTION TO THE ERRORS - ECHO SERVER GIVES BACK BAD DATA (NOT BAD, BUT THE SAME)"
+		sendLoginCheck()
+		sendLogin "foo", "bar"
+		sendLogout()
+		sendDaemons()
+		sendDaemon("123123123")
+		sendControl("123123123", "DIE")	
+
+	if testIN
+		# INCOMING TEST
+		console.log "INCOMING TEST"
+		loginCheckMessageOK = 
+			type: "loginCheck"
+			data: "status": "OK"
+		trySendMessage loginCheckMessageOK
+
+		loginCheckMessageUNAUTHORIZED = 
+			type: "loginCheck"
+			data: "status": "UNAUTHORIZED"
+		trySendMessage loginCheckMessageUNAUTHORIZED
+
+		loginMessageNOTNULL = 
+			type: "login"
+			data: "session_id": "123123123"
+		trySendMessage loginMessageNOTNULL
+		
+		loginMessageNULL = 
+			type: "login"
+			data: "session_id": null
+		trySendMessage loginMessageNULL
+
+		logoutMessageOK = 
+			type: "logout"
+			data: "status": "OK"
+		trySendMessage logoutMessageOK
+		
+		logoutMessageNOTOK = 
+			type: "logout"
+			data: "status": "NOT_OK"
+		trySendMessage logoutMessageNOTOK
+
+		daemonsMessage = 
+			type: "daemons"
+			data: [
+				{"daemon_id": "123", "daemon_name": "foo", "daemon_state": "RUNNING"},
+				{"daemon_id": "234", "daemon_name": "bar", "daemon_state": "STOPPED"},
+				{"daemon_id": "345", "daemon_name": "foobar", "daemon_state": "NOT_KNOWN"},
+				{"daemon_id": "456", "daemon_name": "Bob", "daemon_state": "EATING A PIZZA"},
+			]
+		trySendMessage daemonsMessage
+
+		daemonMessage = 
+			type: "daemon"
+			data: {"daemon_id": "123", "daemon_address": "123.123.123.123", "daemon_port": "666", "daemon_platform": {"OS": "Linux", "Architecture": "64 bit"}, "daemon_all_parameters": ["CPU", "RAM", "HDD"], "daemon_monitored_parameters": ["CPU"]}
+		trySendMessage daemonMessage
+
+		controlMessageOK = 
+			type: "control"
+			data: {"daemon_id": "123", "status": "OK"}
+		trySendMessage controlMessageOK
+
+		controlMessageNOTOK = 
+			type: "control"
+			data: {"daemon_id": "123", "status": "NOT_OK"}
+		trySendMessage controlMessageNOTOK
+
+		monitoringMessage1 = 
+			type: "monitoring"
+			data: {"daemon_id": "123", "data": {"CPU": "100", "RAM": "111"}}
+		trySendMessage monitoringMessage1
+
+		monitoringMessage2 = 
+			type: "monitoring"
+			data: {"daemon_id": "234", "data": {"CPU": "50", "RAM": "222"}}
+		trySendMessage monitoringMessage2
+
+		monitoringMessage3 = 
+			type: "monitoring"
+			data: {"daemon_id": "345", "data": {"CPU": "25", "RAM": "333"}}
+		trySendMessage monitoringMessage3
+
+
+		not_implementedMessage = 
+			type: "not_implemented"
+			data: {"this": "is a wrong message"}
+		trySendMessage not_implementedMessage
+
+		errorMessage = 
+			type: "error"
+			data: {"error": "error info"}
+		trySendMessage errorMessage	
