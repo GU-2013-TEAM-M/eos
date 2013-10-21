@@ -1,13 +1,16 @@
 # root = exports ? this
 
 # The main server address
-serverAddress = "ws://localhost/ws"
+serverAddress = "ws://192.168.1.100:8080/ws"
 serverws = null
 daemonws = null
 
+test = true;
+testOUT = false;
+testIN = true;
 # Ready
 $(document).ready ->
-	init
+	init()
 
 # Templates of all the messages. Used for validation and as a hint.
 messages =
@@ -27,66 +30,84 @@ messages =
 	in:
 		loginCheck: 
 			data: ["status"],
-			process: processLoginCheck
+			processCallback: (data) ->
+				processLoginCheck data
 		login:
 			data: ["session_id"],
-			process: processLogin
+			processCallback: (data) ->
+				processLogin data
 		logout:
 			data: ["status"],
-			process: processLogout
+			processCallback: (data) ->
+				processLogout data
 		daemons:
-			data: [daemon : ["daemon_id", "daemon_name", "daemon_state"]],
-			process: processDaemons
+			data: ["daemon_id", "daemon_name", "daemon_state"],
+			processCallback: (data) ->
+				processDaemons data
 		daemon:
-			data: ["daemon_id", "daemon_address", "daemon_port", daemon_platform: ["platform", "bla1", "bla2"], daemon_all_parameters: [], daemon_monitored_parameters: []],
-			process: processDaemon
+			data: ["daemon_id", "daemon_address", "daemon_port", "daemon_platform", "daemon_all_parameters", "daemon_monitored_parameters"],
+			processCallback: (data) ->
+				processDaemon data
 		control:
 			data: ["daemon_id", "status"],
-			process: processControl
+			processCallback: (data) ->
+				processControl data
 		monitoring:
-			data: ["daemon_id", data: []],
-			process: processMonitoring
+			data: ["daemon_id", "data"],
+			processCallback: (data) ->
+				processMonitoring data
 		not_implemented:
 			data: [],
-			process: processNotImplemented
+			processCallback: (data) ->
+				processNotImplemented data
 		error:
-			data:	[],
-			process: processError
+			data: [],
+			processCallback: (data) ->
+				processError data
 
 # Processes an incoming message if the data is well-formatted
 # Params:	msg - message
-processIncomingMessage = (msg) ->
+processIncomingMessage = (msg, from, messageEvent) ->
+	console.log "Incoming message: " + msg
 	message = JSON.parse msg
 	type = message.type
 	if messages.in[type]
-		console.log "Received a message of type " + type
+		# console.log "Received a message of type " + type
 		data = message.data
 		if checkData type, data, "in"
-			messages[type].process data
+			messages["in"][type].processCallback data
 	else
-		console.err "Received a message of unknown type"
+		console.error "Received a message of unknown type"
 
 # Checks if the data format relates to the type. This works both for incoming and outcoming data. For incoming the function returns true if the check is passed. False if failed. For outcoming - a message object if passed, false if failed.
 # Params:	type - type of data
 #			data - data
 #			direction - "in" or "out". Is the data incoming or outcoming?
-# Return:	true/false/object
+# Return:	true/false/object(JSON)
 checkData = (type, data, direction) ->
 	dataTemplate = messages[direction][type].data
 	
 	for own key of dataTemplate
-		if !data.key
-			console.err "Wrong data format"
-			return false
+		keyname = dataTemplate[key]
+		
+		if type == "daemons" && direction = "in"
+			for daemon in data 
+				if !daemon.hasOwnProperty keyname
+					console.error "Wrong data format"
+					return false
+		else
+			if !data.hasOwnProperty keyname
+				console.error "Wrong data format"
+				return false
 	if direction == "out"
 		message = 
 			type: type
-			data: JSON.stringify(data);
+			data: data
 		return message
 	else if direction == "in"
 		return true;
 	else
-		console.err "wrong direction"
+		console.error "wrong direction"
 # Processes the login check
 # Params:	data - response data, that contain login check status
 processLoginCheck = (data) ->
@@ -99,8 +120,10 @@ processLoginCheck = (data) ->
 
 # Processes the login
 # Params:	data - response data, that contain session id field. If session id is empty/0/null/etc the used is not logged in
-procesLogin = (data) ->
+processLogin = (data) ->
 	session_id = data.session_id
+	#Why 3 days? Maybe it should be specified it response?
+	setCookie "session_id", session_id, 3
 	if session_id
 		console.log "You have successfully logged in"
 	else
@@ -134,22 +157,48 @@ processDaemon = (data) ->
 	daemon_platform = data.daemon_platform
 	daemon_all_parameters = data.daemon_all_parameters
 	daemon_monitored_parameters = data.daemon_monitored_parameters
-	console.log "data for " + daemon_id + " loaded"
+
+	str = ""
+	for own key, value of daemon_platform
+		str += key + ": " + value + "; "
+
+	str += " ALL PARAMS: "
+	for param in daemon_all_parameters
+		str += param + ", "
+
+	str += " MON PARAMS: "
+	for param in daemon_monitored_parameters
+		str += param + ", "
+
+	console.log "ID " + daemon_id + "; address " + daemon_address + "; port " + daemon_port + ". " + str
+
+# Processes control response
+# Params:	data - response data, that contain daemon in and status
+processControl = (data) ->
+	# What was controlled??????????
+	daemon_id = data.daemon_id
+	status = data.status
+	console.log "Control for daemon " + daemon_id + " was " + status
 
 # Processes daemon monitoring data
 # Params:	data
 processMonitoring = (data) ->
-	console.log data
+	daemon_id = data.daemon_id;
+	mon = data.data;
+	str = ""
+	for own key, value of mon
+		str += key + ": " + value + "; " 
+	console.log "Monitoring for " + daemon_id + ". " + str
 
 # Processes not implemented message
 # Params:	data - the inital data sent
 processNotImplemented = (data) ->
-	console.log data
+	console.log "Not implemented: " + JSON.stringify(data)
 
 # Processes an error message
 # Params:	data - log?
 processError = (data) ->
-	console.log data
+	console.log "Not implemented: " + JSON.stringify(data)
 
 # Creates a new message
 # Params:	type - type of the message
@@ -162,14 +211,16 @@ createMessage = (type, data) ->
 # Tries to send a message
 # Params:	message
 # Return: true/false depending on success
-trySendMessage = (message) ->
-	if message
-		serverws.send(message)
-		console.log "Login check message was sent"
-		return true;
-	else 
-		console.err "Login check message was aborted"	
-		return false;
+trySendMessage = (msg) ->
+	try
+		message = JSON.stringify msg
+		serverws.send message
+		console.log msg.type + " message was sent"
+	catch err
+		console.error err
+		return false
+	finally
+		return true    	
 
 # Sends a login check message
 sendLoginCheck = () ->
@@ -244,18 +295,10 @@ init = () ->
 # Return:	web socket object
 createServerWebSocket = (address) ->
 	serverws = new WebSocket serverAddress
-
-	serverws.onopen ->
-		sendLoginCheck
-
-	serverws.onclose ->
-
-	serverws.onerror (event) ->
-		console.err event
-
-	serverws.onmessage (msg) ->
-		processIncomingMessage msg		
-
+	serverws.onopen = wsServerOnOpenHandler
+	serverws.onclose = wsServerOnCloseHandler
+	serverws.onerror = wsServerOnErrorHandler
+	serverws.onmessage = wsServerOnMessageHandler
 	return serverws
 
 # Creates and initializes a web socket connection with the daemon
@@ -263,16 +306,130 @@ createServerWebSocket = (address) ->
 # Return:	web socket object
 createDaemonWebSocket = (address) ->
 	daemonws = new WebSocket address
-
-	daemonws.onopen ->
-		sendLoginCheck # Is it neccessary?
-
-	daemonws.onclose ->
-
-	daemonws.onerror (event) ->
-		console.err event
-
-	daemonws.onmessage (msg) ->
-		processIncomingMessage msg
-
+	daemonws.onopen = wsDaemonOnOpenHandler
+	daemonws.onclose = wsDaemonOnCloseHandler
+	daemonws.onerror = wsDaemonOnErrorHandler
+	daemonws.onmessage = wsDaemonOnMessageHandler
 	return daemonws
+
+wsServerOnOpenHandler = () ->
+	if !test
+		sendLoginCheck()
+	else
+		if testOUT
+			# THESE TEST IS DESIGNED FOR ECHO SERVER ONLY!!!
+			# OUTGOING TEST. DON'T PAY ATTENTION TO THE ERRORS - ECHO SERVER GIVES BACK BAD DATA (NOT BAD, BUT THE SAME)
+			console.log "OUTGOING TEST. DON'T PAY ATTENTION TO THE ERRORS - ECHO SERVER GIVES BACK BAD DATA (NOT BAD, BUT THE SAME)"
+			sendLoginCheck()
+			sendLogin "foo", "bar"
+			sendLogout()
+			sendDaemons()
+			sendDaemon("123123123")
+			sendControl("123123123", "DIE")	
+
+		if testIN
+			# INCOMING TEST
+			console.log "INCOMING TEST"
+			loginCheckMessageOK = 
+				type: "loginCheck"
+				data: "status": "OK"
+			trySendMessage loginCheckMessageOK
+
+			loginCheckMessageUNAUTHORIZED = 
+				type: "loginCheck"
+				data: "status": "UNAUTHORIZED"
+			trySendMessage loginCheckMessageUNAUTHORIZED
+
+			loginMessageNOTNULL = 
+				type: "login"
+				data: "session_id": "123123123"
+			trySendMessage loginMessageNOTNULL
+			
+			loginMessageNULL = 
+				type: "login"
+				data: "session_id": null
+			trySendMessage loginMessageNULL
+
+			logoutMessageOK = 
+				type: "logout"
+				data: "status": "OK"
+			trySendMessage logoutMessageOK
+			
+			logoutMessageNOTOK = 
+				type: "logout"
+				data: "status": "NOT_OK"
+			trySendMessage logoutMessageNOTOK
+
+			daemonsMessage = 
+				type: "daemons"
+				data: [
+					{"daemon_id": "123", "daemon_name": "foo", "daemon_state": "RUNNING"},
+					{"daemon_id": "234", "daemon_name": "bar", "daemon_state": "STOPPED"},
+					{"daemon_id": "345", "daemon_name": "foobar", "daemon_state": "NOT_KNOWN"},
+					{"daemon_id": "456", "daemon_name": "Bob", "daemon_state": "EATING A PIZZA"},
+				]
+			trySendMessage daemonsMessage
+
+			daemonMessage = 
+				type: "daemon"
+				data: {"daemon_id": "123", "daemon_address": "123.123.123.123", "daemon_port": "666", "daemon_platform": {"OS": "Linux", "Architecture": "64 bit"}, "daemon_all_parameters": ["CPU", "RAM", "HDD"], "daemon_monitored_parameters": ["CPU"]}
+			trySendMessage daemonMessage
+
+			controlMessageOK = 
+				type: "control"
+				data: {"daemon_id": "123", "status": "OK"}
+			trySendMessage controlMessageOK
+
+			controlMessageNOTOK = 
+				type: "control"
+				data: {"daemon_id": "123", "status": "NOT_OK"}
+			trySendMessage controlMessageNOTOK
+
+			monitoringMessage1 = 
+				type: "monitoring"
+				data: {"daemon_id": "123", "data": {"CPU": "100", "RAM": "111"}}
+			trySendMessage monitoringMessage1
+
+			monitoringMessage2 = 
+				type: "monitoring"
+				data: {"daemon_id": "234", "data": {"CPU": "50", "RAM": "222"}}
+			trySendMessage monitoringMessage2
+
+			monitoringMessage3 = 
+				type: "monitoring"
+				data: {"daemon_id": "345", "data": {"CPU": "25", "RAM": "333"}}
+			trySendMessage monitoringMessage3
+
+
+			not_implementedMessage = 
+				type: "not_implemented"
+				data: {"this": "is a wrong message"}
+			trySendMessage not_implementedMessage
+
+			errorMessage = 
+				type: "error"
+				data: {"error": "error info"}
+			trySendMessage errorMessage
+		
+wsServerOnCloseHandler = (event) ->
+	ws = event.target;
+	console.log "Connection lost. IMPLEMENT RETRYING!"
+
+wsServerOnErrorHandler = (error) ->
+	console.error error
+
+wsServerOnMessageHandler = (messageEvent) ->
+	processIncomingMessage messageEvent.data, messageEvent.target, messageEvent
+
+wsDaemonOnOpenHandler = () ->
+	sendLoginCheck()
+
+wsDaemonOnCloseHandler = (event) ->
+	ws = event.target;
+	console.log "Connection lost. IMPLEMENT RETRYING!"
+
+wsDaemonOnErrorHandler = (error) ->
+	console.error error
+
+wsDaemonOnMessageHandler = (messageEvent) ->
+	processIncomingMessage messageEvent.data, messageEvent.target, messageEvent
