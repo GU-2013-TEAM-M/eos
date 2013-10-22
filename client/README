@@ -1,1 +1,7 @@
 This is the document that describes what the client is. This document is useless at the moment. Hopefully, this will change.
+
+
+client.js file is compiled using the next command line:
+coffee -bo lib/ -cwj client.js src/service.coffee src/daemon.coffee src/controller.coffee src/communication.coffee
+
+Later -b (bare) flag will be removed.
