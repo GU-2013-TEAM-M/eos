@@ -6,12 +6,20 @@ serverAddress = "ws://192.168.1.100:8080/ws"
 serverws = null
 daemonws = null
 
-testing = false;
+reconnectTimerServer = null
+reconnectTimerDaemon = null
+reconnectTiming = 5000;
+
+testing = true;
 testOUT = false;
-testIN = false;
+testIN = true;
 # Ready
 $(document).ready ->
 	init()
+
+# Initialization
+init = () ->
+	serverws = createServerWebSocket(serverAddress)
 
 # Templates of all the messages. Used for validation and as a hint.
 messages =
@@ -50,7 +58,7 @@ messages =
 			processCallback: (data) ->
 				processDaemon data
 		control:
-			data: ["daemon_id", "status"],
+			data: ["daemon_id", "status", "operation"],
 			processCallback: (data) ->
 				processControl data
 		monitoring:
@@ -68,6 +76,8 @@ messages =
 
 # Processes an incoming message if the data is well-formatted
 # Params:	msg - message
+#			from - who sent the message?
+#			messageEvent - an event object for more specific information
 processIncomingMessage = (msg, from, messageEvent) ->
 	console.log "Incoming message: " + msg
 	message = JSON.parse msg
@@ -92,14 +102,22 @@ checkData = (type, data, direction) ->
 		keyname = dataTemplate[key]
 		
 		if type == "daemons" && direction = "in"
-			for daemon in data 
-				if !daemon.hasOwnProperty keyname
-					console.error "Wrong data format"
-					return false
-		else
-			if !data.hasOwnProperty keyname
+			if data 
+				for daemon in data 
+					if !daemon.hasOwnProperty keyname
+						console.error "Wrong data format"
+						return false
+			else
 				console.error "Wrong data format"
 				return false
+		else
+			if data 
+				if !data.hasOwnProperty keyname
+					console.error "Wrong data format"
+					return false
+			else
+				console.error "Wrong data format"
+				return false	
 	if direction == "out"
 		message = 
 			type: type
@@ -116,19 +134,25 @@ processLoginCheck = (data) ->
 	switch status
 		when "OK"
 			console.log "You are logged in"
+
+			loginCheckSuccessful()
 		when "UNAUTHORIZED"
 			console.log "You are not logged in"
+			
+			loginCheckUnsuccessful()
 
 # Processes the login
 # Params:	data - response data, that contain session id field. If session id is empty/0/null/etc the used is not logged in
 processLogin = (data) ->
 	session_id = data.session_id
-	#Why 3 days? Maybe it should be specified it response?
-	setCookie "session_id", session_id, 3
 	if session_id
-		console.log "You have successfully logged in"
+		console.log "You have successfully logged in (" + session_id + ")"
+
+		loginSuccessful(session_id)
 	else
 		console.log "Username or password are incorrect. Please log in"
+
+		loginUnsuccessful(session_id)
 
 # Processes the logout
 # Params:	data - response data, that contain logout status
@@ -137,8 +161,12 @@ processLogout = (data) ->
 	switch status
 		when "OK"
 			console.log "You are no longer logged in"
+
+			logoutSuccessful()
 		when "NOT_OK"
 			console.log "Sorry, an error has occured"
+
+			logoutError()
 
 # Processes daemons response
 # Params:	data - response data, that contain daemon id, name and state for every available daemon
@@ -148,6 +176,8 @@ processDaemons = (data) ->
 		daemon_name = daemon.daemon_name
 		daemon_state = daemon.daemon_state
 		console.log "ID " + daemon_id + "; Name " + daemon_name + "; State " + daemon_state + ";"
+
+	createDaemons(data)
 
 # Processes daemon response
 # Params:	data - response data, that contain daemon id, address, port, platform, all parameters, monitores parameters for a daemon
@@ -173,6 +203,8 @@ processDaemon = (data) ->
 
 	console.log "ID " + daemon_id + "; address " + daemon_address + "; port " + daemon_port + ". " + str
 
+	updateDaemons(data)
+
 # Processes control response
 # Params:	data - response data, that contain daemon in and status
 processControl = (data) ->
@@ -180,6 +212,8 @@ processControl = (data) ->
 	daemon_id = data.daemon_id
 	status = data.status
 	console.log "Control for daemon " + daemon_id + " was " + status
+
+	controlStatus(data)
 
 # Processes daemon monitoring data
 # Params:	data
@@ -191,15 +225,21 @@ processMonitoring = (data) ->
 		str += key + ": " + value + "; " 
 	console.log "Monitoring for " + daemon_id + ". " + str
 
+	monitoringData(data)
+
 # Processes not implemented message
 # Params:	data - the inital data sent
 processNotImplemented = (data) ->
 	console.log "Not implemented: " + JSON.stringify(data)
 
+	notImplemented(data)
+
 # Processes an error message
 # Params:	data - log?
 processError = (data) ->
 	console.log "Not implemented: " + JSON.stringify(data)
+
+	error(data)
 
 # Creates a new message
 # Params:	type - type of the message
@@ -216,7 +256,7 @@ trySendMessage = (msg) ->
 	try
 		message = JSON.stringify msg
 		serverws.send message
-		console.log msg.type + " message was sent"
+		console.log msg.type + " message was sent " + message
 	catch err
 		console.error err
 		return false
@@ -224,8 +264,7 @@ trySendMessage = (msg) ->
 		return true    	
 
 # Sends a login check message
-sendLoginCheck = () ->
-	session_id = getCookie("session_id");
+sendLoginCheck = (session_id) ->
 	message = createMessage "loginCheck", (session_id: session_id)
 	return trySendMessage message
 
@@ -262,34 +301,7 @@ sendDaemon = (daemon_id) ->
 # Return: true/false depending on success
 sendControl = (daemon_id, operation) ->
 	message = createMessage "control", daemon_id: daemon_id, operation: operation
-	trySendMessage message
-
-# Sets a cookie
-# Params:	name - cookie name
-#			value - cookie value
-#			days - days until a cookie should expire
-setCookie = (name, value, days) ->
-	if days
-		date = new Date
-		date.setTime(date.getTime() + (days*24*60*60*1000))
-		expires = "; expires=" + date.toGMTString()
-	else
-		expires = ""
-	document.cookie = name + "=" + value + expires + "; path=/"
-
-# Gets a cookie value
-# Params:	key - cookie name
-# Return:	cookie value or null if the cookie was not found
-getCookie = (key) ->
-	key = key + "="
-	for c in document.cookie.split(';')
-		c.substring(1, c.length) while c.charAt(0) is ' '
-		return c.substring(key.length, c.length) if c.indexOf(key) == 0
-	return null
-
-# Initialization
-init = () ->
-	serverws = createServerWebSocket(serverAddress)
+	return trySendMessage message
 
 # Creates and initializes a web socket connection with the server
 # Params:	address - server address
@@ -314,30 +326,48 @@ createDaemonWebSocket = (address) ->
 	return daemonws
 
 wsServerOnOpenHandler = () ->
+	console.log "Connection to the server is established."
+	if reconnectTimerServer
+		window.clearInterval(reconnectTimerServer)
+		reconnectTimerServer = null
 	if (!testing)
-		sendLoginCheck()
+		sendLoginCheck("123")
 	else
 		test()
 		
 wsServerOnCloseHandler = (event) ->
-	ws = event.target;
-	console.log "Connection lost. IMPLEMENT RETRYING!"
+	wasClean = event.wasClean
+	if (!wasClean)
+		console.log "Connection to the server (" + serverAddress + ") was lost unexpectedly. Re-connecting (" + reconnectTiming/1000 + ")"
+		if !reconnectTimerServer
+			reconnectTimerServer = setInterval () ->
+				serverws = createServerWebSocket(serverAddress)
+			,reconnectTiming
+	else 
+		console.log "Connection to the server was successfully closed."
 
 wsServerOnErrorHandler = (error) ->
-	console.error error
+	console.error "An error occured while talking to the server (" + serverAddress + ")"
 
 wsServerOnMessageHandler = (messageEvent) ->
 	processIncomingMessage messageEvent.data, messageEvent.target, messageEvent
 
 wsDaemonOnOpenHandler = () ->
-	sendLoginCheck()
+	sendLoginCheck("123")
 
 wsDaemonOnCloseHandler = (event) ->
-	ws = event.target;
-	console.log "Connection lost. IMPLEMENT RETRYING!"
+	wasClean = event.wasClean
+	if (!wasClean)
+		console.log "Connection to the daemon was lost unexpectedly. Re-connecting (" + reconnectTiming/1000 + ")"
+		if !reconnectTimerDaemon
+			reconnectTimerDaemon = setInterval () ->
+				daemonws = createServerWebSocket(daemonAddress)
+			,reconnectTiming
+	else 
+		console.log "Connection to the daemon was successfully closed."
 
 wsDaemonOnErrorHandler = (error) ->
-	console.error error
+	console.error "An error occured while talking to the daemon"
 
 wsDaemonOnMessageHandler = (messageEvent) ->
 	processIncomingMessage messageEvent.data, messageEvent.target, messageEvent
@@ -352,7 +382,7 @@ test = () ->
 		sendLogout()
 		sendDaemons()
 		sendDaemon("123123123")
-		sendControl("123123123", "DIE")	
+		sendControl("123123123", "DIE")
 
 	if testIN
 		# INCOMING TEST
@@ -402,14 +432,19 @@ test = () ->
 			data: {"daemon_id": "123", "daemon_address": "123.123.123.123", "daemon_port": "666", "daemon_platform": {"OS": "Linux", "Architecture": "64 bit"}, "daemon_all_parameters": ["CPU", "RAM", "HDD"], "daemon_monitored_parameters": ["CPU"]}
 		trySendMessage daemonMessage
 
+		daemonMessage = 
+			type: "daemon"
+			data: {"daemon_id": "567", "daemon_address": "123.123.123.123", "daemon_port": "666", "daemon_platform": {"OS": "Linux", "Architecture": "64 bit"}, "daemon_all_parameters": ["CPU", "RAM", "HDD"], "daemon_monitored_parameters": ["CPU"]}
+		trySendMessage daemonMessage
+
 		controlMessageOK = 
 			type: "control"
-			data: {"daemon_id": "123", "status": "OK"}
+			data: {"daemon_id": "123", "status": "OK", "operation": "KILL"}
 		trySendMessage controlMessageOK
 
 		controlMessageNOTOK = 
 			type: "control"
-			data: {"daemon_id": "123", "status": "NOT_OK"}
+			data: {"daemon_id": "123", "status": "NOT_OK", "operation": {"start": ["CPU", "RAM"], "stop": ["NET"]}}
 		trySendMessage controlMessageNOTOK
 
 		monitoringMessage1 = 
@@ -436,4 +471,4 @@ test = () ->
 		errorMessage = 
 			type: "error"
 			data: {"error": "error info"}
-		trySendMessage errorMessage	
+		trySendMessage errorMessage
