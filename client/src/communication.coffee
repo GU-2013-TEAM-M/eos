@@ -10,9 +10,11 @@ reconnectTimerServer = null
 reconnectTimerDaemon = null
 reconnectTiming = 5000;
 
-testing = true;
-testOUT = false;
-testIN = true;
+testing = false
+testOUT = false
+testIN = true
+development = true
+
 # Ready
 $(document).ready ->
 	init()
@@ -20,6 +22,7 @@ $(document).ready ->
 # Initialization
 init = () ->
 	serverws = createServerWebSocket(serverAddress)
+	initUI()
 
 # Templates of all the messages. Used for validation and as a hint.
 messages =
@@ -138,7 +141,7 @@ processLoginCheck = (data) ->
 			loginCheckSuccessful()
 		when "UNAUTHORIZED"
 			console.log "You are not logged in"
-			
+
 			loginCheckUnsuccessful()
 
 # Processes the login
@@ -330,9 +333,9 @@ wsServerOnOpenHandler = () ->
 	if reconnectTimerServer
 		window.clearInterval(reconnectTimerServer)
 		reconnectTimerServer = null
-	if (!testing)
+	if (!development)
 		sendLoginCheck("123")
-	else
+	else if (testing)
 		test()
 		
 wsServerOnCloseHandler = (event) ->

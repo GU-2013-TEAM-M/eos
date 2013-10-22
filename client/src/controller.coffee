@@ -65,3 +65,24 @@ notImplemented = (data) ->
 
 error = (data) ->
 # TODO:
+
+initUI = () ->
+	ctx = ($("#myChart").get 0).getContext "2d"
+
+	data = null;
+
+	setInterval () ->
+		data =
+			labels : ["CPU1", "CPU2", "CPU3", "CPU4"],
+			datasets : [
+				{
+					fillColor : "rgba(220,220,220,0.5)",
+					strokeColor : "rgba(220,220,220,1)",
+					data : [Math.floor(Math.random()*100)+1, Math.floor(Math.random()*100)+1, Math.floor(Math.random()*100)+1, Math.floor(Math.random()*100)+10]
+				},
+			]
+
+		new Chart(ctx).Bar(data, {animation : false, scaleOverride : true, scaleSteps : 10, scaleStepWidth : 10, scaleStartValue : 0})
+	,1000
+
+
