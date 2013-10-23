@@ -64,7 +64,10 @@ monitoringData = (data) ->
 	data = data.data
 	for own key, value of data
 		graph = getGraph(daemon_id, key)
-		graph.update(value)
+		if (graph)
+			graph.update(value)
+		else
+			console.error "There is no graph associated with daemon: " + daemon_id + " for attribute: " + key
 # TODO:
 
 notImplemented = (data) ->

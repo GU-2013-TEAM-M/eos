@@ -166,7 +166,11 @@ monitoringData = function(data) {
     if (!__hasProp.call(data, key)) continue;
     value = data[key];
     graph = getGraph(daemon_id, key);
-    _results.push(graph.update(value));
+    if (graph) {
+      _results.push(graph.update(value));
+    } else {
+      _results.push(console.error("There is no graph associated with daemon: " + daemon_id + " for attribute: " + key));
+    }
   }
   return _results;
 };
@@ -177,7 +181,11 @@ error = function(data) {};
 
 initUI = function() {};
 
-serverAddress = "ws://127.0.0.1:8080/ws";
+serverAddress = "ws://shidlovsky.no-ip.biz:8080/ws";
+
+if (document.URL === "http://localhost/") {
+  serverAddress = "ws://localhost:8080/ws";
+}
 
 serverws = null;
 
