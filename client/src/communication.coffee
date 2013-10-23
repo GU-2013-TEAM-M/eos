@@ -2,7 +2,7 @@
 
 # The main server address
 # My local echo server
-serverAddress = "ws://192.168.1.100:8080/ws"
+serverAddress = "ws://127.0.0.1:8080/ws"
 serverws = null
 daemonws = null
 
