@@ -7,6 +7,9 @@ import (
     "code.google.com/p/go.net/websocket"
 )
 
+//-------------------------------------------------------
+// WebSockets handlers
+//-------------------------------------------------------
 // a WebSocket handler for dealing with clients
 func wsHandlerClient(ws *websocket.Conn) {
     u := &User{SessionId: "dummy"}

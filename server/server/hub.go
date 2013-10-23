@@ -1,5 +1,8 @@
 package main
 
+//-------------------------------------------------------
+// data structures
+//-------------------------------------------------------
 type Hub struct {
     // Registered connections.
     connections map[*Connection]bool
@@ -21,6 +24,9 @@ var h = Hub{
     connections: make(map[*Connection]bool),
 }
 
+//-------------------------------------------------------
+// methods
+//-------------------------------------------------------
 func (h *Hub) run() {
     for {
         select {

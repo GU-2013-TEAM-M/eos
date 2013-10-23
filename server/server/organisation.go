@@ -3,6 +3,9 @@ package main
 import (
 )
 
+//-------------------------------------------------------
+// data structures
+//-------------------------------------------------------
 // a data structure, used to establish connections withing an organisation
 // it maps ids to connections, which have User/Daemon objects internally
 type Organisation struct {
@@ -19,6 +22,9 @@ type Organisable interface {
 // actual map of organisations
 var Orgs = make(map[string]*Organisation)
 
+//-------------------------------------------------------
+// user/daemon management
+//-------------------------------------------------------
 // adds an authorised user
 func (o *Organisation) addUser(u string, c *Connection) error {
     return nil

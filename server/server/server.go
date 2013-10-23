@@ -7,17 +7,14 @@ import (
     "code.google.com/p/go.net/websocket"
 )
 
-type Page struct {
-    Template string
-    Content interface{}
-}
-
-type DummyPage struct {
-    Text string
-}
-
+//-------------------------------------------------------
+// variables
+//-------------------------------------------------------
 var addr = flag.String("addr", ":8080", "http service address")
 
+//-------------------------------------------------------
+// main execution block
+//-------------------------------------------------------
 func main() {
     flag.Parse()
     go h.run()

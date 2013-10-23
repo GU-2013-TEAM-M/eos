@@ -4,6 +4,9 @@ import (
     "code.google.com/p/go.net/websocket"
 )
 
+//-------------------------------------------------------
+// data structures
+//-------------------------------------------------------
 type Connection struct {
     // The websocket Connection.
     ws *websocket.Conn
@@ -15,6 +18,9 @@ type Connection struct {
     owner Organisable
 }
 
+//-------------------------------------------------------
+// methods
+//-------------------------------------------------------
 func (c *Connection) reader() {
     for {
         var message string

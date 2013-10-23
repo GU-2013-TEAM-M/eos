@@ -4,6 +4,9 @@ import (
 //    "eos/server/db"
 )
 
+//-------------------------------------------------------
+// data structures
+//-------------------------------------------------------
 // a user entity, tied to a connection
 // is anonymous if only session id is supplied
 type User struct {
@@ -12,6 +15,9 @@ type User struct {
     SessionId string
 }
 
+//-------------------------------------------------------
+// methods
+//-------------------------------------------------------
 // obtain Id, OrgId and add yourself to a organisation
 func (u *User) Authorise() error {
     return nil

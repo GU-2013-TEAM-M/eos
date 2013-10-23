@@ -4,6 +4,9 @@ import (
 //    "eos/server/db"
 )
 
+//-------------------------------------------------------
+// data structures
+//-------------------------------------------------------
 // a daemon entity, tied to a connection
 // is anonymous if only OrgId and IP are supplied
 type Daemon struct {
@@ -13,6 +16,9 @@ type Daemon struct {
     status int
 }
 
+//-------------------------------------------------------
+// methods
+//-------------------------------------------------------
 // obtain OrgId and add yourself to a organisation
 func (d *Daemon) Authorise() error {
     return nil
