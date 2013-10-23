@@ -1,30 +1,31 @@
 package main
 
 import (
-    "fmt"
+    "log"
+    "flag"
     "net/http"
-    "eos/server/db"
+    "code.google.com/p/go.net/websocket"
 )
 
 type Page struct {
-    Template, Text string
+    Template string
+    Content interface{}
 }
 
-// FIXME: change with an appropriate handler
-func rootHandler(w http.ResponseWriter, r *http.Request) {
-    path := r.URL.Path[1:]
-    if path == "" {
-        page := Page{ Template: "index.html", Text: "Hello World!" }
-        ServeHtml(w, &page)
-    } else if path == "db" {
-        db.Connect()
-        fmt.Fprintf(w, db.Test())
-    } else {
-        fmt.Fprintf(w, "Hi there, you've asked for %s", path)
-    }
+type DummyPage struct {
+    Text string
 }
+
+var addr = flag.String("addr", ":8080", "http service address")
 
 func main() {
+    flag.Parse()
+    go h.run()
     http.HandleFunc("/", rootHandler)
-    http.ListenAndServe(":8080", nil)
+    http.HandleFunc("/client", chatHandler)
+    http.Handle("/wsclient", websocket.Handler(wsHandlerClient))
+    http.Handle("/wsdaemon", websocket.Handler(wsHandlerDaemon))
+    if err := http.ListenAndServe(*addr, nil); err != nil {
+        log.Fatal("ListenAndServe:", err)
+    }
 }

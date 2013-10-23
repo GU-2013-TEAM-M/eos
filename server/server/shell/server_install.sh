@@ -13,6 +13,10 @@ sudo apt-get install mongodb-10gen
 sudo apt-get install bzr
 go get labix.org/v2/mgo
 
+# adding WebSockets to Go
+sudo apt-get install mercurial
+go get code.google.com/p/go.net/websocket
+
 # setting up the workplace (do it yourself)
 # mkdir $HOME/go
 # export GOPATH=$HOME/workplace
