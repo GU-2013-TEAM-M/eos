@@ -29,6 +29,7 @@ func (u *User) Deauthorise() error {
     if err != nil {
         return err
     }
-    return org.delUser(u.Id)
+    org.delUser(u.Id)
+    return nil
 }
 

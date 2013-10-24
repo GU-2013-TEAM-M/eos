@@ -30,6 +30,7 @@ func (d *Daemon) Deauthorise() error {
     if err != nil {
         return err
     }
-    return org.delDaemon(d.Id)
+    org.delDaemon(d.Id)
+    return nil
 }
 

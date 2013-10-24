@@ -1,6 +1,7 @@
 package main
 
 import (
+    "errors"
 )
 
 //-------------------------------------------------------
@@ -20,29 +21,76 @@ type Organisable interface {
 }
 
 // actual map of organisations
-var Orgs = make(map[string]*Organisation)
+var orgs = make(map[string]*Organisation)
+
+//-------------------------------------------------------
+// handling the organisations
+//-------------------------------------------------------
+// create the organisation
+func NewOrg(orgId string) *Organisation {
+    org := &Organisation{
+        Users: make(map[string]*Connection),
+        Daemons: make(map[string]*Connection),
+    }
+    orgs[orgId] = org
+    return org
+}
+
+// get the organisation
+func GetOrg(orgId string) (*Organisation, error) {
+    if org, ok := orgs[orgId]; ok == true {
+        return org, nil
+    }
+    return nil, errors.New("Organisation not found")
+}
+
+// delete the organisation
+func DelOrg(orgId string) error {
+    org, err := GetOrg(orgId)
+    if err != nil {
+        return errors.New("Organisation not found")
+    }
+
+    if len(org.Users) > 0 || len(org.Daemons) > 0 {
+        return errors.New("Deleting non empty organisation")
+    }
+
+    delete(orgs, orgId)
+
+    return nil
+}
 
 //-------------------------------------------------------
 // user/daemon management
 //-------------------------------------------------------
 // adds an authorised user
 func (o *Organisation) addUser(u string, c *Connection) error {
+    if _, ok := o.Users[u]; ok {
+        return errors.New("Such user already exists")
+    }
+
+    o.Users[u] = c
     return nil
 }
 
 // removes a user from the list of authorised for this org
-func (o *Organisation) delUser(u string) error {
-    return nil
+func (o *Organisation) delUser(u string) {
+    delete(o.Users, u)
 }
 
 // adds an authorised daemon
 func (o *Organisation) addDaemon(d string, c *Connection) error {
+    if _, ok := o.Daemons[d]; ok {
+        return errors.New("Such daemon already exists")
+    }
+
+    o.Daemons[d] = c
     return nil
 }
 
 // removes a daemon from the list of authorised for this org
-func (o *Organisation) delDaemon(d string) error {
-    return nil
+func (o *Organisation) delDaemon(d string) {
+    delete(o.Daemons, d)
 }
 
 //-------------------------------------------------------
@@ -65,23 +113,5 @@ func (o* Organisation) sendToDaemon(did, msg string) error {
 
 // send a message to all daemons
 func (o* Organisation) sendToDaemons(msg string) error {
-    return nil
-}
-
-//-------------------------------------------------------
-// handling the organisations
-//-------------------------------------------------------
-// create the organisation
-func NewOrg(orgId string) *Organisation {
-    return nil
-}
-
-// get the organisation
-func GetOrg(orgId string) (*Organisation, error) {
-    return nil, nil
-}
-
-// delete the organisation
-func DelOrg(orgId string) error {
     return nil
 }
