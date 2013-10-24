@@ -58,6 +58,8 @@ monitoringData = (data) ->
 			graph.update(value)
 		else
 			console.error "There is no graph associated with daemon: " + daemon_id + " for attribute: " + key
+
+processHistory = (data) ->
 # TODO:
 
 notImplemented = (data) ->

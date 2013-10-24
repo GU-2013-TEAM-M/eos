@@ -40,6 +40,8 @@ messages =
 			data: []
 		control:
 			data: ["daemon_id", "operation"]
+		history:
+			data: ["daemon_id", "start", "end", "param"]
 	in:
 		loginCheck: 
 			data: ["status"],
@@ -65,6 +67,10 @@ messages =
 			data: ["daemon_id", "data"],
 			processCallback: (data) ->
 				processMonitoring data
+		history:
+			data: ["daemon_id", "start", "end", "param", "point_distance", "points"]
+			processCallback: (data) ->
+				processHistory data
 		not_implemented:
 			data: [],
 			processCallback: (data) ->
@@ -210,14 +216,23 @@ processControl = (data) ->
 # Processes daemon monitoring data
 # Params:	data
 processMonitoring = (data) ->
-	daemon_id = data.daemon_id;
-	mon = data.data;
+	daemon_id = data.daemon_id
+	mon = data.data
 	str = ""
 	for own key, value of mon
 		str += key + ": " + value + "; " 
 	console.log "Monitoring for " + daemon_id + ". " + str
 
-	monitoringData(data)
+	monitoringData data
+
+processHistory = (data) ->
+	daemon_id = data.daemon_id
+	start = data.start
+	end = data.end
+	param = data.param
+	console.log "history for " + daemon_id + " param " + param + " for period from " + start + " to " + end
+
+	processHistory data
 
 # Processes not implemented message
 # Params:	data - the inital data sent
