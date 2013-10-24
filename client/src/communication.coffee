@@ -195,12 +195,6 @@ processDaemons = (data) ->
 
 		console.log "ID " + daemon_id + "; Name " + daemon_name + "; State " + daemon_state + "; address " + daemon_address + "; port " + daemon_port + ". " + str
 
-	createDaemons(data)
-
-# Processes daemon response
-# Params:	data - response data, that contain daemon id, address, port, platform, all parameters, monitores parameters for a daemon
-processDaemon = (data) ->
-
 	updateDaemons(data)
 
 # Processes control response

@@ -31,11 +31,6 @@ logoutSuccessful = () ->
 logoutError = () ->
 # TODO:
 
-createDaemons = (data) ->
-	daemons = []
-	for daemon in data
-		daemons.push new Daemon data
-
 getDaemon = (daemon_id) ->
 	for daemon in daemons
 		if daemon.daemon_id == daemon_id
@@ -47,7 +42,7 @@ updateDaemons = (data) ->
 	if daemon
 		daemon.setDaemonProperties data
 	else
-		console.error "Sorry, you have tried to update a daemon that does not exist"
+		daemons.push new Daemon data
 
 controlStatus = (data) ->
 # TODO:
