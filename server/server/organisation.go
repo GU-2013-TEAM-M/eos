@@ -97,21 +97,41 @@ func (o *Organisation) delDaemon(d string) {
 // now the following are methods to enhance communication
 //-------------------------------------------------------
 // send a message to one user
-func (o* Organisation) sendToUser(uid, msg string) error {
+func (o* Organisation) sendToUser(uId, msg string) error {
+    user, ok := o.Users[uId]
+    if !ok {
+        return errors.New("User not found")
+    }
+
+    user.send <- msg
     return nil
 }
 
 // send a message to all users
-func (o* Organisation) sendToUsers(msg string) error {
-    return nil
+func (o* Organisation) sendToUsers(msg string) {
+    for _, user := range o.Users {
+        go func(user *Connection) {
+            user.send <- msg
+        } (user)
+    }
 }
 
 // send a message to one daemon
-func (o* Organisation) sendToDaemon(did, msg string) error {
+func (o* Organisation) sendToDaemon(dId, msg string) error {
+    daemon, ok := o.Daemons[dId]
+    if !ok {
+        return errors.New("User not found")
+    }
+
+    daemon.send <- msg
     return nil
 }
 
 // send a message to all daemons
-func (o* Organisation) sendToDaemons(msg string) error {
-    return nil
+func (o* Organisation) sendToDaemons(msg string) {
+    for _, daemon := range o.Daemons {
+        go func(daemon *Connection) {
+            daemon.send <- msg
+        } (daemon)
+    }
 }
