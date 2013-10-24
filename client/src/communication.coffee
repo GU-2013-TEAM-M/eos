@@ -38,8 +38,6 @@ messages =
 			data: []
 		daemons:
 			data: []
-		daemon:
-			data: ["daemon_id"]
 		control:
 			data: ["daemon_id", "operation"]
 	in:
@@ -56,13 +54,9 @@ messages =
 			processCallback: (data) ->
 				processLogout data
 		daemons:
-			data: ["daemon_id", "daemon_name", "daemon_state"],
+			data: ["daemon_id", "daemon_name", "daemon_state", "daemon_address", "daemon_port", "daemon_platform", "daemon_all_parameters", "daemon_monitored_parameters"],
 			processCallback: (data) ->
 				processDaemons data
-		daemon:
-			data: ["daemon_id", "daemon_address", "daemon_port", "daemon_platform", "daemon_all_parameters", "daemon_monitored_parameters"],
-			processCallback: (data) ->
-				processDaemon data
 		control:
 			data: ["daemon_id", "status", "operation"],
 			processCallback: (data) ->
@@ -181,33 +175,31 @@ processDaemons = (data) ->
 		daemon_id = daemon.daemon_id
 		daemon_name = daemon.daemon_name
 		daemon_state = daemon.daemon_state
-		console.log "ID " + daemon_id + "; Name " + daemon_name + "; State " + daemon_state + ";"
+		daemon_address = data.daemon_address
+		daemon_port = data.daemon_port
+		daemon_platform = data.daemon_platform
+		daemon_all_parameters = data.daemon_all_parameters
+		daemon_monitored_parameters = data.daemon_monitored_parameters		
+
+		str = ""
+		for own key, value of daemon_platform
+			str += key + ": " + value + "; "
+
+		str += " ALL PARAMS: "
+		for param in daemon_all_parameters
+			str += param + ", "
+
+		str += " MON PARAMS: "
+		for param in daemon_monitored_parameters
+			str += param + ", "
+
+		console.log "ID " + daemon_id + "; Name " + daemon_name + "; State " + daemon_state + "; address " + daemon_address + "; port " + daemon_port + ". " + str
 
 	createDaemons(data)
 
 # Processes daemon response
 # Params:	data - response data, that contain daemon id, address, port, platform, all parameters, monitores parameters for a daemon
 processDaemon = (data) ->
-	daemon_id = data.daemon_id
-	daemon_address = data.daemon_address
-	daemon_port = data.daemon_port
-	daemon_platform = data.daemon_platform
-	daemon_all_parameters = data.daemon_all_parameters
-	daemon_monitored_parameters = data.daemon_monitored_parameters
-
-	str = ""
-	for own key, value of daemon_platform
-		str += key + ": " + value + "; "
-
-	str += " ALL PARAMS: "
-	for param in daemon_all_parameters
-		str += param + ", "
-
-	str += " MON PARAMS: "
-	for param in daemon_monitored_parameters
-		str += param + ", "
-
-	console.log "ID " + daemon_id + "; address " + daemon_address + "; port " + daemon_port + ". " + str
 
 	updateDaemons(data)
 
@@ -292,13 +284,6 @@ sendLogout = () ->
 # Return: true/false depending on success
 sendDaemons = () ->
 	message = createMessage "daemons"
-	return trySendMessage message
-
-# Sends a daemon message
-# Params:	daemon_id
-# Return: true/false depending on success
-sendDaemon = (daemon_id) ->
-	message = createMessage "daemon", daemon_id: daemon_id
 	return trySendMessage message
 
 # Sends a control message
@@ -387,7 +372,6 @@ test = () ->
 		sendLogin "foo", "bar"
 		sendLogout()
 		sendDaemons()
-		sendDaemon("123123123")
 		sendControl("123123123", "DIE")
 
 	if testIN
@@ -426,22 +410,12 @@ test = () ->
 		daemonsMessage = 
 			type: "daemons"
 			data: [
-				{"daemon_id": "123", "daemon_name": "foo", "daemon_state": "RUNNING"},
-				{"daemon_id": "234", "daemon_name": "bar", "daemon_state": "STOPPED"},
-				{"daemon_id": "345", "daemon_name": "foobar", "daemon_state": "NOT_KNOWN"},
-				{"daemon_id": "456", "daemon_name": "Bob", "daemon_state": "EATING A PIZZA"},
+				{"daemon_id": "123", "daemon_name": "foo", "daemon_state": "RUNNING", "daemon_address": "123.123.123.123", "daemon_port": "666", "daemon_platform": {"OS": "Linux", "Architecture": "64 bit"}, "daemon_all_parameters": ["CPU", "RAM", "HDD"], "daemon_monitored_parameters": ["CPU"]},
+				{"daemon_id": "234", "daemon_name": "bar", "daemon_state": "STOPPED", "daemon_address": "123.123.123.123", "daemon_port": "666", "daemon_platform": {"OS": "Linux", "Architecture": "64 bit"}, "daemon_all_parameters": ["CPU", "RAM", "HDD"], "daemon_monitored_parameters": ["CPU"]},
+				{"daemon_id": "345", "daemon_name": "foobar", "daemon_state": "NOT_KNOWN", "daemon_address": "123.123.123.123", "daemon_port": "666", "daemon_platform": {"OS": "Linux", "Architecture": "64 bit"}, "daemon_all_parameters": ["CPU", "RAM", "HDD"], "daemon_monitored_parameters": ["CPU"]},
+				{"daemon_id": "456", "daemon_name": "Bob", "daemon_state": "EATING A PIZZA", "daemon_address": "123.123.123.123", "daemon_port": "666", "daemon_platform": {"OS": "Linux", "Architecture": "64 bit"}, "daemon_all_parameters": ["CPU", "RAM", "HDD"], "daemon_monitored_parameters": ["CPU"]},
 			]
 		trySendMessage daemonsMessage
-
-		daemonMessage = 
-			type: "daemon"
-			data: {"daemon_id": "123", "daemon_address": "123.123.123.123", "daemon_port": "666", "daemon_platform": {"OS": "Linux", "Architecture": "64 bit"}, "daemon_all_parameters": ["CPU", "RAM", "HDD"], "daemon_monitored_parameters": ["CPU"]}
-		trySendMessage daemonMessage
-
-		daemonMessage = 
-			type: "daemon"
-			data: {"daemon_id": "567", "daemon_address": "123.123.123.123", "daemon_port": "666", "daemon_platform": {"OS": "Linux", "Architecture": "64 bit"}, "daemon_all_parameters": ["CPU", "RAM", "HDD"], "daemon_monitored_parameters": ["CPU"]}
-		trySendMessage daemonMessage
 
 		controlMessageOK = 
 			type: "control"

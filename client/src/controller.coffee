@@ -2,8 +2,6 @@ isUserLoggedIn = false
 
 cookieExpiryDays = 3 #Why 3 days? Maybe it should be specified in response?
 
-session_id = getCookie("session_id")
-
 daemons = []
 
 # Callback for successfull login check. All the UI stuff should be done here
@@ -36,10 +34,7 @@ logoutError = () ->
 createDaemons = (data) ->
 	daemons = []
 	for daemon in data
-		daemon_id = daemon.daemon_id
-		daemon_name = daemon.daemon_name
-		daemon_state = daemon.daemon_state
-		daemons.push new Daemon daemon_id, daemon_name, daemon_state
+		daemons.push new Daemon data
 
 getDaemon = (daemon_id) ->
 	for daemon in daemons

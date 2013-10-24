@@ -1,13 +1,14 @@
 class Daemon
-	constructor: (daemon_id, daemon_name, daemon_state) ->
-		@daemon_id = daemon_id
-		@daemon_name = daemon_name
-		@daemon_state = daemon_state
-		@daemon_address = null
-		@daemon_port = null
-		@daemon_platform = null
-		@daemon_all_parameters = null
-		@daemon_monitored_parameters = null
+	constructor: (params) ->
+		@daemon_id = params.daemon_id
+		@daemon_name = params.daemon_name
+		@daemon_state = params.daemon_state
+		@daemon_address = params.daemon_address
+		@daemon_port = params.daemon_port
+		@daemon_platform = params.daemon_platform
+		@daemon_all_parameters = params.daemon_all_parameters
+		@daemon_monitored_parameters = params.daemon_monitored_parameters
+
 
 	# The data already guaranteed to be correct
 	setDaemonProperties: (properties) ->
