@@ -2,8 +2,6 @@ isUserLoggedIn = false
 
 cookieExpiryDays = 3 #Why 3 days? Maybe it should be specified in response?
 
-session_id = getCookie("session_id")
-
 daemons = []
 
 # Callback for successfull login check. All the UI stuff should be done here
@@ -33,14 +31,6 @@ logoutSuccessful = () ->
 logoutError = () ->
 # TODO:
 
-createDaemons = (data) ->
-	daemons = []
-	for daemon in data
-		daemon_id = daemon.daemon_id
-		daemon_name = daemon.daemon_name
-		daemon_state = daemon.daemon_state
-		daemons.push new Daemon daemon_id, daemon_name, daemon_state
-
 getDaemon = (daemon_id) ->
 	for daemon in daemons
 		if daemon.daemon_id == daemon_id
@@ -52,7 +42,7 @@ updateDaemons = (data) ->
 	if daemon
 		daemon.setDaemonProperties data
 	else
-		console.error "Sorry, you have tried to update a daemon that does not exist"
+		daemons.push new Daemon data
 
 controlStatus = (data) ->
 # TODO:
@@ -68,6 +58,8 @@ monitoringData = (data) ->
 			graph.update(value)
 		else
 			console.error "There is no graph associated with daemon: " + daemon_id + " for attribute: " + key
+
+processHistory = (data) ->
 # TODO:
 
 notImplemented = (data) ->
