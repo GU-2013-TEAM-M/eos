@@ -14,6 +14,7 @@ type Daemon struct {
     IP string
     OrgId string
     status int
+    c *Connection
 }
 
 //-------------------------------------------------------
@@ -21,6 +22,16 @@ type Daemon struct {
 //-------------------------------------------------------
 // obtain OrgId and add yourself to a organisation
 func (d *Daemon) Authorise() error {
+    // TODO: getting organisation id from MongoDB
+    orgId := "Anonymous"
+    d.OrgId = orgId
+
+    org, err := GetOrg(d.OrgId)
+    // if the organisation does not exist -- create one
+    if err != nil {
+        org = NewOrg(d.OrgId)
+    }
+    org.addDaemon(d.Id, d.c)
     return nil
 }
 
@@ -31,6 +42,12 @@ func (d *Daemon) Deauthorise() error {
         return err
     }
     org.delDaemon(d.Id)
+    d.OrgId = NO_ORG
     return nil
+}
+
+// check if a daemon is authorised
+func (d *Daemon) IsAuthorised() bool {
+    return d.OrgId != NO_ORG
 }
 

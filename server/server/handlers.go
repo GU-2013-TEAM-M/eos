@@ -14,6 +14,7 @@ import (
 func wsHandlerClient(ws *websocket.Conn) {
     u := &User{SessionId: "dummy"}
     c := &Connection{send: make(chan string, 256), ws: ws, owner: u}
+    u.c = c // backlink for authorisation
     h.register <- c
     defer func() { h.unregister <- c }()
     go c.writer()
@@ -24,6 +25,7 @@ func wsHandlerClient(ws *websocket.Conn) {
 func wsHandlerDaemon(ws *websocket.Conn) {
     d := &Daemon{Id: "dummy", IP: "0.0.0.0"}
     c := &Connection{send: make(chan string, 256), ws: ws, owner: d}
+    d.c = c // backlink for authorisation
     h.register <- c
     defer func() { h.unregister <- c }()
     go c.writer()

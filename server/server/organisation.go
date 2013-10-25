@@ -23,6 +23,9 @@ type Organisable interface {
 // actual map of organisations
 var orgs = make(map[string]*Organisation)
 
+// constant for no organisation
+const NO_ORG = ""
+
 //-------------------------------------------------------
 // handling the organisations
 //-------------------------------------------------------
