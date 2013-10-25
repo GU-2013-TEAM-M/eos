@@ -30,7 +30,7 @@ func (c *Connection) reader() {
         }
         h.broadcast <- message
     }
-    c.Close()
+    c.ws.Close()
 }
 
 func (c *Connection) writer() {
@@ -40,7 +40,7 @@ func (c *Connection) writer() {
             break
         }
     }
-    c.Close()
+    c.ws.Close()
 }
 
 // a function that closes the connection
