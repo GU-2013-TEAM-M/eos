@@ -2,9 +2,7 @@
 
 # The main server address
 # My local echo server
-serverAddress = "ws://shidlovsky.no-ip.biz:8080/ws"
-if document.URL == "http://localhost/"
-	serverAddress = "ws://localhost:8080/ws"
+serverAddress = "ws://shacron.twilightparadox.com:8080/ws"
 
 serverws = null
 daemonws = null
