@@ -20,7 +20,7 @@ func main() {
     go h.run()
     http.HandleFunc("/", rootHandler)
     http.HandleFunc("/client", chatHandler)
-    http.Handle("/static", http.FileServer(http.Dir("./static/")))
+    http.Handle("/static/", http.FileServer(http.Dir("")))
     http.Handle("/wsclient", websocket.Handler(wsHandlerClient))
     http.Handle("/wsdaemon", websocket.Handler(wsHandlerDaemon))
     if err := http.ListenAndServe(*addr, nil); err != nil {
