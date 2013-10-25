@@ -51,13 +51,17 @@ func Test_DelOrg(t *testing.T) {
 //-------------------------------------------------------
 // test user/daemon management
 //-------------------------------------------------------
-func Test_addUser(t *testing.T) {
+func setupOrg() *Organisation {
     orgs = make(map[string]*Organisation)
     orgs["123"] = &Organisation{
         Users: make(map[string]*Connection),
         Daemons: make(map[string]*Connection),
     }
-    org := orgs["123"]
+    return orgs["123"]
+}
+
+func Test_addUser(t *testing.T) {
+    org := setupOrg()
 
     test.Assert(len(org.Users) == 0, "there are no users initially", t)
     org.addUser("test", &Connection{})
@@ -69,12 +73,7 @@ func Test_addUser(t *testing.T) {
 }
 
 func Test_delUser(t *testing.T) {
-    orgs = make(map[string]*Organisation)
-    orgs["123"] = &Organisation{
-        Users: make(map[string]*Connection),
-        Daemons: make(map[string]*Connection),
-    }
-    org := orgs["123"]
+    org := setupOrg()
     org.Users["test"] = &Connection{}
 
     org.delUser("test")
@@ -82,12 +81,7 @@ func Test_delUser(t *testing.T) {
 }
 
 func Test_addDaemon(t *testing.T) {
-    orgs = make(map[string]*Organisation)
-    orgs["123"] = &Organisation{
-        Users: make(map[string]*Connection),
-        Daemons: make(map[string]*Connection),
-    }
-    org := orgs["123"]
+    org := setupOrg()
 
     test.Assert(len(org.Daemons) == 0, "there are no daemons initially", t)
     org.addDaemon("test", &Connection{})
@@ -99,14 +93,68 @@ func Test_addDaemon(t *testing.T) {
 }
 
 func Test_delDaemon(t *testing.T) {
-    orgs = make(map[string]*Organisation)
-    orgs["123"] = &Organisation{
-        Users: make(map[string]*Connection),
-        Daemons: make(map[string]*Connection),
-    }
-    org := orgs["123"]
+    org := setupOrg()
     org.Daemons["test"] = &Connection{}
 
     org.delDaemon("test")
     test.Assert(len(org.Daemons) == 0, "it deletes the daemon", t)
+}
+
+//-------------------------------------------------------
+// test communication enhancement
+//-------------------------------------------------------
+// a helper function to test that a message has been sent
+func messageSent(msg string, c chan string) bool {
+    received := <-c
+    return received == msg
+}
+
+func Test_sendToUser(t *testing.T) {
+    org := setupOrg()
+    c := &Connection{send: make(chan string)}
+    org.Users["test"] = c
+
+    msg := "TestMsg"
+    go org.sendToUser("test", msg)
+
+    test.Assert(messageSent(msg, c.send), "it sends the message to the users channel", t)
+}
+
+func Test_sendToUsers(t *testing.T) {
+    org := setupOrg()
+    c1 := &Connection{send: make(chan string)}
+    c2 := &Connection{send: make(chan string)}
+    org.Users["test1"] = c1
+    org.Users["test2"] = c2
+
+    msg := "TestMsg"
+    go org.sendToUsers(msg)
+
+    test.Assert(messageSent(msg, c1.send), "it sends the message to the first users channel", t)
+    test.Assert(messageSent(msg, c2.send), "it sends the message to the second users channel", t)
+}
+
+func Test_sendToDaemon(t *testing.T) {
+    org := setupOrg()
+    c := &Connection{send: make(chan string)}
+    org.Daemons["test"] = c
+
+    msg := "TestMsg"
+    go org.sendToDaemon("test", msg)
+
+    test.Assert(messageSent(msg, c.send), "it sends the message to the users channel", t)
+}
+
+func Test_sendToDaemons(t *testing.T) {
+    org := setupOrg()
+    c1 := &Connection{send: make(chan string)}
+    c2 := &Connection{send: make(chan string)}
+    org.Daemons["test1"] = c1
+    org.Daemons["test2"] = c2
+
+    msg := "TestMsg"
+    go org.sendToDaemons(msg)
+
+    test.Assert(messageSent(msg, c1.send), "it sends the message to the first daemon's channel", t)
+    test.Assert(messageSent(msg, c2.send), "it sends the message to the second daemon's channel", t)
 }

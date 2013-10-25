@@ -13,6 +13,7 @@ type User struct {
     Id string
     OrgId string
     SessionId string
+    c *Connection
 }
 
 //-------------------------------------------------------
@@ -20,6 +21,16 @@ type User struct {
 //-------------------------------------------------------
 // obtain Id, OrgId and add yourself to a organisation
 func (u *User) Authorise() error {
+    // TODO: getting organisation id from MongoDB
+    orgId := "Anonymous"
+    u.OrgId = orgId
+
+    org, err := GetOrg(u.OrgId)
+    // if the organisation does not exist -- create one
+    if err != nil {
+        org = NewOrg(u.OrgId)
+    }
+    org.addUser(u.Id, u.c)
     return nil
 }
 
@@ -29,7 +40,13 @@ func (u *User) Deauthorise() error {
     if err != nil {
         return err
     }
+
     org.delUser(u.Id)
+    u.OrgId = NO_ORG
     return nil
 }
 
+// check if a user is authorised
+func (u *User) IsAuthorised() bool {
+    return u.OrgId != NO_ORG
+}

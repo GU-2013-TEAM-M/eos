@@ -2,6 +2,7 @@ package test
 
 import (
     "testing"
+    "reflect"
     "fmt"
 )
 
@@ -30,27 +31,33 @@ func Assert(assertion bool, msg string, t *testing.T) {
 }
 
 //-------------------------------------------------------
-// rspec
+// stubbing methods
+// taken online from someone called imosquera
 //-------------------------------------------------------
-// TODO: think about how to port it to go.
-var curT *testing.T
-var ind int = 0
-var indW int = 4
+// Restorer holds a function that can be used
+// to restore some previous state.
+type Restorer func()
 
-// returns a string of spaces, for indentation purposes
-// FIXME: write a proper implementation, if you have time
-func indent() string {
-    s := ""
-    for i := 0; i < ind * indW; i++ {
-        s += " "
-    }
-    return s
+// Restore restores some previous state.
+func (r Restorer) Restore() {
+        r()
 }
 
-// describe block, sets the indentation
-func Describe(msg string, t *testing.T) {
-    curT = t
-    t.Log(indent() + msg)
+// Patch sets the value pointed to by the given destination to the given
+// value, and returns a function to restore it to its original value.  The
+// value must be assignable to the element type of the destination.
+func Patch(dest, value interface{}) Restorer {
+        destv := reflect.ValueOf(dest).Elem()
+        oldv := reflect.New(destv.Type()).Elem()
+        oldv.Set(destv)
+        valuev := reflect.ValueOf(value)
+        if !valuev.IsValid() {
+                // This isn't quite right when the destination type is not
+                // nilable, but it's better than the complex alternative.
+                valuev = reflect.Zero(destv.Type())
+        }
+        destv.Set(valuev)
+        return func() {
+                destv.Set(oldv)
+        }
 }
-
-// it block
