@@ -38,8 +38,7 @@ func wsHandlerDaemon(ws *websocket.Conn) {
 func rootHandler(w http.ResponseWriter, r *http.Request) {
     path := r.URL.Path[1:]
     if path == "" {
-        page := Page{ Template: "index.html", Content: DummyPage{ Text: "Hello World!" } }
-        ServeHtml(w, &page)
+        http.ServeFile(w, r, "./static/templates/index.html")
     } else if path == "db" {
         db.Connect()
         fmt.Fprintf(w, db.Test())
