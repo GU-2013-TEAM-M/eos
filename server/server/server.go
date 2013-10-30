@@ -26,4 +26,5 @@ func main() {
     if err := http.ListenAndServe(*addr, nil); err != nil {
         log.Fatal("ListenAndServe:", err)
     }
+    NewOrg("Anonymous")
 }

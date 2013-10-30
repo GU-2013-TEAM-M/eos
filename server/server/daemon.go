@@ -51,3 +51,20 @@ func (d *Daemon) IsAuthorised() bool {
     return d.OrgId != NO_ORG
 }
 
+// type checks
+func (d *Daemon) IsUser() bool {
+    return false
+}
+func (d *Daemon) IsDaemon() bool {
+    return true
+}
+
+// getting the organisation
+func (d *Daemon) GetOrg() *Organisation {
+    if d.IsAuthorised() {
+        org, _ := GetOrg(d.OrgId)
+        return org
+    }
+    return nil
+}
+

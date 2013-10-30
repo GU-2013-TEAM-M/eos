@@ -50,3 +50,20 @@ func (u *User) Deauthorise() error {
 func (u *User) IsAuthorised() bool {
     return u.OrgId != NO_ORG
 }
+
+// type checks
+func (u *User) IsUser() bool {
+    return true
+}
+func (u *User) IsDaemon() bool {
+    return false
+}
+
+// getting the organisation
+func (u *User) GetOrg() *Organisation {
+    if u.IsAuthorised() {
+        org, _ := GetOrg(u.OrgId)
+        return org
+    }
+    return nil
+}

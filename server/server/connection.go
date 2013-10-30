@@ -28,7 +28,7 @@ func (c *Connection) reader() {
         if err != nil {
             break
         }
-        h.broadcast <- message
+        h.broadcast <- &Message{msg: message, c: c}
     }
     c.ws.Close()
 }
