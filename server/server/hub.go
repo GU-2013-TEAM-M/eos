@@ -39,6 +39,7 @@ func (h *Hub) run() {
     for {
         select {
         case c := <-h.register:
+            fmt.Println("An incomming connection received")
             c.owner.Authorise()
             h.connections[c] = true
         case c := <-h.unregister:
