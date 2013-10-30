@@ -1,5 +1,7 @@
 package main
 
+import "fmt"
+
 //-------------------------------------------------------
 // data structures
 //-------------------------------------------------------
@@ -44,8 +46,10 @@ func (h *Hub) run() {
         case m := <-h.broadcast:
             org := m.c.owner.GetOrg()
             if m.c.owner.IsUser() {
+                fmt.Printf("user:   %s\n", m.msg)
                 org.sendToDaemons(m.msg)
             } else {
+                fmt.Printf("daemon: %s\n", m.msg)
                 org.sendToUsers(m.msg)
             }
             /*for c := range h.connections {
