@@ -48,6 +48,7 @@ func (h *Hub) run() {
             if m.c.owner.IsUser() {
                 fmt.Printf("user:   %s\n", m.msg)
                 org.sendToDaemons(m.msg)
+                org.sendToUsers(m.msg)
             } else {
                 fmt.Printf("daemon: %s\n", m.msg)
                 org.sendToUsers(m.msg)
