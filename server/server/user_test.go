@@ -5,7 +5,7 @@ import (
     "eos/server/test"
 )
 
-func Test_Authorise_newOrg(t *testing.T) {
+func Test_u_Authorise_newOrg(t *testing.T) {
     setupOrg()
     org, err := GetOrg("Anonymous")
     test.Assert(err != nil, "organisation does not exist", t)
@@ -20,7 +20,7 @@ func Test_Authorise_newOrg(t *testing.T) {
     test.Assert(u.OrgId == "Anonymous", "It stores org ID in user", t)
 }
 
-func Test_Authorise_exOrg(t *testing.T) {
+func Test_u_Authorise_exOrg(t *testing.T) {
     setupOrg()
     org := NewOrg("Anonymous")
     test.Assert(len(org.Users) == 0, "there are no daemons in the org initially", t)
@@ -33,7 +33,7 @@ func Test_Authorise_exOrg(t *testing.T) {
     test.Assert(u.OrgId == "Anonymous", "It stores org ID in user", t)
 }
 
-func Test_Deauthorise(t *testing.T) {
+func Test_u_Deauthorise(t *testing.T) {
     org := setupOrg()
     org.Users["test"] = &Connection{}
 
@@ -48,9 +48,25 @@ func Test_Deauthorise(t *testing.T) {
     test.Assert(u.OrgId == NO_ORG, "it sets the user organisation to none", t)
 }
 
-func Test_IsAuthorised(t *testing.T) {
+func Test_u_IsAuthorised(t *testing.T) {
     u := &User{OrgId:NO_ORG}
     test.Assert(!u.IsAuthorised(), "it spots unauthorised person", t)
     u.OrgId = "random"
     test.Assert(u.IsAuthorised(), "it tells when a person is authorised", t)
+}
+
+func Test_u_TypeChecks(t *testing.T) {
+    u := &User{OrgId:NO_ORG}
+    test.Assert(u.IsUser(), "it thinks that it is a user", t)
+    test.Assert(!u.IsDaemon(), "it does not think that is is a daemon", t)
+}
+
+func Test_u_GetOrg(t *testing.T) {
+    org := setupOrg()
+
+    u := &User{OrgId:NO_ORG}
+    test.Assert(u.GetOrg() == nil, "it does not return an org if the daemon is not authorised", t)
+
+    u = &User{OrgId: "123"}
+    test.Assert(u.GetOrg() == org, "it does return an org if the daemon is authorised", t)
 }

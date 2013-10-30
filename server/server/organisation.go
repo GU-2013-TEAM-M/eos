@@ -18,6 +18,7 @@ type Organisation struct {
 type Organisable interface {
     Authorise() error
     Deauthorise() error
+    IsAuthorised() bool
     IsUser() bool
     IsDaemon() bool
     GetOrg() *Organisation
