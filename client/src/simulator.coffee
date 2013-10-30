@@ -37,3 +37,8 @@ class SmoothRandomGenerator
 		for i in [0...n]
 			numbers.push(@getNumber())
 		return numbers
+
+simulate2 = (address) ->
+	daemonAddress = address
+	new Graph("12345", "cpu", {count: 1});
+	daemonws = createDaemonWebSocket(daemonAddress);

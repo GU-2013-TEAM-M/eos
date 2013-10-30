@@ -49,7 +49,6 @@ controlStatus = (data) ->
 
 monitoringData = (data) ->
 	daemon_id = data.daemon_id
-	
 
 	data = data.data
 	for own key, value of data

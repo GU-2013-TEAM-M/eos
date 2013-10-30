@@ -6,6 +6,8 @@ serverAddress = "ws://shacron.twilightparadox.com:8080/wsclient"
 if document.URL == "http://localhost:8080/"
         serverAddress = "ws://localhost:8080/wsclient"
 
+daemonAddress = null
+
 serverws = null
 daemonws = null
 
@@ -257,12 +259,16 @@ createMessage = (type, data) ->
 	return message
 
 # Tries to send a message
-# Params:	message
+# Params:	message, ws
 # Return: true/false depending on success
-trySendMessage = (msg) ->
+trySendMessage = (msg, ws) ->
 	try
 		message = JSON.stringify msg
-		serverws.send message
+		if (!ws) 
+			serverws.send message
+		else
+			ws.send message
+
 		console.log msg.type + " message was sent " + message
 	catch err
 		console.error err
@@ -270,10 +276,10 @@ trySendMessage = (msg) ->
 	finally
 		return true    	
 
-# Sends a login check message
-sendLoginCheck = (session_id) ->
+# Sends a login check message to the specified web socket
+sendLoginCheck = (session_id, ws) ->
 	message = createMessage "loginCheck", (session_id: session_id)
-	return trySendMessage message
+	return trySendMessage message, ws
 
 # Sends a login message
 # Params:	username
@@ -318,6 +324,7 @@ createServerWebSocket = (address) ->
 # Params:	address - server address
 # Return:	web socket object
 createDaemonWebSocket = (address) ->
+	daemonAddress = address;
 	daemonws = new WebSocket address
 	daemonws.onopen = wsDaemonOnOpenHandler
 	daemonws.onclose = wsDaemonOnCloseHandler
@@ -353,7 +360,7 @@ wsServerOnMessageHandler = (messageEvent) ->
 	processIncomingMessage messageEvent.data, messageEvent.target, messageEvent
 
 wsDaemonOnOpenHandler = () ->
-	sendLoginCheck("123")
+	sendLoginCheck("123", daemonws)
 
 wsDaemonOnCloseHandler = (event) ->
 	wasClean = event.wasClean
@@ -361,7 +368,7 @@ wsDaemonOnCloseHandler = (event) ->
 		console.log "Connection to the daemon was lost unexpectedly. Re-connecting (" + reconnectTiming/1000 + ")"
 		if !reconnectTimerDaemon
 			reconnectTimerDaemon = setInterval () ->
-				daemonws = createServerWebSocket(daemonAddress)
+				daemonws = createDaemonWebSocket(daemonAddress)
 			,reconnectTiming
 	else 
 		console.log "Connection to the daemon was successfully closed."
@@ -377,7 +384,7 @@ test = () ->
 		# THESE TEST IS DESIGNED FOR ECHO SERVER ONLY!!!
 		# OUTGOING TEST. DON'T PAY ATTENTION TO THE ERRORS - ECHO SERVER GIVES BACK BAD DATA (NOT BAD, BUT THE SAME)
 		console.log "OUTGOING TEST. DON'T PAY ATTENTION TO THE ERRORS - ECHO SERVER GIVES BACK BAD DATA (NOT BAD, BUT THE SAME)"
-		sendLoginCheck()
+		sendLoginCheck("bla bla bla")
 		sendLogin "foo", "bar"
 		sendLogout()
 		sendDaemons()
