@@ -2,6 +2,7 @@ package main
 
 import (
     "fmt"
+    "time"
     "net/http"
     "eos/server/db"
     "code.google.com/p/go.net/websocket"
@@ -12,7 +13,8 @@ import (
 //-------------------------------------------------------
 // a WebSocket handler for dealing with clients
 func wsHandlerClient(ws *websocket.Conn) {
-    u := &User{SessionId: "dummy"}
+    id := fmt.Sprintf("%d", time.Now().Nanosecond())
+    u := &User{Id: id, SessionId: "dummy"}
     c := &Connection{send: make(chan string, 256), ws: ws, owner: u}
     u.c = c // backlink for authorisation
     h.register <- c
@@ -23,7 +25,8 @@ func wsHandlerClient(ws *websocket.Conn) {
 
 // a WebSocket handler for dealing with daemons
 func wsHandlerDaemon(ws *websocket.Conn) {
-    d := &Daemon{Id: "dummy", IP: "0.0.0.0"}
+    id := fmt.Sprintf("%d", time.Now().Nanosecond())
+    d := &Daemon{Id: id, IP: "0.0.0.0"}
     c := &Connection{send: make(chan string, 256), ws: ws, owner: d}
     d.c = c // backlink for authorisation
     h.register <- c
