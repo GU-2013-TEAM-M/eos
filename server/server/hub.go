@@ -45,6 +45,8 @@ func (h *Hub) run() {
         case c := <-h.unregister:
             c.Close()
         case m := <-h.broadcast:
+            HandleMsg(m)
+
             org := m.c.owner.GetOrg()
             if m.c.owner.IsUser() {
                 fmt.Printf("user:   %s\n", m.msg)

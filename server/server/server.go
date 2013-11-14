@@ -18,6 +18,7 @@ var addr = flag.String("addr", ":8080", "http service address")
 func main() {
     flag.Parse()
     go h.run()
+
     http.HandleFunc("/", rootHandler)
     http.HandleFunc("/client", chatHandler)
     http.Handle("/static/", http.FileServer(http.Dir("")))
