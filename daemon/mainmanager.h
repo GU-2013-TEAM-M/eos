@@ -5,14 +5,22 @@
 #include <boost/chrono.hpp>
 
 #include "cpuwatcher.h"
+#include "memwatcher.h"
+
 #include "outclient.h"
+#include "inserver.h"
 
 #ifdef TARGET_OS_MAC
 #include "cpumac.h"
+
 #elif defined __linux__
 #include "cpuprocstat.h"
+#include "memnix.h"
+
 #elif defined _WIN32 || defined _WIN64
 #include "cpuwin.h"
+#include "memwin.h"
+
 #else
 #error "unknown platform"
 #endif
@@ -20,7 +28,10 @@
 class daemonManager {
 private:
 	CPUWatcher * mainCPUMon;
+	MemWatcher * mainMemMon;
 	outClient * connToServer;
+	serveToClient * connToClient;
+	boost::thread * toClientThread;
 	boost::chrono::milliseconds refresh;
 	bool run;
 public:

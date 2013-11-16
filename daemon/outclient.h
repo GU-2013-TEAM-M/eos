@@ -2,6 +2,9 @@
 #define outclient_h__
 
 #include <websocketpp/config/asio_no_tls_client.hpp>
+
+//Include this when devel-level debug logs are required
+//#include "websocketpp/config/debug_asio_no_tls.hpp"
 #include <websocketpp/client.hpp>
 
 // This header pulls in the WebSocket++ abstracted thread support that will

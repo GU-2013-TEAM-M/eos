@@ -1,5 +1,5 @@
-#ifndef cpuprocstat_h__
-#define cpuprocstat_h__
+#ifndef cpuwin_h__
+#define cpuwin_h__
 
 #include <Pdh.h>
 #include <tchar.h>
@@ -22,4 +22,4 @@ public:
 	void readLoop();
 };
 
-#endif // cpuprocstat_h__
+#endif // cpuwin_h__

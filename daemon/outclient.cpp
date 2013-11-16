@@ -3,6 +3,7 @@
 outClient::outClient() {
 	// set up access channels to only log interesting things
 	m_client.clear_access_channels(websocketpp::log::alevel::all);
+	//m_client.set_access_channels(websocketpp::log::alevel::devel);
 	m_client.set_access_channels(websocketpp::log::alevel::connect);
 	m_client.set_access_channels(websocketpp::log::alevel::disconnect);
 	m_client.set_access_channels(websocketpp::log::alevel::app);
@@ -27,7 +28,7 @@ void outClient::init( const std::string & uri) {
 			"Get Connection Error: "+ec.message());
 		return;
 	}
-
+	con->replace_header("Origin","shacron.twilightparadox.com:8080");
 	// Grab a handle for this connection so we can talk to it in a thread
 	// safe manor after the event loop starts.
 	m_hdl = con->get_handle();

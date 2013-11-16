@@ -89,7 +89,13 @@
     <ClInclude Include="cpuwatcher.h" />
     <ClInclude Include="cpuprocstat.h" />
     <ClInclude Include="cpuwin.h" />
+    <ClInclude Include="memnix.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="memwin.h" />
+    <ClInclude Include="inserver.h" />
     <ClInclude Include="mainmanager.h" />
+    <ClInclude Include="memwatcher.h" />
     <ClInclude Include="outclient.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
@@ -99,6 +105,12 @@
     <ClCompile Include="cpuwatcher.cpp" />
     <ClCompile Include="cpuprocstat.cpp" />
     <ClCompile Include="cpuwin.cpp" />
+    <ClCompile Include="inserver.cpp" />
+    <ClCompile Include="memnix.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="memwatcher.cpp" />
+    <ClCompile Include="memwin.cpp" />
     <ClCompile Include="protoDaemon.cpp" />
     <ClCompile Include="mainmanager.cpp" />
     <ClCompile Include="outclient.cpp" />
