@@ -1,14 +1,150 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<script type="text/javascript" src="static/js/jquery-2.0.3.min.js"></script>
-	<script type="text/javascript" src="static/js/Chart.min.js"></script>
-	<script type="text/javascript" src="static/lib/client.js"></script>
-	<link type="text/css" rel="stylesheet" href="static/css/styles.css">
+	<script type="text/javascript" src="./js/jquery-2.0.3.js"></script>
+	<script type="text/javascript" src="./js/Chart.min.js"></script>
+
+	<script src="./js/backbone.marionette/json2.js"></script>
+	<script src="./js/backbone.marionette/underscore.js"></script>
+	<script src="./js/backbone.marionette/backbone.js"></script>
+	<script src="./js/backbone.marionette/backbone.marionette.js"></script>	
+
+	<script type="text/javascript" src="./lib/client.js"></script>
+
+	<link type="text/css" rel="stylesheet" href="./css/styles.css">
+
 	<title>EOS</title>
+
+	<script type="text/template" id="welcome-page-layout-template">
+		<header>
+		</header>
+		<div id="content">
+		</div>
+		<footer>
+		</footer>
+	</script>
+
+	<script type="text/template" id="welcome-page-header-template">
+		WELCOME header
+	</script>
+
+	<script type="text/template" id="welcome-page-content-template">
+		WELCOME content
+	</script>
+
+	<script type="text/template" id="welcome-page-footer-template">
+		WELCOME footer
+	</script>	
+
+	<script type="text/template" id="login-page-layout-template">
+		<header>
+		</header>
+		<div id="content">
+		</div>
+		<footer>
+		</footer>
+	</script>
+
+	<script type="text/template" id="login-page-header-template">
+		LOGIN header
+	</script>
+
+	<script type="text/template" id="login-page-content-template">
+		LOGIN content
+	</script>
+
+	<script type="text/template" id="login-page-footer-template">
+		LOGIN footer
+	</script>	
+
+	<script type="text/template" id="app-page-layout-template">
+		<header>
+		</header>
+		<div id="content">
+		</div>
+		<footer>
+		</footer>
+	</script>
+
+	<script type="text/template" id="app-page-header-template">
+		APP header
+	</script>
+
+	<script type="text/template" id="app-page-content-template">
+		<div id="tab-selector">
+		</div>
+		<div id="tab">
+		</div>
+	</script>
+
+	<script type="text/template" id="app-page-footer-template">
+		APP footer
+	</script>	
+
+	<script type="text/template" id="tabs-template">
+		<div id="tabsOuterContainer">
+			<div id="tabsInnerContainer">
+				<ul id="tabsList">
+				</ul>
+			</div>
+		</div>
+	</script>
+
+	<script type="text/template" id="tab-template">
+		<div class="tabText">
+			<%= name %>
+		</div>
+	</script>	
+
+	<script type="text/template" id="home-tab-layout">
+		home tab
+	</script>
+
+	<script type="text/template" id="history-tab-layout">
+		history tab
+	</script>
+
+	<script type="text/template" id="alerts-tab-layout">
+		alerts tab
+	</script>
+
+	<script type="text/template" id="user-tab-layout">
+		user tab
+	</script>
+
+	<script type="text/template" id="app-test-template">
+		test
+	</script>
+
+	<script type="text/template" id="daemons-list-template">
+		<ul>
+		</ul>
+	</script>
+
+	<script type="text/template" id="daemon-item-template">
+		<div>
+			<%= daemon_name %>: <%= daemon_state %>
+		</div>
+	</script>
+
+	<script type="text/template" id="daemon-list-template">
+		<ul>
+		</ul>
+	</script>
+
 </head>
 <body>
-	<div id="graphs">
+	<div>
+		<ul>
+			<li><a href="#welcome">welcome</a></li>
+			<li><a href="#login">login</a></li>
+			<li><a href="#app">app</a></li>
+		</ul>
 	</div>
+
+	<div id="mainRegion">
+		
+	</div>
+
 </body>
 </html>
