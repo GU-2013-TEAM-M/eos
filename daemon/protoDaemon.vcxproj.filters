@@ -42,6 +42,18 @@
     <ClInclude Include="cpuwin.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="inserver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="memwatcher.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="memwin.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="memnix.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -66,6 +78,18 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="cpuwin.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="inserver.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="memwatcher.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="memwin.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="memnix.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
