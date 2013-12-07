@@ -45,7 +45,10 @@ func (h *Hub) run() {
         case c := <-h.unregister:
             c.Close()
         case m := <-h.broadcast:
-            HandleMsg(m)
+            err := HandleMsg(m)
+            if err != nil {
+                fmt.Printf("Error: %s\n", err)
+            }
 
             org := m.c.owner.GetOrg()
             if (m.c.owner.IsAuthorised()) {
