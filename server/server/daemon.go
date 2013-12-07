@@ -12,6 +12,7 @@ import (
 type Daemon struct {
     Id string
     IP string
+    Name string
     OrgId string
     status int
     c *Connection
@@ -22,10 +23,6 @@ type Daemon struct {
 //-------------------------------------------------------
 // obtain OrgId and add yourself to a organisation
 func (d *Daemon) Authorise() error {
-    // TODO: getting organisation id from MongoDB
-    orgId := "Anonymous"
-    d.OrgId = orgId
-
     org, err := GetOrg(d.OrgId)
     // if the organisation does not exist -- create one
     if err != nil {

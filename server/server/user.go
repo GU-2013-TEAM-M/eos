@@ -21,10 +21,6 @@ type User struct {
 //-------------------------------------------------------
 // obtain Id, OrgId and add yourself to a organisation
 func (u *User) Authorise() error {
-    // TODO: getting organisation id from MongoDB
-    orgId := "Anonymous"
-    u.OrgId = orgId
-
     org, err := GetOrg(u.OrgId)
     // if the organisation does not exist -- create one
     if err != nil {

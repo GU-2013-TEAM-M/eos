@@ -48,21 +48,16 @@ func (h *Hub) run() {
             HandleMsg(m)
 
             org := m.c.owner.GetOrg()
-            if m.c.owner.IsUser() {
-                fmt.Printf("user:   %s\n", m.msg)
-                org.sendToDaemons(m.msg)
-                org.sendToUsers(m.msg)
-            } else {
-                fmt.Printf("daemon: %s\n", m.msg)
-                org.sendToUsers(m.msg)
-            }
-            /*for c := range h.connections {
-                select {
-                case c.send <- m:
-                default:
-                    c.Close()
+            if (m.c.owner.IsAuthorised()) {
+                if m.c.owner.IsUser() {
+                    fmt.Printf("user:   %s\n", m.msg)
+                    org.sendToDaemons(m.msg)
+                    org.sendToUsers(m.msg)
+                } else {
+                    fmt.Printf("daemon: %s\n", m.msg)
+                    org.sendToUsers(m.msg)
                 }
-            }*/
+            }
         }
     }
 }

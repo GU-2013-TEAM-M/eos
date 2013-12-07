@@ -10,6 +10,7 @@ type Message struct {
 type Organisation struct {
     Id bson.ObjectId `bson:"_id"`
     Name string
+}
 
 type User struct {
     Id bson.ObjectId `bson:"_id"`

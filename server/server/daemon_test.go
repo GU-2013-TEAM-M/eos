@@ -10,7 +10,7 @@ func Test_d_Authorise_newOrg(t *testing.T) {
     org, err := GetOrg("Anonymous")
     test.Assert(err != nil, "organisation does not exist", t)
 
-    d := &Daemon{Id: "test"}
+    d := &Daemon{Id: "test", OrgId: "Anonymous"}
 
     d.Authorise()
     org, err = GetOrg("Anonymous")
@@ -25,7 +25,7 @@ func Test_d_Authorise_exOrg(t *testing.T) {
     org := NewOrg("Anonymous")
     test.Assert(len(org.Daemons) == 0, "there are no daemons in the org initially", t)
 
-    d := &Daemon{Id: "test"}
+    d := &Daemon{Id: "test", OrgId: "Anonymous"}
 
     d.Authorise()
 
