@@ -81,3 +81,14 @@ func GetMessage(cmd *CmdMessage) (*Message, error) {
     m.msg = string(msg[:])
     return m, nil
 }
+
+// dispatches the message
+func DispatchMessage(t string, data map[string]interface{}, c *Connection) error {
+    cmd := &CmdMessage{Type: t, Data: data, Conn: c}
+    m, err := GetMessage(cmd)
+    if err != nil {
+        return err
+    }
+    c.send <- m.msg
+    return nil
+}

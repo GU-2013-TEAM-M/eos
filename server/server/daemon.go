@@ -1,7 +1,8 @@
 package main
 
 import (
-//    "eos/server/db"
+    "eos/server/db"
+    "labix.org/v2/mgo/bson"
 )
 
 //-------------------------------------------------------
@@ -12,15 +13,26 @@ import (
 type Daemon struct {
     Id string
     IP string
-    Name string
     OrgId string
-    status int
+    Entry db.Daemon
     c *Connection
 }
 
 //-------------------------------------------------------
 // methods
 //-------------------------------------------------------
+// obtain all the data and proceed to authorisation
+func (d *Daemon) Authenticate(id bson.ObjectId) error {
+    c := db.C("daemons")
+    err := c.FindId(id).One(&d.Entry)
+    if err == nil {
+        d.Id = id.Hex()
+        d.OrgId = d.Entry.OrgId.Hex()
+        return d.Authorise()
+    }
+    return err
+}
+
 // obtain OrgId and add yourself to a organisation
 func (d *Daemon) Authorise() error {
     org, err := GetOrg(d.OrgId)

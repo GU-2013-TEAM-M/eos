@@ -2,6 +2,7 @@ package main
 
 import (
     "errors"
+    "labix.org/v2/mgo/bson"
 )
 
 //-------------------------------------------------------
@@ -16,6 +17,7 @@ type Organisation struct {
 
 // an interface for Users and Daemons
 type Organisable interface {
+    Authenticate(bson.ObjectId) error
     Authorise() error
     Deauthorise() error
     IsAuthorised() bool

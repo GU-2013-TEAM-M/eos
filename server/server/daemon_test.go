@@ -3,7 +3,29 @@ package main
 import (
     "testing"
     "eos/server/test"
+    "eos/server/db"
+    "labix.org/v2/mgo/bson"
 )
+
+func Test_d_Authenticate(t *testing.T) {
+    tmpD := &db.Daemon{OrgId: bson.ObjectIdHex("52a4ed348350a921bd000002"), Name: "a", IP: "b"}
+    db.AddTemp("daemons", tmpD)
+
+    d := &Daemon{}
+    err := d.Authenticate(tmpD.Id)
+
+    test.Assert(d.OrgId == "52a4ed348350a921bd000002", "It authenticates daemon if he exists in the database", t)
+    test.Assert(err == nil, "And it does not throw an error in that case", t)
+
+    db.DelTemps("daemons")
+
+    d = &Daemon{}
+    err = d.Authenticate(tmpD.Id)
+
+    test.Assert(d.OrgId != "52a4ed348350a921bd000002", "It fails to recognise daemon if he does not exist in the database", t)
+    test.Assert(err != nil, "It throws an error in that case", t)
+}
+
 
 func Test_d_Authorise_newOrg(t *testing.T) {
     setupOrg()

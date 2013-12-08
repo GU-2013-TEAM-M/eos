@@ -15,7 +15,7 @@ func Connect() {
 	panic(err)
     }
 
-    Db = mongoSession.DB("exampledb")
+    Db = mongoSession.DB("eos")
 }
 
 // returns a collection for a given name

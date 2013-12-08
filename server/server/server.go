@@ -5,6 +5,7 @@ import (
     "flag"
     "net/http"
     "code.google.com/p/go.net/websocket"
+    "eos/server/db"
 )
 
 //-------------------------------------------------------
@@ -16,6 +17,7 @@ var addr = flag.String("addr", ":8080", "http service address")
 // main execution block
 //-------------------------------------------------------
 func main() {
+    db.Connect()
     flag.Parse()
     RegisterAllHandlers()
     go h.run()
