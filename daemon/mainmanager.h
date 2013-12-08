@@ -6,6 +6,7 @@
 
 #include "cpuwatcher.h"
 #include "memwatcher.h"
+#include "netwatcher.h"
 
 #include "outclient.h"
 #include "inserver.h"
@@ -20,6 +21,7 @@
 #elif defined _WIN32 || defined _WIN64
 #include "cpuwin.h"
 #include "memwin.h"
+#include "netwin.h"
 
 #else
 #error "unknown platform"
@@ -29,6 +31,8 @@ class daemonManager {
 private:
 	CPUWatcher * mainCPUMon;
 	MemWatcher * mainMemMon;
+	NETWatcher * mainNetMon;
+
 	outClient * connToServer;
 	serveToClient * connToClient;
 	boost::thread * toClientThread;

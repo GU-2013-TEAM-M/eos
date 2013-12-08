@@ -11,6 +11,7 @@ daemonManager::daemonManager() {
 #elif defined _WIN32 || defined _WIN64
 	mainCPUMon = new CPUWin(refresh);
 	mainMemMon = new MemWin(refresh);
+	mainNetMon = new NETWin(refresh);
 #else
 #error "unknown platform"
 #endif
@@ -21,6 +22,7 @@ daemonManager::daemonManager() {
 	toClientThread = new boost::thread(boost::bind(&serveToClient::run, connToClient));
 	mainCPUMon->start();
 	mainMemMon->start();
+	mainNetMon->start();
 	run = true;
 	loop();
 }
@@ -30,7 +32,7 @@ void daemonManager::loop() {
 	while (run) {
 		boost::this_thread::sleep_for(refresh);
 		std::string usagePayload = sendCPUbase;
-		std::cout<<mainMemMon->getUsage()<<std::endl;
+		std::cout<<mainNetMon->getUsage()<<std::endl;
 		usagePayload.append(std::to_string(mainCPUMon->getUsage()));
 		usagePayload.append("]}}}");
 		//connToServer->send(usagePayload);
