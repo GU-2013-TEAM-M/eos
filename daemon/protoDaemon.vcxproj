@@ -96,6 +96,8 @@
     <ClInclude Include="inserver.h" />
     <ClInclude Include="mainmanager.h" />
     <ClInclude Include="memwatcher.h" />
+    <ClInclude Include="netwatcher.h" />
+    <ClInclude Include="netwin.h" />
     <ClInclude Include="outclient.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
@@ -111,6 +113,8 @@
     </ClCompile>
     <ClCompile Include="memwatcher.cpp" />
     <ClCompile Include="memwin.cpp" />
+    <ClCompile Include="netwatcher.cpp" />
+    <ClCompile Include="netwin.cpp" />
     <ClCompile Include="protoDaemon.cpp" />
     <ClCompile Include="mainmanager.cpp" />
     <ClCompile Include="outclient.cpp" />

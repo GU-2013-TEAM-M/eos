@@ -54,6 +54,12 @@
     <ClInclude Include="memnix.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="netwatcher.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="netwin.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -90,6 +96,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="memnix.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="netwatcher.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="netwin.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
