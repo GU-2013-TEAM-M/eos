@@ -28,4 +28,11 @@ func Test_LoginCheckHandler(t *testing.T) {
 
     cmd = GetLastCmd()
     test.Assert(cmd.Data["status"].(string) == "UNAUTHORIZED", "it does not authorise user when there is no previous session", t)
+
+    lcmd.Data["session_id"] = "invalid"
+    err := LoginCheckHandler(lcmd)
+    test.Assert(err != nil, "It returns an error if session id is invalid objectid", t)
+    lcmd.Data["session_id"] = 5
+    err = LoginCheckHandler(lcmd)
+    test.Assert(err != nil, "It returns an error if session id is invalid string", t)
 }

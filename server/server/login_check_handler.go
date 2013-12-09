@@ -2,11 +2,15 @@ package main
 
 import (
     "errors"
+    "labix.org/v2/mgo/bson"
 )
 
 // a handler that checks that the current session id is still active
 func LoginCheckHandler(cmd *CmdMessage) error {
-    sessId := cmd.Data["session_id"].(string)
+    sessId, ok := cmd.Data["session_id"].(string)
+    if !ok || !bson.IsObjectIdHex(sessId) {
+        return errors.New("Invalid session id supplied")
+    }
     data := make(map[string]interface{})
 
     if cmd.Conn.owner.IsUser() {
