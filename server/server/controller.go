@@ -85,6 +85,11 @@ func GetMessage(cmd *CmdMessage) (*Message, error) {
 // dispatches the message
 func DispatchMessage(t string, data map[string]interface{}, c *Connection) error {
     cmd := &CmdMessage{Type: t, Data: data, Conn: c}
+    if TEST {
+        StoreLastCmd(cmd)
+        return nil
+    }
+
     m, err := GetMessage(cmd)
     if err != nil {
         return err
@@ -92,3 +97,12 @@ func DispatchMessage(t string, data map[string]interface{}, c *Connection) error
     c.send <- m.msg
     return nil
 }
+
+//----------------------------------------------------
+// test helpers
+//----------------------------------------------------
+var _test_last_cmd *CmdMessage
+// saving the last command
+func StoreLastCmd(cmd *CmdMessage) { _test_last_cmd = cmd }
+// retrieving the last command
+func GetLastCmd() *CmdMessage { return _test_last_cmd }
