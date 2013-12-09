@@ -1,8 +1,18 @@
 DaemonsView = Backbone.Marionette.CompositeView.extend {
-	id: "daemons"
-	template: "#daemons-list-template",
-	itemView: DaemonView,
+	template: "#daemons-list-template"
+	itemView: DaemonView
+	itemViewContainer: "ul"
 
-	appendHtml: (collectionView, itemView) -> 
-		collectionView.$("ul").append itemView.el	
+	# onRender: () ->
+	# 	if daemons.length == 0 
+	# 		$(@el).append("wait")
+
+	onRender: () ->
+		currentDaemon = appState.get("current_daemon")
+		if currentDaemon
+			el = views.daemonsView.children.findByModel(currentDaemon).el
+			$(".activeDaemon").removeClass("activeDaemon")
+			$(el).addClass("activeDaemon")
+
+
 }

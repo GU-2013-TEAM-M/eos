@@ -31,7 +31,7 @@
     });
 
     if (window["WebSocket"]) {
-        var address = "ws://shacron.twilightparadox.com:8080/ws"
+        var address = "ws://127.0.0.1:8080/ws"
         conn = new WebSocket(address);
         conn.onclose = function(evt) {
             appendLog($("<div><b>Connection closed.</b></div>"))
