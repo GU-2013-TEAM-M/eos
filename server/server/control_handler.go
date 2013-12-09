@@ -11,6 +11,7 @@ func ControlHandler(cmd *CmdMessage) error {
     daemonId := cmd.Data["daemon_id"].(string)
 
     data := make(map[string]interface{})
+    data["daemon_id"] = daemonId
 
     daemon, ok := cmd.Conn.owner.(*User).GetOrg().Daemons[daemonId]
     if !ok {
