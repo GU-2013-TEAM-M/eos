@@ -15,9 +15,14 @@ func DaemonHandler(cmd *CmdMessage) error {
 
     data := make(map[string]interface{})
 
+    daemons := cmd.Conn.owner.GetOrg().Daemons
+    daemon, ok := daemons[daemonId]
+    if !ok {
+        return errors.New("daemon not found")
+    }
+
     data["daemon_id"] = daemonId
-    data["daemon_address"] = "127.0.0.1"
-    data["daemon_port"] = "123"
+    data["daemon_address"] = "ws://" + daemon.ws.Request().RemoteAddr
     data["daemon_platform"] = []string{"Linux"}
     data["daemon_all_parameters"] = []string{"CPU", "Memory"}
     data["daemon_monitored_parameters"] = []string{"CPU"}
