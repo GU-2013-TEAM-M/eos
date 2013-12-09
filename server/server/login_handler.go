@@ -14,9 +14,11 @@ func LoginHandler(cmd *CmdMessage) error {
     if cmd.Conn.owner.IsUser() {
         cmd.Conn.owner.(*User).Id = strconv.Itoa(time.Now().Nanosecond())
         cmd.Conn.owner.(*User).OrgId = "Anonymous"
+        data["id"] = cmd.Conn.owner.(*User).Id
     } else {
         cmd.Conn.owner.(*Daemon).Id = strconv.Itoa(time.Now().Nanosecond())
         cmd.Conn.owner.(*Daemon).OrgId = "Anonymous"
+        data["id"] = cmd.Conn.owner.(*Daemon).Id
     }
     cmd.Conn.owner.Authorise()
     DispatchMessage("login", data, cmd.Conn)
