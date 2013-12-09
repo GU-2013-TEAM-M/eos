@@ -1,11 +1,10 @@
 package main
 
-import (
-    "errors"
-    //"eos/server/db"
-)
-
-// a handler that checks that the current session id is still active
+// a handler that deauthorises the user or the daemon
 func LogoutHandler(cmd *CmdMessage) error {
-    return errors.New("Not implemented")
+    data := make(map[string]interface{})
+    cmd.Conn.owner.Deauthorise()
+    data["status"] = "OK"
+    DispatchMessage("logout", data, cmd.Conn)
+    return nil
 }

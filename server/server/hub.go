@@ -51,7 +51,8 @@ func (h *Hub) run() {
             }
 
             org := m.c.owner.GetOrg()
-            if (m.c.owner.IsAuthorised()) {
+            // disable it for now
+            if false && m.c.owner.IsAuthorised() {
                 if m.c.owner.IsUser() {
                     fmt.Printf("user:   %s\n", m.msg)
                     org.sendToDaemons(m.msg)
