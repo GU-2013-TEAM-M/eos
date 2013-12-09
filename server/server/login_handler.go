@@ -17,6 +17,7 @@ func LoginHandler(cmd *CmdMessage) error {
         data["id"] = cmd.Conn.owner.(*User).Id
     } else {
         cmd.Conn.owner.(*Daemon).Id = strconv.Itoa(time.Now().Nanosecond())
+        cmd.Conn.owner.(*Daemon).Id = "12345"
         cmd.Conn.owner.(*Daemon).OrgId = "Anonymous"
         data["id"] = cmd.Conn.owner.(*Daemon).Id
     }
