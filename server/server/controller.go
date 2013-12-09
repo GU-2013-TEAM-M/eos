@@ -66,13 +66,13 @@ func ParseMsg(m *Message) (*CmdMessage, error) {
 // creates the json message, that we can send to the channel
 func GetMessage(cmd *CmdMessage) (*Message, error) {
     m := &Message{ c: cmd.Conn }
-    // we don't want to send a connection
-    cmd.Conn = nil
 
-    msg, err := json.Marshal(cmd)
+    c := struct {
+        Type string `json:"type"`
+        Data map[string](interface{}) `json:"data"`
+    }{ cmd.Type, cmd.Data }
+    msg, err := json.Marshal(&c)
 
-    // but we don't want to make side effects either
-    cmd.Conn = m.c
     if err != nil {
         return nil, err
     }

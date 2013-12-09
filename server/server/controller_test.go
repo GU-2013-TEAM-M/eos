@@ -119,7 +119,7 @@ func Test_GetMessage(t *testing.T) {
     msg, err := GetMessage(cmd)
 
     test.Assert(err == nil, "successfully stores the correct message", t)
-    test.Assert(msg.msg == `{"type":"test","data":{"foo":"bar"},"Conn":null}`, "produces the expected output", t)
+    test.Assert(msg.msg == `{"type":"test","data":{"foo":"bar"}}`, "produces the expected output", t)
     test.Assert(msg.c == cmd.Conn, "preserves the connection", t)
     test.Assert(cmd.Conn != nil, "does not interfere with the structure", t)
 }
