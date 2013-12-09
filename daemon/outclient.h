@@ -17,6 +17,7 @@ class outClient {
 private:
 	typedef websocketpp::client<websocketpp::config::asio_client> client;
 	typedef websocketpp::lib::lock_guard<websocketpp::lib::mutex> scoped_lock;
+	std::function<void(std::string)> msgRecv;
 	client m_client;
 	websocketpp::connection_hdl m_hdl;
 	websocketpp::lib::mutex m_lock;
@@ -24,9 +25,11 @@ private:
 	bool m_done;
 
 public:
+	bool ready;
+
 	outClient();
 	void init(const std::string &);
-
+	void bindMsg(std::function<void(std::string)>);
 	void send(std::string payload);
 
 	// The open handler will signal that we are ready to start sending telemetry
@@ -38,6 +41,8 @@ public:
 	// The fail handler will signal that we should stop sending telemetry
 	void on_fail(websocketpp::connection_hdl);
 
+	void on_message( websocketpp::connection_hdl, websocketpp::client<websocketpp::config::asio_client>::message_ptr);
+	void run();
 };
 
 
