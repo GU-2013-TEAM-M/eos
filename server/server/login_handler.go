@@ -17,6 +17,7 @@ func LoginHandler(cmd *CmdMessage) error {
         cmd.Conn.owner.(*Daemon).Id = string(time.Now().Nanosecond())
         cmd.Conn.owner.(*Daemon).OrgId = "Anonymous"
     }
+    cmd.Conn.owner.Authorise()
     DispatchMessage("login", data, cmd.Conn)
     return errors.New("Login: Not implemented")
 }
