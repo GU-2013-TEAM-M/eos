@@ -1,10 +1,10 @@
 #ifndef memwin_h__
 #define memwin_h__
 
+#include "memwatcher.h"
+
 #include <windows.h>
 #include <tchar.h>
-
-#include "memwatcher.h"
 
 class MemWin : public MemWatcher {
 

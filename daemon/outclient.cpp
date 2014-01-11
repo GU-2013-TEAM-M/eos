@@ -1,6 +1,8 @@
 #include "outclient.h"
 
 outClient::outClient() {
+	ready = false;
+	
 	// set up access channels to only log interesting things
 	m_client.clear_access_channels(websocketpp::log::alevel::all);
 	//m_client.set_access_channels(websocketpp::log::alevel::devel);
@@ -17,6 +19,7 @@ outClient::outClient() {
 	m_client.set_open_handler(bind(&outClient::on_open,this,::_1));
 	m_client.set_close_handler(bind(&outClient::on_close,this,::_1));
 	m_client.set_fail_handler(bind(&outClient::on_fail,this,::_1));
+	m_client.set_message_handler(bind(&outClient::on_message,this,::_1,::_2));
 }
 
 void outClient::init( const std::string & uri) {
@@ -35,16 +38,20 @@ void outClient::init( const std::string & uri) {
 
 	// Queue the connection. No DNS queries or network connections will be
 	// made until the io_service event loop is run.
-	m_client.connect(con);
 
+	m_client.connect(con);
+}
+
+void outClient::run() {
 	// Create a thread to run the ASIO io_service event loop
 	websocketpp::lib::thread asio_thread(&client::run, &m_client);
 
-	// Create a thread to run the telemetry loop
-	//websocketpp::lib::thread telemetry_thread(&outClient::telemetry_loop,this);
-
 	asio_thread.join();
 	//telemetry_thread.join();
+}
+
+void outClient::bindMsg(std::function<void(std::string)> msgF) {
+	msgRecv = msgF;
 }
 
 void outClient::send(std::string payload) {
@@ -56,17 +63,21 @@ void outClient::send(std::string payload) {
 	// The most likely error that we will get is that the connection is
 	// not in the right state. Usually this means we tried to send a
 	// message to a connection that was closed or in the process of
-	// closing. While many errors here can be easily recovered from,
-	// in this simple example, we'll stop the telemetry loop.
+	// closing.
 	if (ec) {
 		m_client.get_alog().write(websocketpp::log::alevel::app,"Send Error: "+ec.message());
 	}
 }
 
+void outClient::on_message( websocketpp::connection_hdl hdl, websocketpp::client<websocketpp::config::asio_client>::message_ptr msg) {
+	std::cout << "on_message called with hdl: " << hdl.lock().get()	<< " and message: " << msg->get_payload() << std::endl;
+	msgRecv(msg->get_payload());
+}
+
 void outClient::on_open( websocketpp::connection_hdl ) {
 	m_client.get_alog().write(websocketpp::log::alevel::app,
 		"Connection opened");
-
+	ready = true;
 	scoped_lock guard(m_lock);
 	m_open = true;
 }
@@ -74,7 +85,7 @@ void outClient::on_open( websocketpp::connection_hdl ) {
 void outClient::on_close( websocketpp::connection_hdl ) {
 	m_client.get_alog().write(websocketpp::log::alevel::app,
 		"Connection closed");
-
+	ready = false;
 	scoped_lock guard(m_lock);
 	m_done = true;
 }
