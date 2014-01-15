@@ -1,3 +1,3 @@
 Daemons = Backbone.Collection.extend {
-	model: Daemon
+	model: Daemon	
 }

@@ -1,11 +1,13 @@
 HomeTabLayout = Backbone.Marionette.Layout.extend {
+	id: "homeTabWrapper"
 	template: "#home-tab-layout",
 
-	# regions: {
-	# 	tabSelector: "#tab-selector"
-	# 	tab: "#tab"
-	# }
+	regions: {
+		daemonList: "#daemonList"
+		daemonInfo: "#daemonInfo"
+	}
 
-	# onRender: () ->
-	# 	@tabSelector.show views.tabSelectorView
+	onRender: () ->
+		@daemonList.show views.daemonsView
+		@daemonInfo.show views.daemonInfoView
 }

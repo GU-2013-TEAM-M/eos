@@ -1,36 +1,78 @@
 Daemon = Backbone.Model.extend {
 	defaults: {
-		daemon_id: ""
-		daemon_name: ""
-		daemon_state: ""
-		daemon_address: ""
-		daemon_port: ""
-		daemon_platform: ""
-		daemon_all_parameters: ""
-		daemon_monitored_parameters: ""
+		daemon_id: null
+		daemon_name: null
+		daemon_state: null
+		daemon_address: null
+		daemon_port: null
+		daemon_platform: null
+		daemon_all_parameters: null
+		daemon_monitored_parameters: null
+		socket: null
 	}
+
+	initialize: () ->
+		new DaemonSocket(@)
 
 	# The data already guaranteed to be correct
 	setDaemonProperties: (properties) ->
 		for own key, value of properties
 			if key != "daemon_id"
-				this.set(key, value);
+				@set(key, value);
 
 	stop: () ->
-		sendControl this.get("daemon_id"), "stop"
+		message = MessageProcessor.createMessage "control", daemon_id: @get("daemon_id"), operation: "stop"
+		if message
+			@get("socket").sendMessage message
 
 	start: () ->
-		sendControl this.get("daemon_id"), "start"
+		message = MessageProcessor.createMessage "control", daemon_id: @get("daemon_id"), operation: "start"
+		if message
+			@get("socket").sendMessage message		
 
 	monitor: (parameter) ->
-		# What if the parameter is already being monitored?
 		operation = 
 			"start": [parameter]
-		sendControl this.get("daemon_id"), operation
+
+		message = MessageProcessor.createMessage "control", daemon_id: @get("daemon_id"), operation: operation
+		if message
+			@get("socket").sendMessage message	
+
+
+		monitored = @get "daemon_monitored_parameters"
+		if monitored.indexOf(parameter) == -1 
+			monitored.push parameter
 
 	unmonitor: (parameter) ->
-		# What if the parameter is not being monitored?
 		operation = 
 			"stop": [parameter]
-		sendControl this.get("daemon_id"), operation
+
+		message = MessageProcessor.createMessage "control", daemon_id: @get("daemon_id"), operation: operation
+		if message
+			@get("socket").sendMessage message
+
+		monitored = @get "daemon_monitored_parameters"
+		index = monitored.indexOf(parameter)
+		monitored.splice index, 1
+
+	toggleMonitor: (parameter) ->
+		monitored = @get "daemon_monitored_parameters"
+		if monitored.indexOf(parameter) > -1 
+			@unmonitor parameter
+		else 
+			@monitor parameter
+
+	processMonitoring: (data) ->
+		console.log data
+
+		for own key, value of data
+			graph = graphs.find (model) =>
+				model.get("daemon_id") == @get("daemon_id") && model.get("type") == key
+			if graph
+				graph.update(value)
+			else
+				console.log "No graph found"			
+			
+
+
 }

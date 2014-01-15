@@ -22,7 +22,7 @@ development = true
 
 # Ready
 $(document).ready ->
-	init()
+	# init()
 
 # Initialization
 init = () ->

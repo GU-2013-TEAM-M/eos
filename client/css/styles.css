@@ -46,14 +46,44 @@ html, body {
 	background-color:#333333;
 }
 
-.column1of2, .column2of2 {
-	width: 32.3%;
-	height: 500px;
-	float: left;
-	margin: 1%;
+#homeTabWrapper {
+	width: 100%;
 }
 
-.column2of2 {
-	width: 64.6%;
-	margin-left: 0%;
+#daemonList {
+	float: left;
+	width: 20%;
+	background: #d0d0d0;
+}
+	
+#daemonList li {
+	cursor: pointer;
+	margin-bottom: 3px;
+}
+
+#daemonList li:hover {
+	background: #f0f0f0;
+}
+
+#daemonList .activeDaemon {
+	background: #999999;
+}
+
+#daemonInfo {
+	float: right;
+	width: 80%;
+	background: #e0e0e0;
+}
+
+.daemonParameters li {
+	cursor: pointer;
+	margin-bottom: 3px;
+}
+
+.daemonParameters li.active {
+	font-weight:bold;
+}
+
+.daemonParameters li:hover {
+	background: #f0f0f0;
 }

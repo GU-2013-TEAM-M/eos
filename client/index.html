@@ -97,14 +97,9 @@
 	</script>	
 
 	<script type="text/template" id="home-tab-layout">
-		<div class="column1of2">
-			<h2>Daemon List</h2>
-			<p>Daemon1</p>
-			<p>Daemon2</p>
-			<p>Daemon3</p>
+		<div id="daemonList">
 		</div>
-		<div class="column2of2">
-			<h1>HOME CONTENT</h1>
+		<div id="daemonInfo">
 		</div>
 	</script>
 
@@ -164,18 +159,56 @@
 		</ul>
 	</script>
 
+	<script type="text/template" id="daemon-info-template">
+		<h3>
+			<%= daemon_name %> (<%= daemon_id %>)
+		</h3>
+		
+		<div class="daemonState">
+			State: <%= daemon_state %>
+		</div>
+
+		<div class="daemonAddress">
+			Address: <%= daemon_address %>: <%= daemon_port %>
+		</div>
+		
+		<div class="daemonPlatform">
+			Platform: <%= daemon_platform["OS"] + " " + daemon_platform["Architecture"] %>
+		</div>
+		
+		<div class="daemonParameters">
+			<ul>
+				<% _.each(daemon_all_parameters, function(item) { %>
+				<li <%= daemon_monitored_parameters.indexOf(item) > -1 ? "class=\"active\"" : "" %> > <%= item %> </li>
+				<% }); %>
+			</ul>
+		</div>
+
+
+		<div id="graphs">
+		</div>		
+	</script>	
+
+	<script type="text/template" id="daemon-info-template-empty">
+		<h3>
+			There are no daemons
+		</h3>
+	</script>
+
+	
+
 </head>
 <body>
-	<div>
+	<div id="page">
 		<ul>
 			<li><a href="#welcome">welcome</a></li>
 			<li><a href="#login">login</a></li>
 			<li><a href="#app">app</a></li>
 		</ul>
-	</div>
 
-	<div id="mainRegion">
-		
+		<div id="mainRegion">
+			
+		</div>
 	</div>
 
 </body>
