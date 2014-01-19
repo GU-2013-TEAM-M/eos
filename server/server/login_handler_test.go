@@ -39,6 +39,7 @@ func Test_userLoginHandler(t *testing.T) {
     session := &db.Session{}
     err = db.C("sessions").Find(bson.M{"_id": bson.ObjectIdHex(cmd.Data["session_id"].(string))}).One(session)
     test.Assert(err == nil, "it creates a session in the database", t)
+    test.Assert(lcmd.Conn.owner.(*User).Entry != nil, "it extracts the database information and puts it on the connection", t)
 
     db.DelTemps("users")
     db.C("sessions").RemoveAll(bson.M{"uid": bson.ObjectIdHex("52a4ed348350a921bd000001")})
@@ -79,6 +80,7 @@ func Test_daemonLoginHandler(t *testing.T) {
     cmd := GetLastCmd()
     test.Assert(cmd.Data["id"].(string) == "52a4ed348350a921bd000001", "it returns a daemon id", t)
     test.Assert(err == nil, "it does not throw an error", t)
+    test.Assert(lcmd.Conn.owner.(*Daemon).Entry != nil, "it extracts the database information and puts it on the connection", t)
 
     db.DelTemps("daemons")
 
