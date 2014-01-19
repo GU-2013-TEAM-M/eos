@@ -32,9 +32,6 @@ func userLoginHandler(cmd *CmdMessage) error {
         return errors.New("Login failed: bad email or password")
     }
 
-    // saving the database entry
-    cmd.Conn.owner.(*User).Entry = user
-
     // creating the session
     sess := &db.Session{UId: user.Id}
     sess.GenId()
@@ -43,7 +40,7 @@ func userLoginHandler(cmd *CmdMessage) error {
     data["session_id"] = sess.Id.Hex()
     data["id"] = user.Id.Hex()
 
-    cmd.Conn.owner.Authorise()
+    cmd.Conn.owner.Authenticate(user.Id)
     DispatchMessage("login", data, cmd.Conn)
     return nil
 }
@@ -90,12 +87,9 @@ func daemonLoginHandler(cmd *CmdMessage) error {
         db.C("daemons").Insert(daemon)
     }
 
-    // saving the database entry
-    cmd.Conn.owner.(*Daemon).Entry = daemon
-
     data["id"] = daemon.Id.Hex()
 
-    cmd.Conn.owner.Authorise()
+    cmd.Conn.owner.Authenticate(daemon.Id)
     DispatchMessage("login", data, cmd.Conn)
     return nil
 }
