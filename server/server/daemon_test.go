@@ -8,7 +8,7 @@ import (
 )
 
 func Test_d_Authenticate(t *testing.T) {
-    tmpD := &db.Daemon{OrgId: bson.ObjectIdHex("52a4ed348350a921bd000002"), Name: "a", IP: "b"}
+    tmpD := &db.Daemon{OrgId: bson.ObjectIdHex("52a4ed348350a921bd000002"), Name: "a"}
     db.AddTemp("daemons", tmpD)
 
     d := &Daemon{}
