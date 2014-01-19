@@ -51,5 +51,11 @@ func Test_DaemonsHandler(t *testing.T) {
 
     err = DaemonsHandler(lcmd)
     test.Assert(err != nil, "daemons are disallowed", t)
+
+    // cleaning up
+    user.Deauthorise()
+    d1.Deauthorise()
+    d2.Deauthorise()
+    d3.Deauthorise()
 }
 

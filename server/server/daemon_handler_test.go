@@ -37,6 +37,7 @@ func Test_DaemonHandler(t *testing.T) {
     test.Assert(err != nil, "the daemon has to exist in the org", t)
 
     // if everything is ok, the daemon information is returned
+    daemon.Deauthorise()
     daemon.OrgId = "Anonymous"
     daemon.Authorise()
 
@@ -51,5 +52,9 @@ func Test_DaemonHandler(t *testing.T) {
 
     err = DaemonsHandler(lcmd)
     test.Assert(err != nil, "daemons are disallowed", t)
+
+    // cleaning up
+    daemon.Deauthorise()
+    user.Deauthorise()
 }
 
