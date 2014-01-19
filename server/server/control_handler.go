@@ -2,12 +2,17 @@ package main
 
 import (
     "errors"
-    //"eos/server/db"
 )
 
 // a handler that checks that the current session id is still active
 func ControlHandler(cmd *CmdMessage) error {
-    //sessId := cmd.Data["session_id"].(string)
+    if !cmd.Conn.owner.IsUser() {
+        return errors.New("This handler is not available for daemons")
+    }
+    if !cmd.Conn.owner.IsAuthorised() {
+        return errors.New("User has to log in before using this handler")
+    }
+
     daemonId := cmd.Data["daemon_id"].(string)
 
     data := make(map[string]interface{})
