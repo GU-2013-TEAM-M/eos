@@ -43,6 +43,9 @@ type Daemon struct {
     Password string `bson:"password"`
     Name string `bson:"name"`
     Status string `bson:"status"`
+    Platform []string `bson:"platform"`
+    Parameters []string `bson:"parameters"`
+    Monitored []string `bson:"monitored"`
 }
 func (e *Daemon) GenId() { e.Id = bson.NewObjectId() }
 func (e *Daemon) GetId() bson.ObjectId { return e.Id }
