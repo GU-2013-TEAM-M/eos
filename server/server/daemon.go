@@ -14,7 +14,7 @@ type Daemon struct {
     Id string
     IP string
     OrgId string
-    Entry db.Daemon
+    Entry *db.Daemon
     c *Connection
 }
 

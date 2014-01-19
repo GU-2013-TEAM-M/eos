@@ -14,7 +14,7 @@ type User struct {
     Id string
     OrgId string
     SessionId string
-    Entry db.User
+    Entry *db.User
     c *Connection
 }
 
