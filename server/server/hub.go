@@ -48,6 +48,10 @@ func (h *Hub) run() {
             err := HandleMsg(m)
             if err != nil {
                 fmt.Printf("Error: %s\n", err)
+                // sending an error message back
+                data := make(map[string]interface{})
+                data["msg"] = "Wrong password"
+                DispatchMessage("error", data, m.c)
             }
 
             org := m.c.owner.GetOrg()
