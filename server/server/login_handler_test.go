@@ -41,7 +41,7 @@ func Test_userLoginHandler(t *testing.T) {
     test.Assert(err == nil, "it creates a session in the database", t)
 
     db.DelTemps("users")
-    db.C("sessions").RemoveAll(bson.M{"_id": bson.ObjectIdHex("52a4ed348350a921bd000001")})
+    db.C("sessions").RemoveAll(bson.M{"uid": bson.ObjectIdHex("52a4ed348350a921bd000001")})
 
     // no user at all
     err = LoginHandler(lcmd)
