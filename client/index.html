@@ -104,37 +104,33 @@
 	</script>
 
 	<script type="text/template" id="history-tab-layout">
-		<div class="column1of2">
+		<div id="daemonList">
 			<h2>Daemon List</h2>
 			<p>Daemon1</p>
 			<p>Daemon2</p>
 			<p>Daemon3</p>
 		</div>
-		<div class="column2of2">
+		<div id="historyContent">
 			<h1>HISTORY CONTENT</h1>
 		</div>
 	</script>
 
 	<script type="text/template" id="alerts-tab-layout">
-		<div class="column1of2">
-			<h2>Daemon List</h2>
-			<p>Daemon1</p>
-			<p>Daemon2</p>
-			<p>Daemon3</p>
+		<div id="daemonList">
 		</div>
-		<div class="column2of2">
+		<div id="alertsContent">
 			<h1>ALERTS CONTENT</h1>
 		</div>
 	</script>
 
 	<script type="text/template" id="user-tab-layout">
-		<div class="column1of2">
+		<div>
 			<h2>User List</h2>
 			<p>User1</p>
 			<p>User2</p>
 			<p>User3</p>
 		</div>
-		<div class="column2of2">
+		<div>
 			<h1>USER CONTENT</h1>
 		</div>
 	</script>
@@ -145,6 +141,8 @@
 
 	<script type="text/template" id="daemons-list-template">
 		<ul>
+		<li>Daemon1</li>
+		<li>Daemon2</li>
 		</ul>
 	</script>
 
@@ -194,8 +192,18 @@
 			There are no daemons
 		</h3>
 	</script>
-
 	
+	<script type="text/template" id="alert-item-template">
+		<li>
+		</li>
+	</script>
+	
+	<script type="text/template" id="alerts-list-template">
+		<ul>
+		</ul>
+	</script>
+
+
 
 </head>
 <body>

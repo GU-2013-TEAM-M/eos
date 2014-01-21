@@ -1,11 +1,12 @@
 AlertsTabLayout = Backbone.Marionette.Layout.extend {
+	id: "AlertsTabWrapper"
 	template: "#alerts-tab-layout",
 
-	# regions: {
-	# 	tabSelector: "#tab-selector"
-	# 	tab: "#tab"
-	# }
+	regions: {
+		daemonList: "#daemonList"
+		alertList: "#alertList"
+	}
 
-	# onRender: () ->
-	# 	@tabSelector.show views.tabSelectorView
+	onRender: () ->
+		@daemonList.show views.daemonsView
 }
