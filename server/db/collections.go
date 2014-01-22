@@ -43,7 +43,7 @@ type Daemon struct {
     Password string `bson:"password"`
     Name string `bson:"name"`
     Status string `bson:"status"`
-    Platform []string `bson:"platform"`
+    Platform string `bson:"platform"`
     Parameters []string `bson:"parameters"`
     Monitored []string `bson:"monitored"`
 }
@@ -52,18 +52,9 @@ func (e *Daemon) GetId() bson.ObjectId { return e.Id }
 
 type Data struct {
     Id bson.ObjectId `bson:"_id"`
+    DaemonId bson.ObjectId `bson:"daemon_id"`
     Type string `bson:"type"`
-    Period string `bson:"period"`
-    Values []float64 `bson:"values"`
+    Values map[int64]float64 `bson:"values"`
 }
 func (e *Data) GenId() { e.Id = bson.NewObjectId() }
 func (e *Data) GetId() bson.ObjectId { return e.Id }
-
-type Report struct {
-    Id bson.ObjectId `bson:"_id"`
-    Type string `bson:"type"`
-    Period string `bson:"period"`
-    Values []float64 `bson:"values"`
-}
-func (e *Report) GenId() { e.Id = bson.NewObjectId() }
-func (e *Report) GetId() bson.ObjectId { return e.Id }
