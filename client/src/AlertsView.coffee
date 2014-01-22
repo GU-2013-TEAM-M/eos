@@ -1,5 +1,5 @@
 AlertsView = Backbone.Maroinette.CompositeView.extend {
-	template: "#alerts-list-template",
+	template: "#alert-list-template",
 	itemView: AlertView,
 	tagname: "ul"
 }
