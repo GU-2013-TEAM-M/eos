@@ -78,7 +78,7 @@
 	</script>
 
 	<script type="text/template" id="app-page-footer-template">
-		APP footer
+		<!--APP footer -->
 	</script>	
 
 	<script type="text/template" id="tabs-template">
@@ -105,10 +105,6 @@
 
 	<script type="text/template" id="history-tab-layout">
 		<div id="daemonList">
-			<h2>Daemon List</h2>
-			<p>Daemon1</p>
-			<p>Daemon2</p>
-			<p>Daemon3</p>
 		</div>
 		<div id="historyContent">
 			<h1>HISTORY CONTENT</h1>
@@ -118,7 +114,7 @@
 	<script type="text/template" id="alerts-tab-layout">
 		<div id="daemonList">
 		</div>
-		<div id="alertsContent">
+		<div id="alertList">
 			<h1>ALERTS CONTENT</h1>
 		</div>
 	</script>
@@ -135,14 +131,8 @@
 		</div>
 	</script>
 
-	<script type="text/template" id="app-test-template">
-		test
-	</script>
-
 	<script type="text/template" id="daemons-list-template">
 		<ul>
-		<li>Daemon1</li>
-		<li>Daemon2</li>
 		</ul>
 	</script>
 
@@ -150,11 +140,6 @@
 		<div>
 			<%= daemon_name %>: <%= daemon_state %>
 		</div>
-	</script>
-
-	<script type="text/template" id="daemon-list-template">
-		<ul>
-		</ul>
 	</script>
 
 	<script type="text/template" id="daemon-info-template">
@@ -201,6 +186,11 @@
 	<script type="text/template" id="alerts-list-template">
 		<ul>
 		</ul>
+	</script>
+
+
+	<script type="text/template" id="history-content-template">
+		HISTORY template
 	</script>
 
 

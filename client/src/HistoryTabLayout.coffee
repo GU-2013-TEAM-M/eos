@@ -1,11 +1,12 @@
 HistoryTabLayout = Backbone.Marionette.Layout.extend {
 	template: "#history-tab-layout",
 
-	# regions: {
-	# 	tabSelector: "#tab-selector"
-	# 	tab: "#tab"
-	# }
+	regions: {
+		daemonList: "#daemonList"
+		historyContent: "#historyContent"
+	}
 
-	# onRender: () ->
-	# 	@tabSelector.show views.tabSelectorView
+	onRender: () ->
+		@daemonList.show views.daemonsView
+		@historyContent.show views.historyContentView
 }

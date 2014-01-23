@@ -68,8 +68,12 @@ class Messages
 		switch status
 			when "ok"
 				console.log "You are logged in"
-				# loginCheckSuccessful()
-				# appState.set("current_state_layout", layouts.appPageLayout)
+				
+				# message = MessageProcessor.createMessage "loginCheck", session_id: appState.get("session_id")
+				# 	if message
+				# 		serverSocket.sendMessage message
+				loginCheckSuccessful()
+
 				router.navigate("app", {trigger: true})
 			when "unauthorized"
 				console.log "You are not logged in"
@@ -83,10 +87,10 @@ class Messages
 		session_id = data.session_id
 		if session_id
 			console.log "You have successfully logged in (" + session_id + ")"
-			# loginSuccessful(session_id)
+			loginSuccessful session_id
 		else
 			console.log "Username or password are incorrect. Please log in"
-			# loginUnsuccessful(session_id)
+			loginUnsuccessful session_id
 
 
 	# Processes the logout

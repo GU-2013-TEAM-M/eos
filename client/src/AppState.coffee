@@ -7,13 +7,13 @@ AppState = Backbone.Model.extend {
         current_tab: "",
         server_address: null,
         current_daemon: null,
-        serverConnected: false
-        session_id: Service.getCookie("session_id")
+        serverConnected: false,
+        session_id: Service.getCookie("session_id"),
+        is_user_logged_in: false,
     }
 
     initialize: () ->
     	@listenTo this, "change:current_state_layout", () ->
-            console.log("2")
             MyApp.mainRegion.show @get "current_state_layout"
 
         @listenTo this, "change:current_tab", () ->

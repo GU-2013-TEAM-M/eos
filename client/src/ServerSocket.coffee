@@ -53,7 +53,7 @@ ServerSocket = Backbone.Model.extend {
 			stringMessage = JSON.stringify message
 			ws.send stringMessage
 			console.log message.type + " message was sent " + stringMessage
-			return true    	
+			return true
 		else
 			console.log "message was  NOT sent"
 			return false

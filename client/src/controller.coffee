@@ -6,25 +6,25 @@ daemons = []
 
 # Callback for successfull login check. All the UI stuff should be done here
 loginCheckSuccessful = () ->
-	isUserLoggedIn = true
+	appState.set "is_user_logged_in", true
 
 # Callback for unsuccessfull login check. All the UI stuff should be done here
 loginCheckUnsuccessful = () ->
-	isUserLoggedIn = false
+	appState.set "is_user_logged_in", false
 
 # Callback for successfull login. All the UI stuff should be done here
 loginSuccessful = (session_id) ->
-	isUserLoggedIn = true;
+	appState.set "is_user_logged_in", true
 	setCookie "session_id", session_id, cookieExpiryDays
 
 # Callback for unsuccessfull login. All the UI stuff should be done here
 loginUnsuccessful = () ->
-	isUserLoggedIn = false;
+	appState.set "is_user_logged_in", false
 	setCookie "session_id", null, cookieExpiryDays
 
 # Callback for successfull logout. All the UI stuff should be done here
 logoutSuccessful = () ->
-	isUserLoggedIn = false;
+	appState.set "is_user_logged_in", false
 	setCookie "session_id", null, cookieExpiryDays		
 	daemons = []
 
