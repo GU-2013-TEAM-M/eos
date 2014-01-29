@@ -39,6 +39,7 @@ func userLoginHandler(cmd *CmdMessage) error {
 
     data["session_id"] = sess.Id.Hex()
     data["id"] = user.Id.Hex()
+    data["org_id"] = user.OrgId.Hex()
 
     cmd.Conn.owner.Authenticate(user.Id)
     DispatchMessage("login", data, cmd.Conn)
