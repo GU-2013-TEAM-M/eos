@@ -4,6 +4,7 @@ import (
     "testing"
     "eos/server/test"
     "eos/server/db"
+    "labix.org/v2/mgo/bson"
 )
 
 func Test_DaemonHandler(t *testing.T) {
@@ -47,14 +48,41 @@ func Test_DaemonHandler(t *testing.T) {
     cmd := GetLastCmd()
     test.Assert(cmd.Data["daemon_id"].(string) == "a", "it returns the daemon information", t)
 
-    // daemons cannot request it
-    lcmd.Conn = &Connection{owner: &Daemon{}}
+    //--------------------------------------------------
+    // if it is a daemon
+    //--------------------------------------------------
+    // not sending the data
+    lcmd.Conn = &Connection{owner: daemon}
 
-    err = DaemonsHandler(lcmd)
-    test.Assert(err != nil, "daemons are disallowed", t)
+    err = DaemonHandler(lcmd)
+    test.Assert(err != nil, "it has to contain information", t)
+
+    // when the data is sent, it stores it in the database
+    lcmd.Data["daemon_platform"] = "Linux"
+    lcmd.Data["daemon_all_parameters"] = []string{"cpu", "ram", "network"}
+    lcmd.Data["daemon_monitored_parameters"] = []string{"cpu", "ram"}
+
+    tmpD := &db.Daemon{OrgId: bson.ObjectIdHex("52a4ed348350a921bd000002"), Name: "a", Password: "b"}
+    db.AddTemp("daemons", tmpD)
+    daemon.Entry = tmpD
+    daemon.Id = tmpD.Id.Hex()
+
+    err = DaemonHandler(lcmd)
+    test.Assert(err == nil, "no errors are raised", t)
+    dbd := &db.Daemon{}
+    db.C("daemons").FindId(tmpD.Id).One(dbd)
+    test.Assert(dbd.Platform == lcmd.Data["daemon_platform"], "it stores the platform in the database", t)
+    test.Assert(len(dbd.Parameters) == len(lcmd.Data["daemon_all_parameters"].([]string)), "it stores all the parameters", t)
+    test.Assert(len(dbd.Monitored) == len(lcmd.Data["daemon_monitored_parameters"].([]string)), "it also stores what it is monitoring", t)
+
+    // it also sends new information to all the users in the org
+    cmd = GetLastCmd()
+    test.Assert(cmd.Type == "daemon", "it sends a daemon message", t)
+    test.Assert(cmd.Data["daemon_id"].(string) == daemon.Id, "with the latest information about this daemon", t)
 
     // cleaning up
     daemon.Deauthorise()
     user.Deauthorise()
+    db.DelTemps("daemons")
 }
 
