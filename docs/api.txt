@@ -1,0 +1,179 @@
+Here is a document, outlining the communication API used in all the parts.
+
+//---------------------------------------------------------------------
+DAEMON -> SERVER
+//---------------------------------------------------------------------
+login:
+{
+    "type": "login",
+    "data": {
+        "name": "user defined",
+        "password": "user defined, currently unencrypted",
+        "org_id": "user defined, will be shown in client"
+    }
+}
+
+daemon:
+{
+    "type": "daemon",
+    "data": {
+        "daemon_id": "id of the daemon",
+        "daemon_platform": "OS",
+        "daemon_all_parameters": ["CPU", "RAM", "etc."],
+        "daemon_monitored_parameters": ["CPU", "RAM"],
+        // FIXME: add additional info about the system
+    }
+}
+
+//---------------------------------------------------------------------
+SERVER -> DAEMON
+//---------------------------------------------------------------------
+login:
+{
+    "type": "login",
+    "data": {
+        "id": "daemon id from the database"
+    }
+}
+
+control: // it is just a forwarded message from the client
+{
+    "type": "control",
+    "data": {
+        "daemon_id": "id received from the server",
+        // FIXME: whatever parameters can be sent to the daemon
+    }
+}
+
+error:
+{
+    "type": "error",
+    "data": {
+        "msg": "Error message",
+    }
+}
+
+//---------------------------------------------------------------------
+CLIENT -> SERVER
+//---------------------------------------------------------------------
+login:
+{
+    "type": "login",
+    "data": {
+        "email": "user's email address instead of login",
+        "password": "currently unencrypted",
+    }
+}
+
+login_check:
+{
+    "type": "login_check",
+    "data": {
+        "session_id": "session id from the previous log in"
+    }
+}
+
+logout:
+{
+    "type": "logout",
+    "data": {
+    }
+}
+
+control:
+{
+    "type": "control",
+    "data": {
+        "daemon_id": "id received from the server",
+        // FIXME: whatever parameters can be sent to the daemon
+    }
+}
+
+daemons:
+{
+    "type": "daemons",
+    "data": {
+    }
+}
+
+daemon:
+{
+    "type": "daemon",
+    "data": {
+        "daemon_id": "id received from the server",
+    }
+}
+
+//---------------------------------------------------------------------
+SERVER -> CLIENT
+//---------------------------------------------------------------------
+login:
+{
+    "type": "login",
+    "data": {
+        "id": "user id from the database",
+        "session_id": "for subsequent authentification from cookies",
+        "org_id": "id of organisation, to be shown, in order to setup
+            daemons manually"
+    }
+}
+
+login_check:
+{
+    "type": "login_check",
+    "data": {
+        "status": "OK or UNAUTHORIZED, latter might be redundant, since
+            client will also receive a usual error"
+    }
+}
+
+logout:
+{
+    "type": "logout",
+    "data": {
+        "status": "OK"
+    }
+}
+
+control:
+{
+    "type": "control",
+    "data": {
+        "status": "OK"
+    }
+}
+
+daemons:
+{
+    "type": "daemons",
+    "data": {
+        "list": [
+            {
+                "daemon_id": "id of the daemon",
+                "daemon_name": "the name of the daemon",
+                "daemon_state": "current state of the daemon (ACTIVE, etc.)"
+            }
+        ]
+    }
+}
+
+daemon:
+{
+    "type": "daemon",
+    "data": {
+        "daemon_id": "id of the daemon",
+        "daemon_address": "ip address together with protocol and the port",
+        "daemon_platform": "OS",
+        "daemon_all_parameters": ["CPU", "RAM", "etc."],
+        "daemon_monitored_parameters": ["CPU", "RAM"]
+    }
+}
+
+error:
+{
+    "type": "error",
+    "data": {
+        "msg": "Error message",
+    }
+}
+
