@@ -20,8 +20,6 @@ func ControlHandler(cmd *CmdMessage) error {
 
     daemon, ok := cmd.Conn.owner.(*User).GetOrg().Daemons[daemonId]
     if !ok {
-        data["status"] = "NOT_OK"
-        DispatchMessage("control", data, cmd.Conn)
         return errors.New("Trying to control inexistent daemon")
     }
 
