@@ -8,11 +8,11 @@ import (
 
 // a handler that provides the detailed information about the daemon
 func DaemonHandler(cmd *CmdMessage) error {
+    if !cmd.Conn.owner.IsAuthorised() {
+        return errors.New("Logging in is required before using this handler")
+    }
     if !cmd.Conn.owner.IsUser() {
         return daemonUpdateInfo(cmd)
-    }
-    if !cmd.Conn.owner.IsAuthorised() {
-        return errors.New("User has to log in before using this handler")
     }
 
     daemonId, ok := cmd.Data["daemon_id"].(string)
