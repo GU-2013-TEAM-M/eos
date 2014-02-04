@@ -128,6 +128,26 @@ monitoring:
     }
 }
 
+// to trigger an alert and send the emails
+alert:
+{
+    "type": "alert",
+    "data": {
+        "daemon_id": "id of the daemon",
+        "parameter": "ram",
+        "value": 9001
+    }
+}
+
+// to get the list of all previous alerts
+alerts:
+{
+    "type": "alerts",
+    "data": {
+        "daemon_id": "id of the daemon",
+    }
+}
+
 //---------------------------------------------------------------------
 SERVER -> CLIENT
 //---------------------------------------------------------------------
@@ -213,3 +233,17 @@ monitoring:
         }
     }
 }
+
+// to send the list of all previous alerts
+alerts:
+{
+    "type": "alerts",
+    "data": {
+        "daemon_id": "id of the daemon",
+        "list": [{
+            "parameter": "ram",
+            "value": 9001,
+            "date": "yyyy-mm-dd hh:mm:ss"
+    }
+}
+
