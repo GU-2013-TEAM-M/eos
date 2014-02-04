@@ -1,0 +1,89 @@
+html, body {
+	margin: 0px;
+	padding: 0px;
+}
+
+#content {
+}
+
+#tabsOuterContainer {
+	width: 100%;
+	background: #bbbbbb;
+}
+
+#tabsInnerContainer {
+	width: 100%;
+	height: 100%;
+}
+
+#tabs ul {
+	list-style-type:none;
+	margin:0;
+	padding:0;
+	overflow:hidden;
+	height: 100%
+}
+
+#tabs li {
+	float:left;
+	height: 100%;
+	padding: 0px 5px;
+}
+
+.tabText {
+	display:block;
+	width:120px;
+	font-weight:bold;
+	color:#FFFFFF;
+	background-color:#999999;
+	text-align:center;
+	text-decoration:none;
+	height: 100%;
+	padding: 15px;
+}
+
+.tabText:hover {
+	background-color:#333333;
+}
+
+#homeTabWrapper {
+	width: 100%;
+}
+
+#daemonList {
+	float: left;
+	width: 20%;
+	background: #d0d0d0;
+}
+	
+#daemonList li {
+	cursor: pointer;
+	margin-bottom: 3px;
+}
+
+#daemonList li:hover {
+	background: #f0f0f0;
+}
+
+#daemonList .activeDaemon {
+	background: #999999;
+}
+
+#daemonInfo {
+	float: right;
+	width: 80%;
+	background: #e0e0e0;
+}
+
+.daemonParameters li {
+	cursor: pointer;
+	margin-bottom: 3px;
+}
+
+.daemonParameters li.active {
+	font-weight:bold;
+}
+
+.daemonParameters li:hover {
+	background: #f0f0f0;
+}

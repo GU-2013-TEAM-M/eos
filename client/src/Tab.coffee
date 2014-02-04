@@ -1,0 +1,2 @@
+Tab = Backbone.Model.extend {
+}
