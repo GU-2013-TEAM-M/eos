@@ -25,6 +25,19 @@ daemon:
     }
 }
 
+monitoring:
+{
+    "type": "monitoring",
+    "data": {
+        "list": [{
+            "type": "cpu",
+            "values": [{
+                1104...unix time: 12.5
+            }]
+        }]
+    }
+}
+
 //---------------------------------------------------------------------
 SERVER -> DAEMON
 //---------------------------------------------------------------------
@@ -104,6 +117,17 @@ daemon:
     }
 }
 
+monitoring:
+{
+    "type": "monitoring",
+    "data": {
+        "daemon_id": "id of the daemon",
+        "type": "cpu",
+        "from": 110... unix time,
+        "to": 110... unix time
+    }
+}
+
 //---------------------------------------------------------------------
 SERVER -> CLIENT
 //---------------------------------------------------------------------
@@ -177,3 +201,15 @@ error:
     }
 }
 
+monitoring:
+{
+    "type": "monitoring",
+    "data": {
+        "daemon_id": "id of the daemon",
+        "type": "cpu",
+        "values": {
+            110...unix time: 12.5,
+            110...unix time: 13.1
+        }
+    }
+}
