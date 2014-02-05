@@ -8,6 +8,11 @@ daemons = []
 loginCheckSuccessful = () ->
 	appState.set "is_user_logged_in", true
 
+	message = MessageProcessor.createMessage "daemons";
+	if message
+		serverSocket.sendMessage message
+
+
 # Callback for unsuccessfull login check. All the UI stuff should be done here
 loginCheckUnsuccessful = () ->
 	appState.set "is_user_logged_in", false
@@ -15,17 +20,23 @@ loginCheckUnsuccessful = () ->
 # Callback for successfull login. All the UI stuff should be done here
 loginSuccessful = (session_id) ->
 	appState.set "is_user_logged_in", true
-	setCookie "session_id", session_id, cookieExpiryDays
+	Service.setCookie "session_id", session_id, cookieExpiryDays
+
+	message = MessageProcessor.createMessage "daemons";
+	if message
+		serverSocket.sendMessage message
+
+
 
 # Callback for unsuccessfull login. All the UI stuff should be done here
 loginUnsuccessful = () ->
 	appState.set "is_user_logged_in", false
-	setCookie "session_id", null, cookieExpiryDays
+	Service.setCookie "session_id", null, cookieExpiryDays
 
 # Callback for successfull logout. All the UI stuff should be done here
 logoutSuccessful = () ->
 	appState.set "is_user_logged_in", false
-	setCookie "session_id", null, cookieExpiryDays		
+	Service.setCookie "session_id", null, cookieExpiryDays		
 	daemons = []
 
 logoutError = () ->

@@ -1,9 +1,8 @@
 DaemonInfoView = Backbone.Marionette.ItemView.extend {
-	# template: "#daemon-info-template",
 
-	events: {
-		'click li': 'paramClicked',
-	},
+	# events: {
+	# 	'click li': 'paramClicked',
+	# },
 
 	getTemplate: () ->
 		if !@model
@@ -25,20 +24,33 @@ DaemonInfoView = Backbone.Marionette.ItemView.extend {
 					model.get("daemon_id") == @model.get("daemon_id") && model.get("type") == param
 				if !graph
 					switch param
-						when "CPU"
-							graph = new GraphCPU({daemon_id: @model.get("daemon_id"), options: {cpuCount: 4} })
-						when "RAM"
-							graph = new GraphRAM({daemon_id: @model.get("daemon_id"), options: {totalRam: 2048} })
-					graphs.add graph
+						when "cpu"
+							graph = new GraphCPU({daemon_id: @model.get("daemon_id"), options: {cpuCount: 1} })
+						when "ram"
+							graph = new GraphRAM_2({daemon_id: @model.get("daemon_id"), options: {totalRam: 32768} })
+						when "hdd"
+							graph = new GraphHDD({daemon_id: @model.get("daemon_id"), options: {totalHdd: 4096} })
+						when "net"
+							graph = new GraphNET_2({daemon_id: @model.get("daemon_id"), options: {maxNet: 100000} })							
+					if graph
+						graphs.add graph
 
 				$("#graphs", @el).append(graph.get("canvas"))
 				graph.set("context", $("#graphs", @el))
 				graph.reset()
 
-	paramClicked: (event) ->
-		el = event.target
-		param = $(el).text().trim()
-		@model.toggleMonitor(param)
-		@render()
+			$("li", @el).on('click', (event) =>
+				el = event.target
+				param = $(el).text().trim()
+				@model.toggleMonitor(param)
+				@render()
+			)
+
+	# paramClicked: (event) ->
+	# 	console.log "lololo"
+	# 	el = event.target
+	# 	param = $(el).text().trim()
+	# 	@model.toggleMonitor(param)
+	# 	@render()
 		
 }

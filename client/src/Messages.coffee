@@ -3,16 +3,18 @@ class Messages
 	messages =
 		out:
 			loginCheck:
-				data: ["session_id"],
+				data: ["session_id"]
 			login:
-				data: ["username", "password"]
+				data: ["email", "password"]
 			logout:
 				data: []
 			daemons:
 				data: []
+			daemon:
+				data: ["daemon_id"]
 			control:
 				data: ["daemon_id", "operation"]
-			history:
+			monitoring:
 				data: ["daemon_id", "start", "end", "param"]
 		in:
 			loginCheck: 
@@ -28,9 +30,13 @@ class Messages
 				processCallback: (data) ->
 					processLogout data
 			daemons:
-				data: ["daemon_id", "daemon_name", "daemon_state", "daemon_address", "daemon_port", "daemon_platform", "daemon_all_parameters", "daemon_monitored_parameters"],
+				data: ["daemon_id", "daemon_name", "daemon_state"],
 				processCallback: (data) ->
 					processDaemons data
+			daemon:
+				data: ["daemon_id", "daemon_address", "daemon_platform", "daemon_all_parameters", "daemon_monitored_parameters"],
+				processCallback: (data) ->
+					processDaemon data
 			control:
 				data: ["daemon_id", "status", "operation"],
 				processCallback: (data) ->
@@ -108,44 +114,68 @@ class Messages
 	# Processes daemons response
 	# Params:	data - response data, that contain daemon id, name and state for every available daemon
 	processDaemons = (data) ->
-		for daemon in data
+		for daemon in data.list
 			daemon_id = daemon.daemon_id
 			daemon_name = daemon.daemon_name
 			daemon_state = daemon.daemon_state
-			daemon_address = daemon.daemon_address
-			daemon_port = daemon.daemon_port
-			daemon_platform = daemon.daemon_platform
-			daemon_all_parameters = daemon.daemon_all_parameters
-			daemon_monitored_parameters = daemon.daemon_monitored_parameters		
+			# daemon_address = daemon.daemon_address
+			# daemon_port = daemon.daemon_port
+			# daemon_platform = daemon.daemon_platform
+			# daemon_all_parameters = daemon.daemon_all_parameters
+			# daemon_monitored_parameters = daemon.daemon_monitored_parameters		
 
-			str = ""
-			for own key, value of daemon_platform
-				str += key + ": " + value + "; "
+			# str = ""
+			# for own key, value of daemon_platform
+			# 	str += key + ": " + value + "; "
 
-			str += " ALL PARAMS: "
-			for param in daemon_all_parameters
-				str += param + ", "
+			# str += " ALL PARAMS: "
+			# for param in daemon_all_parameters
+			# 	str += param + ", "
 
-			str += " MON PARAMS: "
-			for param in daemon_monitored_parameters
-				str += param + ", "
+			# str += " MON PARAMS: "
+			# for param in daemon_monitored_parameters
+			# 	str += param + ", "
 
-			console.log "ID " + daemon_id + "; Name " + daemon_name + "; State " + daemon_state + "; address " + daemon_address + "; port " + daemon_port + ". " + str
+			# console.log "ID " + daemon_id + "; Name " + daemon_name + "; State " + daemon_state + "; address " + daemon_address + "; port " + daemon_port + ". " + str
+# , "daemon_address": daemon_address, "daemon_port": daemon_port, "daemon_platform": daemon_platform, "daemon_all_parameters": daemon_all_parameters, "daemon_monitored_parameters": daemon_monitored_parameters
+		# , "daemon_address": daemon_address, "daemon_port": daemon_port, 
 
-		
+
 			# UPDATING
-			existing = daemons.find (model) =>
-				model.get("daemon_id") == daemon_id
-			if existing
-				existing.setDaemonProperties {"daemon_name": daemon_name, "daemon_state": daemon_state, "daemon_address": daemon_address, "daemon_port": daemon_port, "daemon_platform": daemon_platform, "daemon_all_parameters": daemon_all_parameters, "daemon_monitored_parameters": daemon_monitored_parameters}
-			else 
-				daemons.add(new Daemon({"daemon_id": daemon_id, "daemon_name": daemon_name, "daemon_state": daemon_state, "daemon_address": daemon_address, "daemon_port": daemon_port, "daemon_platform": daemon_platform, "daemon_all_parameters": daemon_all_parameters, "daemon_monitored_parameters": daemon_monitored_parameters}))
-			if !appState.get("current_daemon")
-				appState.set("current_daemon", daemons.models[0])
-		
+			# existing = daemons.find (model) =>
+			# 	model.get("daemon_id") == daemon_id
+			# if existing
+			# 	existing.setDaemonProperties {"daemon_name": daemon_name, "daemon_state": daemon_state}
+			# else 
+				# daemons.add(new Daemon({"daemon_id": daemon_id, "daemon_name": daemon_name, "daemon_state": daemon_state}))
+			daemons.add(new Daemon({"daemon_id": daemon_id, "daemon_name": daemon_name, "daemon_state": daemon_state}))				
+
+			
+			message = MessageProcessor.createMessage "daemon", daemon_id: daemon_id
+			if message
+				serverSocket.sendMessage message
+
 		# updateDaemons(data)
 		
+	processDaemon = (data) ->
+		daemon = data 
+		daemon_id = daemon.daemon_id
+		# daemon_address = daemon.daemon_address
+		daemon_address = "ws://31.220.209.4:9005"
+		daemon_platform = daemon.daemon_platform
+		daemon_all_parameters = daemon.daemon_all_parameters
+		daemon_monitored_parameters = daemon.daemon_monitored_parameters		
 
+		existing = daemons.find (model) =>
+			model.get("daemon_id") == daemon_id
+
+		if existing
+			existing.setDaemonProperties {"daemon_address": daemon_address, "daemon_platform": daemon_platform, "daemon_all_parameters": daemon_all_parameters, "daemon_monitored_parameters": daemon_monitored_parameters}
+		
+		existing.createSocket();
+
+		if !appState.get("current_daemon")
+			appState.set("current_daemon", daemons.models[0])
 
 	# Processes control response
 	# Params:	data - response data, that contain daemon in and status
@@ -197,5 +227,12 @@ class Messages
 	# Processes an error message
 	# Params:	data - log?
 	processError = (data) ->
-		console.log "Not implemented: " + JSON.stringify(data)
-		# error(data)
+		# console.log "Not implemented: " + JSON.stringify(data)
+		switch data.handler
+			when "loginCheck"
+				console.log data.msg
+				# loginCheckUnsuccessful()
+				router.navigate("login", {trigger: true})
+			when "control"
+				console.log data.msg
+		# error(data)	
