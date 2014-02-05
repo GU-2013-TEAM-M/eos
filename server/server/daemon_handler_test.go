@@ -61,7 +61,15 @@ func Test_DaemonHandler(t *testing.T) {
     test.Assert(err != nil, "it has to contain information", t)
 
     // when the data is sent, it stores it in the database
-    msg.msg = `{"type":"daemon","data":{"daemon_id":"id of the daemon","daemon_platform":"Linux","daemon_all_parameters":["cpu","ram","network"],"daemon_monitored_parameters":["cpu","ram"]}}`
+    msg.msg = `{
+        "type":"daemon",
+        "data":{
+            "daemon_id":"id of the daemon",
+            "daemon_platform":"Linux",
+            "daemon_all_parameters":["cpu","ram","network"],
+            "daemon_monitored_parameters":["cpu","ram"]
+        }
+    }`
 
     tmpD := &db.Daemon{OrgId: bson.ObjectIdHex("52a4ed348350a921bd000002"), Name: "a", Password: "b"}
     db.AddTemp("daemons", tmpD)

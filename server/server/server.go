@@ -6,6 +6,7 @@ import (
     "net/http"
     "code.google.com/p/go.net/websocket"
     "eos/server/db"
+    "labix.org/v2/mgo/bson"
 )
 
 //-------------------------------------------------------
@@ -41,7 +42,10 @@ func main() {
 // dummy users, to be removed
 //-------------------------------------------------------
 func createDummyUsers() {
-    org := &db.Organisation{ Name: "Test organisation" }
+    org := &db.Organisation{
+        Id: bson.ObjectIdHex("52f2bf8521db4a04d5000001"),
+        Name: "Test organisation",
+    }
     db.AddTemp("organisations", org)
     db.AddTemp("users", &db.User{
         OrgId: org.Id,
