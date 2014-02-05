@@ -20,7 +20,7 @@ func HandleMsg(m *Message) (error, string) {
     // decode json of the message
     c, err := ParseMsg(m)
     if err != nil {
-        return err, c.Type
+        return err, "unknown"
     }
     // run the corresponding function
     return RunCmd(c), c.Type
