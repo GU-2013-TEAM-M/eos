@@ -31,9 +31,9 @@ monitoring:
     "data": {
         "list": [{
             "parameter": "cpu",
-            "values": [{
-                1104...unix time: 12.5
-            }]
+            "values": {
+                "1104...unix time": 12.5
+            }
         }]
     }
 }
@@ -240,8 +240,8 @@ monitoring:
         "daemon_id": "id of the daemon",
         "parameter": "cpu",
         "values": {
-            110...unix time: 12.5,
-            110...unix time: 13.1
+            "110...unix time": 12.5,
+            "110...unix time": 13.1
         }
     }
 }
