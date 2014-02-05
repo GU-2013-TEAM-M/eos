@@ -11,7 +11,7 @@ Daemon = Backbone.Model.extend {
 		socket: null
 	}
 
-	initialize: () ->
+	createSocket: () ->
 		new DaemonSocket(@)
 
 	# The data already guaranteed to be correct
@@ -23,12 +23,14 @@ Daemon = Backbone.Model.extend {
 	stop: () ->
 		message = MessageProcessor.createMessage "control", daemon_id: @get("daemon_id"), operation: "stop"
 		if message
-			@get("socket").sendMessage message
+			# @get("socket").sendMessage message
+			serverSocket.sendMessage message
 
 	start: () ->
 		message = MessageProcessor.createMessage "control", daemon_id: @get("daemon_id"), operation: "start"
 		if message
-			@get("socket").sendMessage message		
+			# @get("socket").sendMessage message
+			serverSocket.sendMessage message	
 
 	monitor: (parameter) ->
 		operation = 
@@ -36,7 +38,8 @@ Daemon = Backbone.Model.extend {
 
 		message = MessageProcessor.createMessage "control", daemon_id: @get("daemon_id"), operation: operation
 		if message
-			@get("socket").sendMessage message	
+			# @get("socket").sendMessage message
+			serverSocket.sendMessage message
 
 
 		monitored = @get "daemon_monitored_parameters"
@@ -49,7 +52,8 @@ Daemon = Backbone.Model.extend {
 
 		message = MessageProcessor.createMessage "control", daemon_id: @get("daemon_id"), operation: operation
 		if message
-			@get("socket").sendMessage message
+			# @get("socket").sendMessage message
+			serverSocket.sendMessage message
 
 		monitored = @get "daemon_monitored_parameters"
 		index = monitored.indexOf(parameter)
@@ -63,13 +67,11 @@ Daemon = Backbone.Model.extend {
 			@monitor parameter
 
 	processMonitoring: (data) ->
-		console.log data
-
 		for own key, value of data
 			graph = graphs.find (model) =>
 				model.get("daemon_id") == @get("daemon_id") && model.get("type") == key
 			if graph
-				graph.update(value)
+				graph.update(parseFloat value)
 			else
 				console.log "No graph found"			
 			
