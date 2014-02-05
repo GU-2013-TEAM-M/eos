@@ -52,28 +52,29 @@ func Test_DaemonHandler(t *testing.T) {
     // if it is a daemon
     //--------------------------------------------------
     // not sending the data
-    lcmd.Conn = &Connection{owner: daemon}
+    msg := &Message{
+        msg: `{"type":"daemon","data":{"daemon_id":"id of the daemon"}}`,
+        c: &Connection{ owner: daemon },
+    }
 
-    err = DaemonHandler(lcmd)
+    err, _ = HandleMsg(msg)
     test.Assert(err != nil, "it has to contain information", t)
 
     // when the data is sent, it stores it in the database
-    lcmd.Data["daemon_platform"] = "Linux"
-    lcmd.Data["daemon_all_parameters"] = []string{"cpu", "ram", "network"}
-    lcmd.Data["daemon_monitored_parameters"] = []string{"cpu", "ram"}
+    msg.msg = `{"type":"daemon","data":{"daemon_id":"id of the daemon","daemon_platform":"Linux","daemon_all_parameters":["cpu","ram","network"],"daemon_monitored_parameters":["cpu","ram"]}}`
 
     tmpD := &db.Daemon{OrgId: bson.ObjectIdHex("52a4ed348350a921bd000002"), Name: "a", Password: "b"}
     db.AddTemp("daemons", tmpD)
     daemon.Entry = tmpD
     daemon.Id = tmpD.Id.Hex()
 
-    err = DaemonHandler(lcmd)
+    err, _ = HandleMsg(msg)
     test.Assert(err == nil, "no errors are raised", t)
     dbd := &db.Daemon{}
     db.C("daemons").FindId(tmpD.Id).One(dbd)
-    test.Assert(dbd.Platform == lcmd.Data["daemon_platform"], "it stores the platform in the database", t)
-    test.Assert(len(dbd.Parameters) == len(lcmd.Data["daemon_all_parameters"].([]string)), "it stores all the parameters", t)
-    test.Assert(len(dbd.Monitored) == len(lcmd.Data["daemon_monitored_parameters"].([]string)), "it also stores what it is monitoring", t)
+    test.Assert(dbd.Platform == "Linux", "it stores the platform in the database", t)
+    test.Assert(len(dbd.Parameters) == 3, "it stores all the parameters", t)
+    test.Assert(len(dbd.Monitored) == 2, "it also stores what it is monitoring", t)
 
     // it also sends new information to all the users in the org
     cmd = GetLastCmd()

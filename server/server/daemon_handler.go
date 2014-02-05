@@ -32,11 +32,18 @@ func DaemonHandler(cmd *CmdMessage) error {
 
 func daemonUpdateInfo(cmd *CmdMessage) error {
     platform, ok1 := cmd.Data["daemon_platform"].(string)
-    parameters, ok2 := cmd.Data["daemon_all_parameters"].([]string)
-    monitored, ok3 := cmd.Data["daemon_monitored_parameters"].([]string)
+    par, ok2 := cmd.Data["daemon_all_parameters"].([]interface{})
+    mon, ok3 := cmd.Data["daemon_monitored_parameters"].([]interface{})
 
     if !(ok1 && ok2 && ok3) {
         return errors.New("All parameters must be supplied")
+    }
+
+    parameters, err1 := ToStringSlice(par)
+    monitored, err2 := ToStringSlice(mon)
+
+    if err1 != nil || err2 != nil {
+        return errors.New("Non-string parameters given")
     }
 
     // update elements for this id

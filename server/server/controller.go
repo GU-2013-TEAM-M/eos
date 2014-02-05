@@ -99,6 +99,21 @@ func DispatchMessage(t string, data map[string]interface{}, c *Connection) error
 }
 
 //----------------------------------------------------
+// json helpers
+//----------------------------------------------------
+func ToStringSlice(arr []interface{}) ([]string, error) {
+    strs := make([]string, len(arr))
+    for i, v := range arr {
+        s, ok := v.(string)
+        if !ok {
+            return nil, errors.New("Not a string given for a string slice")
+        }
+        strs[i] = s
+    }
+    return strs, nil
+}
+
+//----------------------------------------------------
 // test helpers
 //----------------------------------------------------
 var _test_last_cmd *CmdMessage
