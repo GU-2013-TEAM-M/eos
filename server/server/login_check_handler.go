@@ -12,6 +12,7 @@ func LoginCheckHandler(cmd *CmdMessage) error {
         return errors.New("Invalid session id supplied")
     }
     data := make(map[string]interface{})
+    ClearOldSessions()
 
     if cmd.Conn.owner.IsUser() {
         id, err := AuthFromSession(sessId)

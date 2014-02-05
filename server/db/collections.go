@@ -24,6 +24,7 @@ func (e *Organisation) GetId() bson.ObjectId { return e.Id }
 type Session struct {
     Id bson.ObjectId `bson:"_id"`
     UId bson.ObjectId `bson:"uid"`
+    Created int64 `bson:"created"`
 }
 func (e *Session) GenId() { e.Id = bson.NewObjectId() }
 func (e *Session) GetId() bson.ObjectId { return e.Id }
