@@ -59,4 +59,48 @@ func Test_MonitoringHandlerDaemon(t *testing.T) {
 }
 
 func Test_MonitoringHandlerUser(t *testing.T) {
+    // before
+    user := &User{ OrgId: "Anonymous" }
+    daemon := &Daemon{ Id: "a", OrgId: "Anonymous" }
+    user.Authorise()
+
+    data1 := &db.Data{ "", "cpu", 1000, 12.5 }
+    data2 := &db.Data{ "", "cpu", 1500, 14.5 }
+    data3 := &db.Data{ "", "cpu", 1900, 15.5 }
+    data4 := &db.Data{ "", "ram", 1200, 9000 }
+    db.AddTemp( "monitoring_of_a", data1)
+    db.AddTemp( "monitoring_of_a", data2)
+    db.AddTemp( "monitoring_of_a", data3)
+    db.AddTemp( "monitoring_of_a", data4)
+
+    // let's try it from the string...
+    msg := &Message{
+        msg: `
+        {
+            "type": "monitoring",
+            "data": {
+                "daemon_id": "a",
+                "parameter": "cpu",
+                "from": 1100,
+                "to": 1600
+            }
+        }
+        `,
+        c: &Connection{ owner: user },
+    }
+
+    // the daemon is not in the org
+    err, _ := HandleMsg(msg)
+
+    test.Assert(err != nil, "it doesn't allow to monitor foreign daemons", t)
+
+    // daemon exists in the org
+    daemon.Authorise()
+
+    err, _ = HandleMsg(msg)
+    test.Assert(err == nil, "it does allow to monitor your daemons", t)
+
+    // cleaning up
+    db.C("monitoring_of_a").DropCollection()
+    user.Deauthorise(); daemon.Deauthorise()
 }

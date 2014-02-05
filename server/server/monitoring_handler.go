@@ -16,7 +16,22 @@ func MonitoringHandler(cmd *CmdMessage) error {
         return storeMonitoringData(cmd)
     }
 
-    return errors.New("not implemented")
+    daemonId, ok := cmd.Data["daemon_id"].(string)
+    if !ok {
+        return errors.New("wrong daemon_id supplied")
+    }
+
+    daemons := cmd.Conn.owner.GetOrg().Daemons
+    daemon, ok := daemons[daemonId]
+    if !ok {
+        return errors.New("daemon not found")
+    }
+
+    if daemon != nil {
+        return nil
+    }
+
+    return nil
 }
 
 func storeMonitoringData(cmd *CmdMessage) error {

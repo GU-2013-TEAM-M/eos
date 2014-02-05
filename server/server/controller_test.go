@@ -14,7 +14,7 @@ func getHandlerSpy() (func(*CmdMessage) error, *bool) {
     called := false
     return func(cmd *CmdMessage) error {
         called = true
-        if cmd.Type != "test" {
+        if cmd.Type != "_test" {
             return errors.New("test error")
         }
         return nil
@@ -25,59 +25,65 @@ func getHandlerSpy() (func(*CmdMessage) error, *bool) {
 // to check, whether ParseMsg or RunCmd were called
 // so I will simply check, that it handles happy and bad cases fully
 func Test_HandleMsg(t *testing.T) {
-    handlers = make(map[string] func(*CmdMessage) error)
     spy, called := getHandlerSpy()
-    goodMsg := &Message{ msg:`{"type":"test","data":{}}` }
-    badMsg := &Message{ msg:`{"type":"error","data":{}}` }
+    goodMsg := &Message{ msg:`{"type":"_test","data":{}}` }
+    badMsg := &Message{ msg:`{"type":"_error","data":{}}` }
 
-    handlers["test"] = spy
-    handlers["error"] = spy
+    handlers["_test"] = spy
+    handlers["_error"] = spy
 
     err, hName := HandleMsg(goodMsg)
     test.Assert(*called == true, "calls the function", t)
     test.Assert(err == nil, "does not throw without an error", t)
-    test.Assert(hName == "test", "returns a handler type", t)
+    test.Assert(hName == "_test", "returns a handler type", t)
 
     *called = false
     err, hName = HandleMsg(badMsg)
     test.Assert(*called == true, "calls the another function", t)
     test.Assert(err != nil, "pipes through the error from it", t)
-    test.Assert(hName == "error", "returns a handler type", t)
+    test.Assert(hName == "_error", "returns a handler type", t)
+
+    // cleaning up
+    delete(handlers, "_test"); delete(handlers, "_error")
 }
 
 func Test_RegisterHandler(t *testing.T) {
-    handlers = make(map[string] func(*CmdMessage) error)
     spy, called := getHandlerSpy()
 
-    RegisterHandler("test", spy)
+    oldLen := len(handlers)
+    RegisterHandler("_test", spy)
 
-    test.Assert(len(handlers) == 1, "created a new handler", t)
+    test.Assert(len(handlers) - oldLen == 1, "created a new handler", t)
     test.Assert(*called == false, "our spy works", t)
-    handlers["test"](&CmdMessage{})
+    handlers["_test"](&CmdMessage{})
     test.Assert(*called == true, "associated with specified function", t)
+
+    // cleaning up
+    delete(handlers, "_test")
 }
 
 func Test_DeregisterHandler(t *testing.T) {
-    handlers = make(map[string] func(*CmdMessage) error)
     spy, _ := getHandlerSpy()
 
-    handlers["test"] = spy
+    handlers["_test"] = spy
 
-    test.Assert(len(handlers) == 1, "One handler initially", t)
-    DeregisterHandler("test")
-    test.Assert(len(handlers) == 0, "deletes the handler", t)
-    err := DeregisterHandler("again")
+    oldLen := len(handlers)
+    DeregisterHandler("_test")
+    test.Assert(oldLen - len(handlers) == 1, "deletes the handler", t)
+    err := DeregisterHandler("_again")
     test.Assert(err != nil, "fails when no such handler exists", t)
+
+    // cleaning up
+    delete(handlers, "_test")
 }
 
 func Test_RunCmd(t *testing.T) {
-    handlers = make(map[string] func(*CmdMessage) error)
     spy, called := getHandlerSpy()
-    goodCmd := &CmdMessage{ Type: "test" }
-    badCmd := &CmdMessage{ Type: "error" }
+    goodCmd := &CmdMessage{ Type: "_test" }
+    badCmd := &CmdMessage{ Type: "_error" }
 
-    handlers["test"] = spy
-    handlers["error"] = spy
+    handlers["_test"] = spy
+    handlers["_error"] = spy
 
     err := RunCmd(goodCmd)
     test.Assert(*called == true, "calls the function", t)
@@ -87,6 +93,9 @@ func Test_RunCmd(t *testing.T) {
     err = RunCmd(badCmd)
     test.Assert(*called == true, "calls the another function", t)
     test.Assert(err != nil, "pipes through the error from it", t)
+
+    // cleaning up
+    delete(handlers, "_test"); delete(handlers, "_error")
 }
 
 //-------------------------------------------------------
