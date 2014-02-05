@@ -10,11 +10,18 @@ func Test_ControlHandler(t *testing.T) {
         Id: "52a4ed348350a921bd000001",
         OrgId: NO_ORG,
     }
-    lcmd := &CmdMessage{
-        Data: make(map[string]interface{}),
-        Conn: &Connection{owner: user},
+    msg := &Message{
+        msg: `{
+            "type": "control",
+            "data": {
+                "daemon_id": "a",
+                "operation": {
+                    "start": ["cpu"]
+                }
+            }
+        }`,
+        c: &Connection{ owner: user },
     }
-    lcmd.Data["daemon_id"] = "a"
     daemon := &Daemon{
         Id: "a",
         OrgId: "Random_org",
@@ -23,14 +30,14 @@ func Test_ControlHandler(t *testing.T) {
     daemon.Authorise()
 
     // the user has to be authorised
-    err := ControlHandler(lcmd)
+    err, _ := HandleMsg(msg)
     test.Assert(err != nil, "user has to be authorised", t)
 
     // it fails if the daemon does not exist
     user.OrgId = "Anonymous"
     user.Authorise()
 
-    err = ControlHandler(lcmd)
+    err, _ = HandleMsg(msg)
     test.Assert(err != nil, "the daemon has to exist in the org", t)
 
     // it transmutes the message if the daemon exists
@@ -38,13 +45,13 @@ func Test_ControlHandler(t *testing.T) {
     daemon.OrgId = "Anonymous"
     daemon.Authorise()
 
-    err = ControlHandler(lcmd)
+    err, _ = HandleMsg(msg)
     test.Assert(err == nil, "it does not send the error, when all is ok", t)
 
     // it is only available to user
-    lcmd.Conn = &Connection{owner: &Daemon{}}
+    msg.c = &Connection{owner: &Daemon{}}
 
-    err = ControlHandler(lcmd)
+    err, _ = HandleMsg(msg)
     test.Assert(err != nil, "daemons are disallowed", t)
 
     // cleaning up
