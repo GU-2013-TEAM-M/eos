@@ -52,12 +52,19 @@ func Test_userLoginHandler(t *testing.T) {
 
 func Test_daemonLoginHandler(t *testing.T) {
     // when there is a daemon -----------------------------------------
-    tmpD := &db.Daemon{Id: bson.ObjectIdHex("52a4ed348350a921bd000001"),
-    OrgId: bson.ObjectIdHex("52a4ed348350a921bd000002"), Name: "daemon", Password: "b"}
+    tmpD := &db.Daemon{
+        Id: bson.ObjectIdHex("52a4ed348350a921bd000001"),
+        OrgId: bson.ObjectIdHex("52a4ed348350a921bd000002"),
+        Name: "daemon",
+        Password: "b",
+    }
     db.AddTemp("daemons", tmpD)
 
     // a field missing
-    lcmd := &CmdMessage{Data: make(map[string]interface{}), Conn: &Connection{owner: &Daemon{}}}
+    lcmd := &CmdMessage{
+        Data: make(map[string]interface{}),
+        Conn: &Connection{owner: &Daemon{}},
+    }
     lcmd.Data["org_id"] = "52a4ed348350a921bd000002"
     lcmd.Data["name"] = "daemon"
 
