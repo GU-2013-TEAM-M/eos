@@ -45,6 +45,7 @@ func RegisterAllHandlers() {
     RegisterHandler("daemons", DaemonsHandler)
     RegisterHandler("daemon", DaemonHandler)
     RegisterHandler("control", ControlHandler)
+    RegisterHandler("monitoring", MonitoringHandler)
 }
 
 //-------------------------------------------------------------

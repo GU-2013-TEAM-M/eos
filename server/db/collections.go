@@ -52,9 +52,9 @@ func (e *Daemon) GetId() bson.ObjectId { return e.Id }
 
 type Data struct {
     Id bson.ObjectId `bson:"_id"`
-    DaemonId bson.ObjectId `bson:"daemon_id"`
-    Type string `bson:"type"`
-    Values map[int64]float64 `bson:"values"`
+    Parameter string `bson:"parameter"`
+    Time int64 `bson:"time"`
+    Value float64 `bson:"value"`
 }
 func (e *Data) GenId() { e.Id = bson.NewObjectId() }
 func (e *Data) GetId() bson.ObjectId { return e.Id }
