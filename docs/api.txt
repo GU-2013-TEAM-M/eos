@@ -54,7 +54,12 @@ control: // it is just a forwarded message from the client
     "type": "control",
     "data": {
         "daemon_id": "id received from the server",
-        // FIXME: whatever parameters can be sent to the daemon
+        "operation": {
+            "start": ["cpu"],
+            "stop": ["cpu"],
+            "start": true, // start all
+            "stop": "true // stop all
+        }
     }
 }
 
@@ -81,7 +86,7 @@ login:
 
 login_check:
 {
-    "type": "login_check",
+    "type": "loginCheck",
     "data": {
         "session_id": "session id from the previous log in"
     }

@@ -1,6 +1,7 @@
 package main
 
 import (
+    "time"
     "errors"
     "eos/server/db"
     "labix.org/v2/mgo/bson"
@@ -24,6 +25,8 @@ func userLoginHandler(cmd *CmdMessage) error {
         return errors.New("Login failed: missing email or password")
     }
 
+    ClearOldSessions()
+
     user := &db.User{}
 
     err := db.C("users").Find(bson.M{"email": email, "password": pass}).One(user)
@@ -33,7 +36,7 @@ func userLoginHandler(cmd *CmdMessage) error {
     }
 
     // creating the session
-    sess := &db.Session{UId: user.Id}
+    sess := &db.Session{UId: user.Id, Created: time.Now().Unix()}
     sess.GenId()
     db.C("sessions").Insert(sess)
 

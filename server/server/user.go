@@ -1,6 +1,7 @@
 package main
 
 import (
+    "time"
     "eos/server/db"
     "labix.org/v2/mgo/bson"
 )
@@ -27,6 +28,12 @@ func AuthFromSession(sessId string) (bson.ObjectId, error) {
     result := &db.Session{}
     err := c.FindId(bson.ObjectIdHex(sessId)).One(result)
     return result.UId, err
+}
+
+// remove all old sessions
+func ClearOldSessions() {
+    expired := time.Now().Unix() - 10 * 24 * 60 * 60
+    db.C("sessions").Remove(bson.M{ "created": bson.M{ "$ls": expired } })
 }
 
 //-------------------------------------------------------
