@@ -16,14 +16,14 @@ type CmdMessage struct {
 }
 
 // perform an action described in the message
-func HandleMsg(m *Message) error {
+func HandleMsg(m *Message) (error, string) {
     // decode json of the message
     c, err := ParseMsg(m)
     if err != nil {
-        return err
+        return err, c.Type
     }
     // run the corresponding function
-    return RunCmd(c)
+    return RunCmd(c), c.Type
 }
 
 // registering a handler, to be executed when the specific command is sent

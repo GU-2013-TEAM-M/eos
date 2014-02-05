@@ -45,12 +45,13 @@ func (h *Hub) run() {
         case c := <-h.unregister:
             c.Close()
         case m := <-h.broadcast:
-            err := HandleMsg(m)
+            err, hName := HandleMsg(m)
             if err != nil {
                 fmt.Printf("Error: %s\n", err)
                 // sending an error message back
                 data := make(map[string]interface{})
-                data["msg"] = "Wrong password"
+                data["msg"] = err.Error()
+                data["handler"] = hName
                 DispatchMessage("error", data, m.c)
             }
 

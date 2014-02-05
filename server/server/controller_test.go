@@ -33,14 +33,16 @@ func Test_HandleMsg(t *testing.T) {
     handlers["test"] = spy
     handlers["error"] = spy
 
-    err := HandleMsg(goodMsg)
+    err, hName := HandleMsg(goodMsg)
     test.Assert(*called == true, "calls the function", t)
     test.Assert(err == nil, "does not throw without an error", t)
+    test.Assert(hName == "test", "returns a handler type", t)
 
     *called = false
-    err = HandleMsg(badMsg)
+    err, hName = HandleMsg(badMsg)
     test.Assert(*called == true, "calls the another function", t)
     test.Assert(err != nil, "pipes through the error from it", t)
+    test.Assert(hName == "error", "returns a handler type", t)
 }
 
 func Test_RegisterHandler(t *testing.T) {

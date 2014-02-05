@@ -63,6 +63,7 @@ error:
     "type": "error",
     "data": {
         "msg": "Error message",
+        "handler": "Name of the handler that triggered the error"
     }
 }
 
@@ -218,6 +219,7 @@ error:
     "type": "error",
     "data": {
         "msg": "Error message",
+        "handler": "Name of the handler that triggered the error"
     }
 }
 
