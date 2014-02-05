@@ -1,5 +1,5 @@
 AlertView = Backbone.Marionette.ItemView.extend {
-	template: "#alert-item-template",
-	className: "alertItem",
+	template: "#alert-template",
+	className: "alert",
 	tagName: "li"
 }

@@ -87,3 +87,13 @@ html, body {
 .daemonParameters li:hover {
 	background: #f0f0f0;
 }
+
+#alertList {
+	float: right;
+	width: 20%;
+}
+
+#instanceList {
+	float: right;
+	width: 60%;
+}
