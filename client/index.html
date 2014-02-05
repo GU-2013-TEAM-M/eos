@@ -1,14 +1,225 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<script type="text/javascript" src="static/js/jquery-2.0.3.min.js"></script>
-	<script type="text/javascript" src="static/js/Chart.min.js"></script>
-	<script type="text/javascript" src="static/lib/client.js"></script>
-	<link type="text/css" rel="stylesheet" href="static/css/styles.css">
+	<script type="text/javascript" src="./static/js/jquery-2.0.3.js"></script>
+	<script type="text/javascript" src="./static/js/Chart.min.js"></script>
+
+	<script src="./static/js/backbone.marionette/json2.js"></script>
+	<script src="./static/js/backbone.marionette/underscore.js"></script>
+	<script src="./static/js/backbone.marionette/backbone.js"></script>
+	<script src="./static/js/backbone.marionette/backbone.marionette.js"></script>	
+
+	<script type="text/javascript" src="./static/lib/client.js"></script>
+
+	<link type="text/css" rel="stylesheet" href="./static/css/styles.css">
+
 	<title>EOS</title>
+
+	<script type="text/template" id="welcome-page-layout-template">
+		<header>
+		</header>
+		<div id="content">
+		</div>
+		<footer>
+		</footer>
+	</script>
+
+	<script type="text/template" id="welcome-page-header-template">
+		WELCOME header
+	</script>
+
+	<script type="text/template" id="welcome-page-content-template">
+		WELCOME content
+	</script>
+
+	<script type="text/template" id="welcome-page-footer-template">
+		WELCOME footer
+	</script>	
+
+	<script type="text/template" id="login-page-layout-template">
+		<header>
+		</header>
+		<div id="content">
+		</div>
+		<footer>
+		</footer>
+	</script>
+
+	<script type="text/template" id="login-page-header-template">
+		LOGIN header
+	</script>
+
+	<script type="text/template" id="login-page-content-template">
+		LOGIN content
+	</script>
+
+	<script type="text/template" id="login-page-footer-template">
+		LOGIN footer
+	</script>	
+
+	<script type="text/template" id="app-page-layout-template">
+		<header>
+		</header>
+		<div id="content">
+		</div>
+		<footer>
+		</footer>
+	</script>
+
+	<script type="text/template" id="app-page-header-template">
+		APP header
+	</script>
+
+	<script type="text/template" id="app-page-content-template">
+		<div id="tab-selector">
+		</div>
+		<div id="tab">
+		</div>
+	</script>
+
+	<script type="text/template" id="app-page-footer-template">
+		<!--APP footer -->
+	</script>	
+
+	<script type="text/template" id="tabs-template">
+		<div id="tabsOuterContainer">
+			<div id="tabsInnerContainer">
+				<ul id="tabsList">
+				</ul>
+			</div>
+		</div>
+	</script>
+
+	<script type="text/template" id="tab-template">
+		<div class="tabText">
+			<%= name %>
+		</div>
+	</script>	
+	
+	<!-- TABBED PAGE TEMPLATES -->
+
+	<script type="text/template" id="home-tab-layout">
+		<div id="daemonList">
+		</div>
+		<div id="daemonInfo">
+		</div>
+	</script>
+
+	<script type="text/template" id="history-tab-layout">
+		<div id="daemonList">
+		</div>
+		<div id="historyContent">
+			<h1>HISTORY CONTENT</h1>
+		</div>
+	</script>
+
+	<script type="text/template" id="alerts-tab-layout">
+		<div id="daemonList">
+		</div>
+		<div id="alertList">
+			<h1>ALERTS CONTENT</h1>
+		</div>
+	</script>
+
+	<script type="text/template" id="user-tab-layout">
+		<div>
+			<h2>User List</h2>
+			<p>User1</p>
+			<p>User2</p>
+			<p>User3</p>
+		</div>
+		<div>
+			<h1>USER CONTENT</h1>
+		</div>
+	</script>
+
+	<script type="text/template" id="daemons-list-template">
+		<ul>
+		</ul>
+	</script>
+
+	<script type="text/template" id="daemon-item-template">
+		<div>
+			<%= daemon_name %>: <%= daemon_state %>
+		</div>
+	</script>
+
+	<script type="text/template" id="daemon-list-template">
+		<ul>
+		</ul>
+	</script>
+
+	<script type="text/template" id="daemon-info-template">
+		<h3>
+			<%= daemon_name %> (<%= daemon_id %>)
+		</h3>
+		
+		<div class="daemonState">
+			State: <%= daemon_state %>
+		</div>
+
+		<div class="daemonAddress">
+			Address: <%= daemon_address %>: <%= daemon_port %>
+		</div>
+		
+		<div class="daemonPlatform">
+			Platform: <%= daemon_platform["OS"] + " " + daemon_platform["Architecture"] %>
+		</div>
+		
+		<div class="daemonParameters">
+			<ul>
+				<% _.each(daemon_all_parameters, function(item) { %>
+				<li <%= daemon_monitored_parameters.indexOf(item) > -1 ? "class=\"active\"" : "" %> > <%= item %> </li>
+				<% }); %>
+			</ul>
+		</div>
+
+
+		<div id="graphs">
+		</div>		
+	</script>	
+
+	<script type="text/template" id="daemon-info-template-empty">
+		<h3>
+			There are no daemons
+		</h3>
+	</script>
+	
+	<script type="text/template" id="alert-item-template">
+		<li>
+		</li>
+	</script>
+	
+	<script type="text/template" id="alert-list-template">
+		<ul>
+		</ul>
+	</script>
+	
+	<script type="text/template" id="alert-instance-template">
+		<li>
+		</li>
+	</script>
+	
+	<script type="text/template" id="alert-instance-list-template">
+		<ul>
+		</ul>
+	</script>
+
+
+
 </head>
 <body>
-	<div id="graphs">
+	<div id="page">
+		<ul>
+			<li><a href="#welcome">welcome</a></li>
+			<li><a href="#login">login</a></li>
+			<li><a href="#app">app</a></li>
+		</ul>
+
+		<div id="mainRegion">
+			
+		</div>
 	</div>
+
 </body>
 </html>
