@@ -38,7 +38,7 @@ ServerSocket = Backbone.Model.extend {
 			console.log "An error occured while talking to the server (" + @.url + ")"
 
 		ws.onmessage = (messageEvent) ->
-			console.log messageEvent
+			#console.log messageEvent
 			MessageProcessor.process messageEvent
 
 		ws
