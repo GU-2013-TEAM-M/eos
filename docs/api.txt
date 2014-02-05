@@ -104,7 +104,12 @@ control:
     "type": "control",
     "data": {
         "daemon_id": "id received from the server",
-        // FIXME: whatever parameters can be sent to the daemon
+        "operation": {
+            "start": ["cpu"],
+            "stop": ["cpu"],
+            "start": true, // start all
+            "stop": "true // stop all
+        }
     }
 }
 
