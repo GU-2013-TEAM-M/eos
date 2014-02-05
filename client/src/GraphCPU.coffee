@@ -1,6 +1,6 @@
 GraphCPU = Graph.extend {
 	defaults: {
-		type: "CPU"
+		type: "cpu"
 		cpuCount: null
 	}
 
@@ -37,7 +37,7 @@ GraphCPU = Graph.extend {
 		graphData.datasets[0].data = data
 
 	update: (data) ->
-		@setData(data)
+		@setData([data])
 		@createGraph()
 
 	reset: () ->
