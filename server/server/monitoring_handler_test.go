@@ -10,19 +10,23 @@ import (
 func Test_MonitoringHandlerDaemon(t *testing.T) {
     daemon := &Daemon{Id: "a", OrgId: NO_ORG, Entry: &db.Daemon{}}
 
-    lcmd := &CmdMessage{
-        Data: make(map[string]interface{}),
-        Conn: &Connection{owner: daemon},
+    msg := &Message{
+        msg: `{
+            "type": "monitoring",
+            "data": {
+                "list": [{
+                    "parameter": "cpu",
+                    "values": {
+                        "1104699": 12.5
+                    }
+                }]
+            }
+        }`,
+        c: &Connection{ owner: daemon },
     }
-    value := make(map[int64]float64)
-    value[1104699] = 12.5
-    entry := make(map[string]interface{})
-    entry["parameter"] = "cpu"
-    entry["values"] = value
-    lcmd.Data["list"] = []interface{}{entry}
 
     // without authorisation
-    err := MonitoringHandler(lcmd)
+    err, _ := HandleMsg(msg)
 
     test.Assert(err != nil, "the daemon must be authorised", t)
 
@@ -30,7 +34,7 @@ func Test_MonitoringHandlerDaemon(t *testing.T) {
     daemon.OrgId = "Anonymous"
     daemon.Authorise()
 
-    err = MonitoringHandler(lcmd)
+    err, _ = HandleMsg(msg)
 
     test.Assert(err == nil, "it does not throw errors, when the daemon is authorised", t)
     data := &db.Data{}
@@ -39,11 +43,19 @@ func Test_MonitoringHandlerDaemon(t *testing.T) {
     test.Assert(data.Value == 12.5, "it stores the metric right", t)
 
     // adding additional metrics to it
-    value2 := make(map[int64]float64)
-    value2[1104670] = 15
-    entry["values"] = value2
+    msg.msg = `{
+        "type": "monitoring",
+        "data": {
+            "list": [{
+                "parameter": "cpu",
+                "values": {
+                    "1104670": 15
+                }
+            }]
+        }
+    }`
 
-    err = MonitoringHandler(lcmd)
+    err, _ = HandleMsg(msg)
 
     test.Assert(err == nil, "it still doesn't throw errors", t)
     q := db.C("monitoring_of_a").Find(bson.M{"parameter": "cpu"})

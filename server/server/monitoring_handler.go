@@ -1,6 +1,7 @@
 package main
 
 import (
+    "strconv"
     "errors"
     "eos/server/db"
     "labix.org/v2/mgo/bson"
@@ -48,12 +49,17 @@ func storeMonitoringData(cmd *CmdMessage) error {
             return errors.New("Monitoring entry is invalid")
         }
         parameter, ok2 := entry["parameter"].(string)
-        values, ok3 := entry["values"].(map[int64]float64)
+        values, ok3 := entry["values"].(map[string]interface{})
         if !(ok2 && ok3) {
             return errors.New("You need to specify parameter and values")
         }
 
-        for time, value := range values {
+        for t, v := range values {
+            time, _ := strconv.Atoi(t)
+            value, ok := v.(float64)
+            if !ok {
+                return errors.New("Non floating point number value supplied")
+            }
             c.Insert(bson.M{
                 "parameter": parameter,
                 "time": time,
