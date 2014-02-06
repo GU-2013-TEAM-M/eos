@@ -22,4 +22,11 @@ AppState = Backbone.Model.extend {
         @listenTo this, "change:current_daemon", () ->
             views.daemonsView.render()
             views.daemonInfoView.render()
-}
+
+        @listenTo this, "change:is_user_logged_in", () ->
+            console.log @get "is_user_logged_in"
+            if @get "is_user_logged_in"
+                router.navigate("app", {trigger: true})
+            else
+                router.navigate("login", {trigger: true}) 
+}               

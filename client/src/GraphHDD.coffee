@@ -1,20 +1,18 @@
-GraphCPU = Graph.extend {
+GraphHDD = Graph.extend {
 	defaults: {
-		type: "cpu"
-		cpuCount: null
+		type: "hdd"
+		totalHdd: null
 	}
 
 	initialize: () ->
 		Graph.prototype.initialize.apply(@, arguments)
 
-		cpuCount = @get("options").cpuCount
-		@set("cpuCount", cpuCount)
+		totalHdd = @get("options").totalHdd
+		@set("totalHdd", totalHdd)
 
-		@graphOptions = {animation : false, scaleOverride : true, scaleSteps : 10, scaleStepWidth : 10, scaleStartValue : 0}
+		@graphOptions = {animation : false, scaleOverride : true, scaleSteps : totalHdd/256, scaleStepWidth : 256, scaleStartValue : 0}
 
-		labels = []
-		for i in [0...cpuCount]
-			labels.push "CPU " + (i+1)
+		labels = ["HDD"]
 
 		data = 
 			labels: labels
@@ -31,19 +29,16 @@ GraphCPU = Graph.extend {
 	createGraph: () ->
 		new Chart(($("#graph_" + @cid, @get("context")).get 0).getContext "2d").Bar(@get("data"), @graphOptions)
 
-	# data - an array of numbers					
+	# data - a number
 	setData: (data) ->
+		console.log data
 		graphData = @get("data")
-		graphData.datasets[0].data = data
+		graphData.datasets[0].data = [data]
 
 	update: (data) ->
-		@setData([data])
+		@setData(data)
 		@createGraph()
 
 	reset: () ->
-		data = []
-		for i in [0...@get("cpuCount")]
-			data.push 0
-		@update(data)
-
+		@update([0])
 }
