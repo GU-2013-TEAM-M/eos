@@ -18,15 +18,15 @@ func Test_LogoutHandler(t *testing.T) {
         SessionId: tmpS.GetId().Hex(),
         OrgId: "Anonymous",
     }
-    lcmd := &CmdMessage{
-        Data: make(map[string]interface{}),
-        Conn: &Connection{owner: user},
+    msg := &Message{
+        msg: `{"type":"logout","data":{}}`,
+        c: &Connection{ owner: user },
     }
     user.Authorise()
 
     test.Assert(user.IsAuthorised(), "user is authorised before logout", t)
 
-    err := LogoutHandler(lcmd)
+    err, _ := HandleMsg(msg)
 
     test.Assert(err == nil, "it logs out successfully", t)
     test.Assert(!user.IsAuthorised(), "user is not in the organisation any more", t)
@@ -36,7 +36,7 @@ func Test_LogoutHandler(t *testing.T) {
     test.Assert(err != nil, "there are no sessions for this user", t)
 
     // it does not break if session was already gone
-    err = LogoutHandler(lcmd)
+    err, _ = HandleMsg(msg)
     test.Assert(err == nil, "it does not blow up without session", t)
 
     // a daemon is removed from the organisation
@@ -44,15 +44,15 @@ func Test_LogoutHandler(t *testing.T) {
         Id: "52a4ed348350a921bd000001",
         OrgId: "Anonymous",
     }
-    lcmd = &CmdMessage{
-        Data: make(map[string]interface{}),
-        Conn: &Connection{owner: daemon},
+    msg = &Message{
+        msg: `{"type":"logout","data":{}}`,
+        c: &Connection{ owner: daemon },
     }
     daemon.Authorise()
 
     test.Assert(daemon.IsAuthorised(), "daemon is authorised before logout", t)
 
-    err = LogoutHandler(lcmd)
+    err, _ = HandleMsg(msg)
 
     test.Assert(err == nil, "it logs out successfully", t)
     test.Assert(!daemon.IsAuthorised(), "daemon is not in the organisation any more", t)
