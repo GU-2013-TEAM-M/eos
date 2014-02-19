@@ -116,8 +116,9 @@
 	<script type="text/template" id="alerts-tab-layout">
 		<div id="daemonList">
 		</div>
+		<div id="instanceList">
+		</div>
 		<div id="alertList">
-			<h1>ALERTS CONTENT</h1>
 		</div>
 	</script>
 
@@ -132,6 +133,8 @@
 			<h1>USER CONTENT</h1>
 		</div>
 	</script>
+
+	<!-- DAEMON TEMPLATES -->
 
 	<script type="text/template" id="daemons-list-template">
 		<ul>
@@ -185,9 +188,23 @@
 		</h3>
 	</script>
 	
-	<script type="text/template" id="alert-item-template">
-		<li>
-		</li>
+	<!-- ALERT TEMPLATES -->
+	
+	<script type="text/template" id="alert-trigger-item-template">
+		<div>
+			<%= trigger_name %>
+		</div>
+	</script>
+	
+	<script type="text/template" id="alert-trigger-list-template">
+		<ul>
+		</ul>
+	</script>
+	
+	<script type="text/template" id="alert-template">
+		<div>
+			<%= time %>: value is <%= value %>
+		</div>
 	</script>
 	
 	<script type="text/template" id="alert-list-template">
@@ -195,15 +212,14 @@
 		</ul>
 	</script>
 	
-	<script type="text/template" id="alert-instance-template">
-		<li>
-		</li>
+	<!-- HISTORY TEMPLATES -->
+	
+	<script type="text/template" id="history-content-template">
+		<div id="historyContent">
+		</div>
 	</script>
 	
-	<script type="text/template" id="alert-instance-list-template">
-		<ul>
-		</ul>
-	</script>
+	
 
 
 
