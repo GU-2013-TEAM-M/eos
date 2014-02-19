@@ -1,7 +1,9 @@
 AlertTrigger = Backbone.Model.extend {
 	
+	idAttribute: "trigger_id",
+	
 	defaults: {
-		daemon: null
+		daemon_id: null
 		trigger_id: null
 		trigger_name: null
 		trigger_parameter: null

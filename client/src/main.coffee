@@ -8,17 +8,17 @@ daemons = new Daemons [
 ]
 
 alertTriggers = new AlertTriggers [
-	{"daemon": daemons.at(0), "trigger_id": "001", "trigger_name": "CPU_Alert", "trigger_parameter":"CPU", "trigger_min":80, "trigger_max":100},
-	{"daemon": daemons.at(0), "trigger_id": "002", "trigger_name": "CPU_Alert!", "trigger_parameter":"CPU", "trigger_min":80, "trigger_max":100},
-	{"daemon": daemons.at(0), "trigger_id": "003", "trigger_name": "CPU_Alert!!!", "trigger_parameter":"CPU", "trigger_min":80, "trigger_max":100}
+	{"daemon_id": "123", "trigger_id": "001", "trigger_name": "CPU_Alert", "trigger_parameter":"CPU", "trigger_min":80, "trigger_max":100},
+	{"daemon_id": "123", "trigger_id": "002", "trigger_name": "CPU_Alert!", "trigger_parameter":"CPU", "trigger_min":95, "trigger_max":100},
+	{"daemon_id": "123", "trigger_id": "003", "trigger_name": "CPU_Alert!!!", "trigger_parameter":"CPU", "trigger_min":99, "trigger_max":100}
 #	{"daemon": daemons[1], "trigger_id": "002", "trigger_name": "CPU_Alert", "trigger_parameter":"CPU", "trigger_min":80, "trigger_max":100},
 #	{"daemon": daemons[1], "trigger_id": "003", "trigger_name": "RAM_Alert", "trigger_parameter":"RAM", "trigger_min":80, "trigger_max":100}
 ]
 
 alerts = new Alerts [
-	{"trigger": alertTriggers.at(0), "time":"01/01/14 00:00:00", "value":83},
-	{"trigger": alertTriggers.at(0), "time":"02/01/14 00:00:00", "value":90},
-	{"trigger": alertTriggers.at(0), "time":"03/01/14 00:00:00", "value":85},
+	{"trigger_id": "001", "time":"01/01/14 00:00:00", "value":83},
+	{"trigger_id": "001", "time":"02/01/14 00:00:00", "value":90},
+	{"trigger_id": "001", "time":"03/01/14 00:00:00", "value":85},
 #	{"trigger": alerts[1], "time":"01/01/14 09:30:13", "value":83},
 #	{"trigger": alerts[2], "time":"01/01/14 09:30:13", "value":95},
 #	{"trigger": alerts[2], "time":"01/01/14 09:50:36", "value":82}

@@ -22,4 +22,8 @@ AppState = Backbone.Model.extend {
         @listenTo this, "change:current_daemon", () ->
             views.daemonsView.render()
             views.daemonInfoView.render()
+			
+        @listenTo this, "change:current_alert_trigger", () ->
+            views.alertTriggersView.render(); views.alertsView.render(); console.log "Hi"
+		
 }
