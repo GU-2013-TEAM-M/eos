@@ -161,7 +161,7 @@ class Messages
 		daemon = data 
 		daemon_id = daemon.daemon_id
 		# daemon_address = daemon.daemon_address
-		daemon_address = "ws://31.220.209.4:9005"
+		daemon_address = "ws://31.220.209.68:9005"
 		daemon_platform = daemon.daemon_platform
 		daemon_all_parameters = daemon.daemon_all_parameters
 		daemon_monitored_parameters = daemon.daemon_monitored_parameters		
