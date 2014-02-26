@@ -37,7 +37,7 @@ loginUnsuccessful = () ->
 logoutSuccessful = () ->
 	appState.set "is_user_logged_in", false
 	Service.setCookie "session_id", null, cookieExpiryDays		
-	daemons = []
+	# daemons = []
 
 logoutError = () ->
 # TODO:

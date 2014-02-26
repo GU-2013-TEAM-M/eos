@@ -11,8 +11,8 @@ DaemonsView = Backbone.Marionette.CompositeView.extend {
 		currentDaemon = appState.get("current_daemon")
 		if currentDaemon
 			el = views.daemonsView.children.findByModel(currentDaemon).el
-			$(".activeDaemon").removeClass("activeDaemon")
-			$(el).addClass("activeDaemon")
+			$(".active").removeClass("active")
+			$(el).addClass("active")
 
 
 }

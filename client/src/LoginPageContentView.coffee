@@ -4,7 +4,7 @@ LoginPageContentView = Backbone.Marionette.ItemView.extend {
 
 	onRender: () ->
 		$("button", @el).on("click", () ->
-			console.log "123"
+			console.log "Login pressed"
 			login()
 		)
 

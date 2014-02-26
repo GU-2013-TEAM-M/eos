@@ -66,10 +66,10 @@ class Messages
 	# Processes the login check
 	# Params:	data - response data, that contain login check status
 	processLoginCheck = (data) ->
-		# status = data.status.toLowerCase()
+		status = data.status.toLowerCase()
 
 		# test
-		status = "ok"
+		# status = "ok"
 
 		switch status
 			when "ok"
@@ -106,7 +106,7 @@ class Messages
 		switch status
 			when "ok"
 				console.log "You are no longer logged in"
-				# logoutSuccessful()
+				logoutSuccessful()
 			when "not_ok"
 				console.log "Sorry, an error has occured"
 				# logoutError()
