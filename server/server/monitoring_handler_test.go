@@ -78,12 +78,14 @@ func Test_MonitoringHandlerUser(t *testing.T) {
 
     data1 := &db.Data{ "", "cpu", 1000, 12.5 }
     data2 := &db.Data{ "", "cpu", 1500, 14.5 }
-    data3 := &db.Data{ "", "cpu", 1900, 15.5 }
-    data4 := &db.Data{ "", "ram", 1200, 9000 }
+    data3 := &db.Data{ "", "cpu", 1600, 15.5 }
+    data4 := &db.Data{ "", "cpu", 1900, 11.5 }
+    data5 := &db.Data{ "", "ram", 1200, 9000 }
     db.AddTemp( "monitoring_of_a", data1)
     db.AddTemp( "monitoring_of_a", data2)
     db.AddTemp( "monitoring_of_a", data3)
     db.AddTemp( "monitoring_of_a", data4)
+    db.AddTemp( "monitoring_of_a", data5)
 
     // let's try it from the string...
     msg := &Message{
@@ -110,7 +112,14 @@ func Test_MonitoringHandlerUser(t *testing.T) {
     daemon.Authorise()
 
     err, _ = HandleMsg(msg)
+
+    cmd := GetLastCmd()
+
     test.Assert(err == nil, "it does allow to monitor your daemons", t)
+    vals := cmd.Data["values"].(map[int64]float64)
+    test.Assert(len(vals) == 2, "it returns the right number of answers", t)
+    test.Assert(vals[1500] == 14.5, "it has the correct data", t)
+    test.Assert(vals[1600] == 15.5, "it has the correct data", t)
 
     // cleaning up
     db.C("monitoring_of_a").DropCollection()

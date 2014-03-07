@@ -23,14 +23,39 @@ func MonitoringHandler(cmd *CmdMessage) error {
     }
 
     daemons := cmd.Conn.owner.GetOrg().Daemons
-    daemon, ok := daemons[daemonId]
+    _, ok = daemons[daemonId]
     if !ok {
         return errors.New("daemon not found")
     }
 
-    if daemon != nil {
-        return nil
+    param, ok1 := cmd.Data["parameter"].(string)
+    from, ok2 := cmd.Data["from"].(float64)
+    to, ok3 := cmd.Data["to"].(float64)
+
+    if (!(ok1 && ok2 && ok3)) {
+        return errors.New("Some parameters are missing!")
     }
+
+    c := db.C("monitoring_of_" + daemonId);
+    var inf []db.Data = nil;
+
+    c.Find(bson.M{
+        "time": bson.M{ "$gte": from, "$lte": to },
+        "parameter": param,
+    }).All(&inf)
+
+    vals := make(map[int64]float64)
+
+    for _, d := range inf {
+        vals[d.Time] = d.Value
+    }
+
+    data := make(map[string]interface{})
+    data["daemon_id"] = daemonId
+    data["parameter"] = param
+    data["values"] = vals
+
+    DispatchMessage("monitoring", data, cmd.Conn)
 
     return nil
 }
