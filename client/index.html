@@ -13,6 +13,11 @@
 
 	<link type="text/css" rel="stylesheet" href="./static/css/styles.css">
 
+
+
+	<link type="text/css" rel="stylesheet" href="./static/css/bootstrap.css">
+	<script src="./static/js/bootstrap.js"></script>	
+
 	<title>EOS</title>
 
 	<script type="text/template" id="welcome-page-layout-template">
@@ -67,7 +72,7 @@
 	</script>
 
 	<script type="text/template" id="app-page-header-template">
-		APP header
+		<h1 class="text-center">EOS</h1>
 	</script>
 
 	<script type="text/template" id="app-page-content-template">
@@ -82,26 +87,26 @@
 	</script>	
 
 	<script type="text/template" id="tabs-template">
-		<div id="tabsOuterContainer">
-			<div id="tabsInnerContainer">
-				<ul id="tabsList">
-				</ul>
-			</div>
-		</div>
+		<ul class="nav nav-tabs nav-justified" id="tabsList">
+		</ul>				
 	</script>
 
 	<script type="text/template" id="tab-template">
-		<div class="tabText">
-			<%= name %>
-		</div>
+		<a><%= name %></a>
 	</script>	
 	
 	<!-- TABBED PAGE TEMPLATES -->
 
 	<script type="text/template" id="home-tab-layout">
-		<div id="daemonList">
-		</div>
-		<div id="daemonInfo">
+		<div class="row">
+			<div class="col-md-4">
+				<div id="daemonList">
+				</div>
+			</div>
+			<div class="col-md-8">
+				<div id="daemonInfo">
+				</div>			
+			</div>
 		</div>
 	</script>
 
@@ -116,8 +121,9 @@
 	<script type="text/template" id="alerts-tab-layout">
 		<div id="daemonList">
 		</div>
+		<div id="instanceList">
+		</div>
 		<div id="alertList">
-			<h1>ALERTS CONTENT</h1>
 		</div>
 	</script>
 
@@ -133,15 +139,15 @@
 		</div>
 	</script>
 
+	<!-- DAEMON TEMPLATES -->
+
 	<script type="text/template" id="daemons-list-template">
-		<ul>
+		<ul class="nav nav-pills nav-stacked">
 		</ul>
 	</script>
 
 	<script type="text/template" id="daemon-item-template">
-		<div>
-			<%= daemon_name %>: <%= daemon_state %>
-		</div>
+		<a><%= daemon_name %>: <%= daemon_state %></a>
 	</script>
 
 	<script type="text/template" id="daemon-list-template">
@@ -167,9 +173,11 @@
 		</div>
 		
 		<div class="daemonParameters">
-			<ul>
+			<ul class="nav nav-pills">
 				<% _.each(daemon_all_parameters, function(item) { %>
-				<li <%= daemon_monitored_parameters.indexOf(item) > -1 ? "class=\"active\"" : "" %> > <%= item %> </li>
+				<li <%= daemon_monitored_parameters.indexOf(item) > -1 ? "class=\"active\"" : "" %> >
+					<a><%= item %></a>
+				</li>
 				<% }); %>
 			</ul>
 		</div>
@@ -185,9 +193,23 @@
 		</h3>
 	</script>
 	
-	<script type="text/template" id="alert-item-template">
-		<li>
-		</li>
+	<!-- ALERT TEMPLATES -->
+	
+	<script type="text/template" id="alert-trigger-item-template">
+		<div>
+			<%= trigger_name %>
+		</div>
+	</script>
+	
+	<script type="text/template" id="alert-trigger-list-template">
+		<ul>
+		</ul>
+	</script>
+	
+	<script type="text/template" id="alert-template">
+		<div>
+			<%= time %>: value is <%= value %>
+		</div>
 	</script>
 	
 	<script type="text/template" id="alert-list-template">
@@ -195,26 +217,25 @@
 		</ul>
 	</script>
 	
-	<script type="text/template" id="alert-instance-template">
-		<li>
-		</li>
+	<!-- HISTORY TEMPLATES -->
+	
+	<script type="text/template" id="history-content-template">
+		<div id="historyContent">
+		</div>
 	</script>
 	
-	<script type="text/template" id="alert-instance-list-template">
-		<ul>
-		</ul>
-	</script>
+	
 
 
 
 </head>
 <body>
 	<div id="page">
-		<ul>
+<!-- 		<ul>
 			<li><a href="#welcome">welcome</a></li>
 			<li><a href="#login">login</a></li>
 			<li><a href="#app">app</a></li>
-		</ul>
+		</ul> -->
 
 		<div id="mainRegion">
 			

@@ -6,7 +6,7 @@ AppState = Backbone.Model.extend {
         current_state_layout: "",
         current_tab: "",
         server_address: null,
-        current_daemon: null,
+        current_daemon: null, current_alert_trigger: null,
         serverConnected: false,
         session_id: Service.getCookie("session_id"),
         is_user_logged_in: false,
@@ -22,6 +22,10 @@ AppState = Backbone.Model.extend {
         @listenTo this, "change:current_daemon", () ->
             views.daemonsView.render()
             views.daemonInfoView.render()
+			
+        @listenTo this, "change:current_alert_trigger", () ->
+            views.alertTriggersView.render(); views.alertsView.render(); console.log "Hi"
+		
 
         @listenTo this, "change:is_user_logged_in", () ->
             console.log @get "is_user_logged_in"

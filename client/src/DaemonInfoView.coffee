@@ -23,7 +23,7 @@ DaemonInfoView = Backbone.Marionette.ItemView.extend {
 				graph = graphs.find (model) =>
 					model.get("daemon_id") == @model.get("daemon_id") && model.get("type") == param
 				if !graph
-					switch param
+					switch param.toLowerCase()
 						when "cpu"
 							graph = new GraphCPU({daemon_id: @model.get("daemon_id"), options: {cpuCount: 1} })
 						when "ram"
