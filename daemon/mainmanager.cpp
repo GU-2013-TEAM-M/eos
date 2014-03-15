@@ -6,13 +6,13 @@ daemonManager::daemonManager() {
 
 #ifdef TARGET_OS_MAC
 	mainCPUMon = new CPUMac(refresh);
-	os = "mac"
+	os = "mac";
 #elif defined __linux__
 	mainCPUMon = new CPUProcStat(refresh);
 	mainMemMon = new MemNix(refresh);
 	mainNetMon = new NETNix(refresh);
 	totalRAM = MemNix::getTotalRAM();
-	os = "linux"
+	os = "linux";
 #elif defined _WIN32 || defined _WIN64
 	mainCPUMon = new CPUWin(refresh);
 	mainMemMon = new MemWin(refresh);
