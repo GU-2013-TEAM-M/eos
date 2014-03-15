@@ -11,11 +11,13 @@ daemonManager::daemonManager() {
 	mainCPUMon = new CPUProcStat(refresh);
 	mainMemMon = new MemNix(refresh);
 	mainNetMon = new NETNix(refresh);
+	totalRAM = MemNix::getTotalRAM();
 	os = "linux"
 #elif defined _WIN32 || defined _WIN64
 	mainCPUMon = new CPUWin(refresh);
 	mainMemMon = new MemWin(refresh);
 	mainNetMon = new NETWin(refresh);
+	totalRAM = MemWin::getTotalRAM();
 	os = "win";
 #else
 #error "unknown platform"
@@ -102,7 +104,7 @@ void daemonManager::handleServerMessage(std::string msg) {
 		daemonID = msg.substr(spos+1,msg.find("\"",spos+1)-(spos+1));
 		//Send daemon info after receiving ID
 		std::string identString = "{\"type\":\"daemon\",\"data\":{\"daemon_id\":\""+daemonID+
-			"\",\"daemon_platform\":{os: \""+os+"\", ram_total: \""+std::to_string(mainMemMon->getTotalRAM()) +"\"},"+
+			"\",\"daemon_platform\":{os: \""+os+"\", ram_total: \""+totalRAM+"\"},"+
 			"\"daemon_all_parameters\":[\"cpu\",\"ram\",\"net\"],"+
 			"\"daemon_monitored_parameters\":[\"cpu\",\"ram\",\"net\"]}}";
 		connToServer->send(identString);
