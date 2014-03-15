@@ -1,8 +1,5 @@
 #include "netnix.h"
 
-PDH_HQUERY NETWin::netQuery;
-PDH_HCOUNTER NETWin::netTotal;
-
 NETNix::NETNix() {
 	init();
 	refresh = boost::chrono::milliseconds(500);

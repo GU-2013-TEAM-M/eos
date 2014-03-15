@@ -45,7 +45,7 @@ private:
 	serveToClient * connToClient;
 	boost::thread * toClientThread, * toServerThread;
 	boost::chrono::milliseconds refresh;
-	std::string daemonID;
+	std::string daemonID, os, totalRAM;
 	bool run;
 
 	void handleServerMessage(std::string);
