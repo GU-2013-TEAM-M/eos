@@ -47,23 +47,51 @@ daemonManager::daemonManager() {
 
 void daemonManager::loop() {
 	while (run) {
-		std::string sendCPUbase("{\"type\": \"monitoring\", \"data\": {\"daemon_id\": \""+daemonID+"\", \"data\": {");
+		std::string payloadBase("{\"type\": \"monitoring\", \"data\": {\"daemon_id\": \""+daemonID+"\", \"data\": {");
+		std::string serverPayloadBase(
+						(std::string) "{"							+
+										"\"type\": \"monitoring\","	+
+										"\"data\": {"				+
+											"\"list\": [{"			+
+												"\"parameter\": "	);
+		std::string timestamp;
+		timestamp = std::to_string(std::time(0));
+
+		std::vector<std::string> serverPayloads;
 		boost::this_thread::sleep_for(refresh);
-		std::string usagePayload = sendCPUbase;
+		std::string usagePayload = payloadBase;
 		if (watcherStatus["CPU"]) {
 			usagePayload.append("\"cpu\": \"");
 			usagePayload.append(std::to_string(mainCPUMon->getUsage()));
 			usagePayload.append("\",");
+
+			std::string cpuP(serverPayloadBase + "\"cpu\", "+ 
+								"\"values\": {" +
+								"\"" + timestamp +"\": " + std::to_string(mainCPUMon->getUsage()) +
+								"} }] } }");
+			serverPayloads.push_back(cpuP);
 		}
 		if (watcherStatus["RAM"]) {
 			usagePayload.append("\"ram\": \"");
 			usagePayload.append(std::to_string(mainMemMon->getUsage()));
 			usagePayload.append("\",");
+
+			std::string ramP(serverPayloadBase + "\"ram\", "+ 
+				"\"values\": {" +
+				"\"" + timestamp +"\": " + std::to_string(mainMemMon->getUsage()) +
+				"} }] } }");
+			serverPayloads.push_back(ramP);
 		}
 		if (watcherStatus["NET"]) {
 			usagePayload.append("\"net\": \"");
 			usagePayload.append(std::to_string(mainNetMon->getUsage()));
 			usagePayload.append("\",");
+
+			std::string netP(serverPayloadBase + "\"net\", "+ 
+				"\"values\": {" +
+				"\"" + timestamp +"\": " + std::to_string(mainNetMon->getUsage()) +
+				"} }] } }");
+			serverPayloads.push_back(netP);
 		}
 		usagePayload = usagePayload.substr(0,usagePayload.length()-1);
 		usagePayload.append("}}}");
@@ -71,6 +99,10 @@ void daemonManager::loop() {
 		//connToServer->send(usagePayload);
 		if (connToClient->open) {
 			connToClient->send(usagePayload);
+
+			for (std::string payload : serverPayloads) {
+				connToServer->send(payload);
+			}
 		}
 	}
 }
