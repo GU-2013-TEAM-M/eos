@@ -27,3 +27,9 @@ void MemNix::readLoop() {
 		boost::this_thread::sleep_for(refresh);
 	}
 }
+
+unsigned long long MemNix::getTotalRAM() {
+	struct sysinfo memInfo;
+	sysinfo (&memInfo);
+	return memInfo.totalram;
+}

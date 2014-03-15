@@ -8,7 +8,6 @@ private:
 	static PDH_HQUERY netQuery;
 	static PDH_HCOUNTER netTotal;
 
-	void procParse(std::string);
 	void init();
 
 public:

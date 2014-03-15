@@ -13,6 +13,7 @@ public:
 	MemNix(unsigned int);
 	MemNix( boost::chrono::milliseconds );
 	~MemNix();
+	static unsigned long long getTotalRAM();
 	void readLoop();
 };
 

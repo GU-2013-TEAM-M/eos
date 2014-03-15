@@ -13,6 +13,7 @@ public:
 	MemWin(unsigned int);
 	MemWin( boost::chrono::milliseconds );
 	~MemWin();
+	static unsigned long long getTotalRAM();
 	void readLoop();
 };
 

@@ -27,3 +27,10 @@ void MemWin::readLoop() {
 		boost::this_thread::sleep_for(refresh);
 	}
 }
+
+unsigned long long MemWin::getTotalRAM() {
+	MEMORYSTATUSEX memInfo;
+	memInfo.dwLength = sizeof(MEMORYSTATUSEX);
+	GlobalMemoryStatusEx(&memInfo);
+	return memInfo.ullTotalPhys;
+}

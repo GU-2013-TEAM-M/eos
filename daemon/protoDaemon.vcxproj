@@ -103,6 +103,9 @@
     <ClInclude Include="inserver.h" />
     <ClInclude Include="mainmanager.h" />
     <ClInclude Include="memwatcher.h" />
+    <ClInclude Include="netnix.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="netwatcher.h" />
     <ClInclude Include="netwin.h" />
     <ClInclude Include="outclient.h" />
@@ -120,6 +123,7 @@
     </ClCompile>
     <ClCompile Include="memwatcher.cpp" />
     <ClCompile Include="memwin.cpp" />
+    <ClCompile Include="netnix.cpp" />
     <ClCompile Include="netwatcher.cpp" />
     <ClCompile Include="netwin.cpp" />
     <ClCompile Include="protoDaemon.cpp" />

@@ -1,13 +1,15 @@
 #include "mainmanager.h"
 
 daemonManager::daemonManager() {
-	refresh = boost::chrono::milliseconds(250);
+	refresh = boost::chrono::milliseconds(1000);
 	daemonID = 12345;
+
 #ifdef TARGET_OS_MAC
 	mainCPUMon = new CPUMac(refresh);
 #elif defined __linux__
 	mainCPUMon = new CPUProcStat(refresh);
 	mainMemMon = new MemNix(refresh);
+	mainNetMon = new NETNix(refresh);
 #elif defined _WIN32 || defined _WIN64
 	mainCPUMon = new CPUWin(refresh);
 	mainMemMon = new MemWin(refresh);
@@ -17,22 +19,21 @@ daemonManager::daemonManager() {
 #endif
 
 	connToServer = new outClient();
-	connToServer->init("ws://shacron.twilightparadox.com:8080/wsdaemon");
+	connToServer->init("ws://eos.sytes.net/wsdaemon");
 	toServerThread = new boost::thread(boost::bind(&outClient::run, connToServer));
 
 	while (!connToServer->ready) {
 		boost::this_thread::sleep_for(boost::chrono::milliseconds(1));
 	}
 	connToServer->bindMsg(boost::bind(&daemonManager::handleServerMessage,this,::_1));
-	connToServer->send("{\"type\":\"login\", \"data\":{}}");
-
+	connToServer->send("{\"type\":\"login\",\"data\":{\"name\":\"Anekharat\",\"password\":\"derp\",\"org_id\":\"52f2bf8521db4a04d5000001\"}}");
 	connToClient = new serveToClient();
 	toClientThread = new boost::thread(boost::bind(&serveToClient::run, connToClient));
 
 	mainCPUMon->start();
 	watcherStatus["CPU"] = true;
 	mainMemMon->start();
-	watcherStatus["MEM"] = true;
+	watcherStatus["RAM"] = true;
 	mainNetMon->start();
 	watcherStatus["NET"] = true;
 	run = true;
@@ -41,7 +42,7 @@ daemonManager::daemonManager() {
 
 void daemonManager::loop() {
 	while (run) {
-		std::string sendCPUbase("{\"type\": \"monitoring\", \"data\": {\"daemon_id\": \""+std::to_string(daemonID)+"\", \"data\": {");
+		std::string sendCPUbase("{\"type\": \"monitoring\", \"data\": {\"daemon_id\": \""+daemonID+"\", \"data\": {");
 		boost::this_thread::sleep_for(refresh);
 		std::string usagePayload = sendCPUbase;
 		if (watcherStatus["CPU"]) {
@@ -49,8 +50,8 @@ void daemonManager::loop() {
 			usagePayload.append(std::to_string(mainCPUMon->getUsage()));
 			usagePayload.append("\",");
 		}
-		if (watcherStatus["MEM"]) {
-			usagePayload.append("\"mem\": \"");
+		if (watcherStatus["RAM"]) {
+			usagePayload.append("\"ram\": \"");
 			usagePayload.append(std::to_string(mainMemMon->getUsage()));
 			usagePayload.append("\",");
 		}
@@ -61,7 +62,7 @@ void daemonManager::loop() {
 		}
 		usagePayload = usagePayload.substr(0,usagePayload.length()-1);
 		usagePayload.append("}}}");
-		std::cout<<usagePayload<<std::endl;
+	//	std::cout<<usagePayload<<std::endl;
 		//connToServer->send(usagePayload);
 		if (connToClient->open) {
 			connToClient->send(usagePayload);
@@ -85,8 +86,8 @@ void daemonManager::handleServerMessage(std::string msg) {
 			watcherStatus["CPU"] = setTo;
 		}
 		//if (comps.get<std::string>(op)=="RAM") {
-		if ((msg.find("MEM")!=msg.npos)) {
-			watcherStatus["MEM"] = setTo;
+		if ((msg.find("RAM")!=msg.npos)) {
+			watcherStatus["RAM"] = setTo;
 		}
 		//if (comps.get<std::string>(op)=="NET") {
 		if ((msg.find("NET")!=msg.npos)) {
@@ -95,7 +96,13 @@ void daemonManager::handleServerMessage(std::string msg) {
 	} else if (msg.find("\"id\"")!=msg.npos) {
 		int spos = msg.find("\"id\"");
 		spos = msg.find("\"", spos+5);
-		std::string idString = msg.substr(spos+1,msg.find("\"",spos+1)-(spos+1));
-		daemonID = stoll(idString);
+		daemonID = msg.substr(spos+1,msg.find("\"",spos+1)-(spos+1));
+		//Send daemon info after receiving ID
+		std::string identString = "{\"type\":\"daemon\",\"data\":{\"daemon_id\":\""+daemonID+
+			"\",\"daemon_platform\":{os: \"win\", ram_total: \""+std::to_string(MemWin::getTotalRAM()) +"\"},"+
+			"\"daemon_all_parameters\":[\"cpu\",\"ram\",\"net\"],"+
+			"\"daemon_monitored_parameters\":[\"cpu\",\"ram\",\"net\"]}}";
+		connToServer->send(identString);
+	//	daemonID = stoll(idString);
 	}
 }

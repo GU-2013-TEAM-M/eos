@@ -18,6 +18,7 @@ public:
 	unsigned long long int getUsage();
 	void start();
 	void updateUsage(unsigned long long int);
+	static unsigned long long getTotalRAM();
 	virtual void readLoop() = 0;
 };
 
