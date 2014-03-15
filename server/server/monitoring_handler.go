@@ -47,10 +47,10 @@ func MonitoringHandler(cmd *CmdMessage) error {
         "parameter": param,
     }).All(&inf)
 
-    vals := make(map[int64]float64)
+    vals := make(map[string]float64)
 
     for _, d := range inf {
-        vals[d.Time] = d.Value
+        vals[strconv.FormatInt(d.Time, 10)] = d.Value
     }
 
     data := make(map[string]interface{})
@@ -58,7 +58,8 @@ func MonitoringHandler(cmd *CmdMessage) error {
     data["parameter"] = param
     data["values"] = vals
 
-    DispatchMessage("monitoring", data, cmd.Conn)
+    err := DispatchMessage("monitoring", data, cmd.Conn)
+    fmt.Println(err)
     fmt.Println("And I did send you all the data")
 
     return nil

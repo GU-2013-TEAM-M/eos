@@ -116,10 +116,10 @@ func Test_MonitoringHandlerUser(t *testing.T) {
     cmd := GetLastCmd()
 
     test.Assert(err == nil, "it does allow to monitor your daemons", t)
-    vals := cmd.Data["values"].(map[int64]float64)
+    vals := cmd.Data["values"].(map[string]float64)
     test.Assert(len(vals) == 2, "it returns the right number of answers", t)
-    test.Assert(vals[1500] == 14.5, "it has the correct data", t)
-    test.Assert(vals[1600] == 15.5, "it has the correct data", t)
+    test.Assert(vals["1500"] == 14.5, "it has the correct data", t)
+    test.Assert(vals["1600"] == 15.5, "it has the correct data", t)
 
     // cleaning up
     db.C("monitoring_of_a").DropCollection()
