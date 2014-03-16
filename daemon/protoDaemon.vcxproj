@@ -123,7 +123,9 @@
     </ClCompile>
     <ClCompile Include="memwatcher.cpp" />
     <ClCompile Include="memwin.cpp" />
-    <ClCompile Include="netnix.cpp" />
+    <ClCompile Include="netnix.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="netwatcher.cpp" />
     <ClCompile Include="netwin.cpp" />
     <ClCompile Include="protoDaemon.cpp" />
@@ -133,6 +135,9 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Makefile" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

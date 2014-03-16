@@ -24,6 +24,7 @@
 #elif defined __linux__
 #include "cpuprocstat.h"
 #include "memnix.h"
+#include "netnix.h"
 
 #elif defined _WIN32 || defined _WIN64
 #define WIN32_LEAN_AND_MEAN

@@ -2,7 +2,7 @@
 
 daemonManager::daemonManager() {
 	refresh = boost::chrono::milliseconds(1000);
-	daemonID = 12345;
+	daemonID = "12345";
 
 #ifdef TARGET_OS_MAC
 	mainCPUMon = new CPUMac(refresh);
@@ -11,18 +11,18 @@ daemonManager::daemonManager() {
 	mainCPUMon = new CPUProcStat(refresh);
 	mainMemMon = new MemNix(refresh);
 	mainNetMon = new NETNix(refresh);
-	totalRAM = MemNix::getTotalRAM();
+	totalRAM = std::to_string(MemNix::getTotalRAM());
 	os = "linux";
 #elif defined _WIN32 || defined _WIN64
 	mainCPUMon = new CPUWin(refresh);
 	mainMemMon = new MemWin(refresh);
 	mainNetMon = new NETWin(refresh);
-	totalRAM = MemWin::getTotalRAM();
+	totalRAM = std::to_string(MemWin::getTotalRAM());
 	os = "win";
 #else
 #error "unknown platform"
 #endif
-
+	std::cout << "CPP MACRO: " << __cplusplus << std::endl;
 	connToServer = new outClient();
 	connToServer->init("ws://eos.sytes.net/wsdaemon");
 	toServerThread = new boost::thread(boost::bind(&outClient::run, connToServer));
@@ -135,10 +135,11 @@ void daemonManager::handleServerMessage(std::string msg) {
 		spos = msg.find("\"", spos+5);
 		daemonID = msg.substr(spos+1,msg.find("\"",spos+1)-(spos+1));
 		//Send daemon info after receiving ID
-		std::string identString = "{\"type\":\"daemon\",\"data\":{\"daemon_id\":\""+daemonID+
-			"\",\"daemon_platform\":{os: \""+os+"\", ram_total: \""+totalRAM+"\"},"+
+		std::string identString("{\"type\":\"daemon\",\"data\":{\"daemon_id\":\""+daemonID+
+			"\",\"daemon_platform\": \""+os+"\","+
 			"\"daemon_all_parameters\":[\"cpu\",\"ram\",\"net\"],"+
-			"\"daemon_monitored_parameters\":[\"cpu\",\"ram\",\"net\"]}}";
+			"\"daemon_monitored_parameters\":[\"cpu\",\"ram\",\"net\"]," +
+			 "ram_total: \""+totalRAM+"\"}}");
 		connToServer->send(identString);
 	//	daemonID = stoll(idString);
 	}

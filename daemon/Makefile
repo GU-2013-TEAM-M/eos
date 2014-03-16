@@ -3,7 +3,7 @@ OBJECTS=$(SOURCES:.cpp=.o)
 CC = g++
 DEBUG = -g -W -Wall
 CFLAGS = -c -std=c++11
-WSPPI = -I/usr/include/c++/websocketpp
+WSPPI = -D_WEBSOCKETPP_CPP11_STL_ -I/usr/include/c++/websocketpp
 BOOSTI = -lboost_system-mt -lboost_thread-mt
 LFLAGS = $(DEBUG)
 EXEC = daemon

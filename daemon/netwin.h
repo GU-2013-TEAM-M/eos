@@ -1,3 +1,6 @@
+#ifndef netwin_h__
+#define netwin_h__
+
 #include <Pdh.h>
 #include <tchar.h>
 
@@ -17,3 +20,4 @@ public:
 	~NETWin();
 	void readLoop();
 };
+#endif // netwin_h__
