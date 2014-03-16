@@ -4,7 +4,7 @@ CC = g++
 DEBUG = -g -W -Wall
 CFLAGS = -c -std=c++11
 WSPPI = -D_WEBSOCKETPP_CPP11_STL_ -I/usr/include/c++/websocketpp
-BOOSTI = -lboost_system-mt -lboost_thread-mt -pthread
+BOOSTI = -lboost_system -lboost_thread -pthread
 LFLAGS = $(DEBUG)
 EXEC = daemon
 
