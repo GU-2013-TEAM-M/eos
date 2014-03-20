@@ -45,8 +45,7 @@ func userLoginHandler(cmd *CmdMessage) error {
     data["org_id"] = user.OrgId.Hex()
 
     cmd.Conn.owner.Authenticate(user.Id)
-    DispatchMessage("login", data, cmd.Conn)
-    return nil
+    return DispatchMessage("login", data, cmd.Conn)
 }
 
 func daemonLoginHandler(cmd *CmdMessage) error {

@@ -21,8 +21,7 @@ func DaemonsHandler(cmd *CmdMessage) error {
         data["list"] = append(data["list"].([]map[string]interface{}), getDaemonFormat(daemons[id]))
     }
 
-    DispatchMessage("daemons", data, cmd.Conn)
-    return nil
+    return DispatchMessage("daemons", data, cmd.Conn)
 }
 
 // a helper function, generating the daemon info from the connection
@@ -31,6 +30,7 @@ func getDaemonFormat(c *Connection) map[string]interface{} {
     daemon := make(map[string]interface{})
     daemon["daemon_id"] = d.Id
     daemon["daemon_name"] = d.Entry.Name
-    daemon["daemon_state"] = d.Entry.Status
+    //daemon["daemon_state"] = d.Entry.Status
+    daemon["daemon_state"] = "Running"
     return daemon
 }

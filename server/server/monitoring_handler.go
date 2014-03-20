@@ -1,7 +1,6 @@
 package main
 
 import (
-    "fmt"
     "strconv"
     "errors"
     "eos/server/db"
@@ -11,14 +10,12 @@ import (
 // a handler that either stores monitoring information
 // for that particular daemon, or sends the stats to the user
 func MonitoringHandler(cmd *CmdMessage) error {
-    fmt.Println("I understood you wanted history")
     if !cmd.Conn.owner.IsAuthorised() {
         return errors.New("Logging in is required before using this handler")
     }
     if !cmd.Conn.owner.IsUser() {
         return storeMonitoringData(cmd)
     }
-    fmt.Println("I understood you are the user")
 
     daemonId, ok := cmd.Data["daemon_id"].(string)
     if !ok {
@@ -58,11 +55,7 @@ func MonitoringHandler(cmd *CmdMessage) error {
     data["parameter"] = param
     data["values"] = vals
 
-    err := DispatchMessage("monitoring", data, cmd.Conn)
-    fmt.Println(err)
-    fmt.Println("And I did send you all the data")
-
-    return nil
+    return DispatchMessage("monitoring", data, cmd.Conn)
 }
 
 func storeMonitoringData(cmd *CmdMessage) error {
