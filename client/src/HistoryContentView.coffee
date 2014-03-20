@@ -24,7 +24,8 @@ HistoryContentView = Backbone.Marionette.ItemView.extend {
 				dateEnd = $("#dp_end", @el)
 				unixDateStart = new Date(dateStart[0].value).getTime()/1000
 				unixDateEnd = new Date(dateEnd[0].value).getTime()/1000
-				param = "cpu"
+				param = $("select", @el).val()
+				console.log param
 				daemon_id = @model.get("daemon_id")
 
 				message = MessageProcessor.createMessage "monitoring", {daemon_id: daemon_id, from: unixDateStart, to: unixDateEnd, parameter: param}

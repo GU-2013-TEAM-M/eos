@@ -74,23 +74,27 @@ historyData = (data) ->
 	daemon_id = data.daemon_id
 	parameter = data.parameter
 	values = data.values
+
+	array = []
+	for own key, value of values
+		array.push(value)
+
+	arrayData = array.slice(array.length-100, array.length)	
+
+	graph = {}
 	switch parameter
 		when "cpu"
-			array = [1,2,3,4,5,6,7,8,9]
+			graph = new GraphCPU_2({daemon_id: daemon_id, options: {cpuCount: 1, width: 500, pointNumber: arrayData.length} })
+		when "ram"
+			graph = new GraphRAM_2({daemon_id: daemon_id, options: {totalRam: 32768, width: 500, pointNumber: arrayData.length} })
+		when "net"
+			graph = new GraphNET_2({daemon_id: daemon_id, options: {maxNet: 10000, width: 500, pointNumber: arrayData.length} })
 
-			# for own key, value of values
-				# array.push(value)
-
-			graph = new GraphCPU_2({daemon_id: daemon_id, options: {cpuCount: 1, width: 500, pointNumber: array.length} })
-			$("#history_graph").empty()
-			$("#history_graph").append(graph.get("canvas"))
-			graph.set("context", $("#history_graph", @el))
-			# graph.reset()
-
-
-
-			graph.setFullData(array)
-			graph.createGraph()
+	$("#history_graph").empty()
+	$("#history_graph").append(graph.get("canvas"))
+	graph.set("context", $("#history_graph", @el))
+	graph.setFullData(arrayData)
+	graph.createGraph()
 
 notImplemented = (data) ->
 # TODO:

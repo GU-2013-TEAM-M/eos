@@ -12,6 +12,10 @@ GraphRAM_2 = Graph.extend {
 		totalRam = @get("options").totalRam
 		@set("totalRam", totalRam)
 
+		pn = @get("options").pointNumber
+		if pn
+			@set("pointNumber", pn)		
+
 		pointNumber = @get("pointNumber")
 
 		lastPoints = new Array(pointNumber)
@@ -25,7 +29,8 @@ GraphRAM_2 = Graph.extend {
 
 		labels = []
 		for  i in [0...pointNumber-1]
-			labels[i] = i+1
+			# labels[i] = i+1
+			labels[i] = ""
 
 		data = 
 			labels: labels
@@ -54,7 +59,11 @@ GraphRAM_2 = Graph.extend {
 			graphData.datasets[0].data = lastPoints
 		else 
 			graphData = @get("data")
-			graphData.datasets[0].data = lastPoints			
+			graphData.datasets[0].data = lastPoints	
+
+	setFullData: (data) ->
+		graphData = @get("data")
+		graphData.datasets[0].data = data					
 
 	update: (data) ->
 		@setData(data/1048576)
