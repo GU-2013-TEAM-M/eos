@@ -31,6 +31,7 @@ func getDaemonFormat(c *Connection) map[string]interface{} {
     daemon := make(map[string]interface{})
     daemon["daemon_id"] = d.Id
     daemon["daemon_name"] = d.Entry.Name
-    daemon["daemon_state"] = d.Entry.Status
+    //daemon["daemon_state"] = d.Entry.Status
+    daemon["daemon_state"] = "Running"
     return daemon
 }
