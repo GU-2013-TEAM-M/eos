@@ -11,7 +11,7 @@ CPUProcStat::CPUProcStat( unsigned int ref ) : PROC ("/proc/stat") {
 	refresh = boost::chrono::milliseconds(ref);
 }
 
-CPUProcStat::CPUProcStat( boost::chrono::milliseconds ref ) : PROC ("proc/stat") {
+CPUProcStat::CPUProcStat( boost::chrono::milliseconds ref ) : PROC ("/proc/stat") {
 	procNumsFirst = new CPUCycles();
 	procNumsSecond = new CPUCycles();
 	refresh = ref;
@@ -74,6 +74,7 @@ void CPUProcStat::procParse(std::string procLine) {
 		long long unsigned int total = procNumsSecond->getTotalCycles() - procNumsFirst->getTotalCycles();
 		updateUsage((double)work/total*100.0);
 	}
+	//std::cout<<getUsage()<<std::endl;
 }
 
 void CPUProcStat::readLoop() {
@@ -87,14 +88,14 @@ void CPUProcStat::readLoop() {
 			procFile.open(PROC,std::fstream::in);
 			getline(procFile, procLine);
 			procFile.close();
-			std::cout<<procLine<<std::endl;
+			//std::cout<<procLine<<std::endl;
 			procParse(procLine);
 			procLine.clear();
 			boost::this_thread::sleep_for(refresh);
 		} else {
 			procFile.open(PROC,std::fstream::in);
 			while (std::getline(procFile,procLine)) {
-				std::cout<<procLine<<std::endl;
+				std::cout<<"Proc line: "<<procLine<<std::endl;
 				procParse(procLine);
 				procLine.clear();
 				boost::this_thread::sleep_for(refresh);
