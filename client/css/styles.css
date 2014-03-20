@@ -36,10 +36,10 @@ html, body {
 	background: #e0e0e0;
 }*/
 
-.daemonParameters li {
+/*.daemonParameters li {
 	cursor: pointer;
 	margin-bottom: 3px;
-}
+}*/
 
 .daemonParameters li.active {
 	font-weight:bold;

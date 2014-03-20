@@ -25,7 +25,8 @@ DaemonInfoView = Backbone.Marionette.ItemView.extend {
 				if !graph
 					switch param.toLowerCase()
 						when "cpu"
-							graph = new GraphCPU({daemon_id: @model.get("daemon_id"), options: {cpuCount: 1} })
+							# graph = new GraphCPU({daemon_id: @model.get("daemon_id"), options: {cpuCount: 1} })
+							graph = new GraphCPU_2({daemon_id: @model.get("daemon_id"), options: {cpuCount: 1} })
 						when "ram"
 							graph = new GraphRAM_2({daemon_id: @model.get("daemon_id"), options: {totalRam: 32768} })
 						when "hdd"
@@ -35,8 +36,10 @@ DaemonInfoView = Backbone.Marionette.ItemView.extend {
 					if graph
 						graphs.add graph
 
-				$("#graphs", @el).append(graph.get("canvas"))
-				graph.set("context", $("#graphs", @el))
+
+
+				$("#"+graph.get("type")+"Graph", @el).append(graph.get("canvas"))
+				graph.set("context", $("#"+graph.get("type")+"Graph", @el))
 				graph.reset()
 
 			$("li", @el).on('click', (event) =>
@@ -45,12 +48,4 @@ DaemonInfoView = Backbone.Marionette.ItemView.extend {
 				@model.toggleMonitor(param)
 				@render()
 			)
-
-	# paramClicked: (event) ->
-	# 	console.log "lololo"
-	# 	el = event.target
-	# 	param = $(el).text().trim()
-	# 	@model.toggleMonitor(param)
-	# 	@render()
-		
 }
