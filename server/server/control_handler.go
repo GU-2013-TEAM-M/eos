@@ -38,9 +38,8 @@ func ControlHandler(cmd *CmdMessage) error {
     }
 
     data["status"] = "OK"
-    DispatchMessage("control", data, cmd.Conn)
     DispatchMessage("control", cmd.Data, daemon)
-    return nil
+    return DispatchMessage("control", data, cmd.Conn)
 }
 
 func isSubset(smaller []interface{}, larger []string) bool {

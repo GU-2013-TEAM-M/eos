@@ -63,13 +63,16 @@ func daemonUpdateInfo(cmd *CmdMessage) error {
 
     // send information to all the users in the org
     for _, ucon := range daemon.GetOrg().Users {
-        sendDaemonMessage(daemon, ucon)
+        err := sendDaemonMessage(daemon, ucon)
+        if err != nil {
+            return err
+        }
     }
 
     return nil
 }
 
-func sendDaemonMessage(daemon *Daemon, c *Connection) {
+func sendDaemonMessage(daemon *Daemon, c *Connection) error {
     data := make(map[string]interface{})
     data["daemon_id"] = daemon.Id
 
@@ -85,5 +88,5 @@ func sendDaemonMessage(daemon *Daemon, c *Connection) {
     data["daemon_all_parameters"] = d.Parameters
     data["daemon_monitored_parameters"] = d.Monitored
 
-    DispatchMessage("daemon", data, c)
+    return DispatchMessage("daemon", data, c)
 }
