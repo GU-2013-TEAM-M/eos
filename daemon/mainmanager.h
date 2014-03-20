@@ -15,8 +15,8 @@
 #include "memwatcher.h"
 #include "netwatcher.h"
 
-#include "outclient.h"
-#include "inserver.h"
+#include "toServerConn.h"
+#include "toClientsConn.h"
 
 #ifdef TARGET_OS_MAC
 #include "cpumac.h"

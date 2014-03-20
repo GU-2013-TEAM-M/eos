@@ -54,8 +54,8 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>D:\Software\Programming\C++\websocketpp\;D:\Software\Programming\C++\boost_1_54_0</AdditionalIncludeDirectories>
-      <AdditionalOptions>-D_SCL_SECURE_NO_WARNINGS %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalIncludeDirectories>D:\Software\Programming\C++\websocketpp-master\;D:\Software\Programming\C++\boost_1_54_0</AdditionalIncludeDirectories>
+      <AdditionalOptions>-D_SCL_SECURE_NO_WARNINGS -D_WEBSOCKETPP_CPP11_MEMORY_ %(AdditionalOptions)</AdditionalOptions>
       <InlineFunctionExpansion>Default</InlineFunctionExpansion>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
@@ -79,10 +79,10 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CRT_SECURE_NO_WARNINGS;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>D:\Software\Programming\C++\websocketpp\;D:\Software\Programming\C++\boost_1_54_0</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\Software\Programming\C++\websocketpp-master\;D:\Software\Programming\C++\boost_1_54_0</AdditionalIncludeDirectories>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-      <AdditionalOptions>-D_SCL_SECURE_NO_WARNINGS %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>-D_SCL_SECURE_NO_WARNINGS -D_WEBSOCKETPP_CPP11_FUNCTIONAL_ -D_WEBSOCKETPP_CPP11_MEMORY_ %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -106,7 +106,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="memwin.h" />
-    <ClInclude Include="inserver.h" />
+    <ClInclude Include="toClientsConn.h" />
     <ClInclude Include="mainmanager.h" />
     <ClInclude Include="memwatcher.h" />
     <ClInclude Include="netnix.h">
@@ -115,7 +115,7 @@
     </ClInclude>
     <ClInclude Include="netwatcher.h" />
     <ClInclude Include="netwin.h" />
-    <ClInclude Include="outclient.h" />
+    <ClInclude Include="toServerConn.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
@@ -124,7 +124,7 @@
     <ClCompile Include="cpuwatcher.cpp" />
     <ClCompile Include="cpuprocstat.cpp" />
     <ClCompile Include="cpuwin.cpp" />
-    <ClCompile Include="inserver.cpp" />
+    <ClCompile Include="toClientsConn.cpp" />
     <ClCompile Include="memnix.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
@@ -139,7 +139,7 @@
     <ClCompile Include="netwin.cpp" />
     <ClCompile Include="protoDaemon.cpp" />
     <ClCompile Include="mainmanager.cpp" />
-    <ClCompile Include="outclient.cpp" />
+    <ClCompile Include="toServerConn.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
