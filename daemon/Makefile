@@ -2,16 +2,16 @@ SOURCES = protoDaemon.cpp mainmanager.cpp outclient.cpp inserver.cpp cpuwatcher.
 OBJECTS=$(SOURCES:.cpp=.o)
 CC = g++
 DEBUG = -g -W -Wall
-CFLAGS = -c -std=c++11 $(DEBUG)
-WSPPI = -I/usr/include/c++/websocketpp
-BOOSTI = -lboost_system-mt -lboost_thread-mt
+CFLAGS = -c -std=c++11
+WSPPI = -D_WEBSOCKETPP_CPP11_STL_ -I/usr/include/c++/websocketpp
+BOOSTI = -lboost_system -lboost_thread -pthread
 LFLAGS = $(DEBUG)
 EXEC = daemon
 
 all: $(SOURCES) $(EXEC)
 	
 $(EXEC): $(OBJECTS) 
-	$(CC) $(LDFLAGS) $(OBJECTS) $(BOOSTI) -o $@
+	$(CC) $(OBJECTS) $(BOOSTI) -o $@
 
 .cpp.o:
 	$(CC) $(CFLAGS) $(WSPPI) $(BOOSTI) $< -o $@

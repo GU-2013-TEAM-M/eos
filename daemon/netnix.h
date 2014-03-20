@@ -6,7 +6,6 @@
 class NETNix : public NETWatcher{
 private:
 	void procParse(std::string);
-	void init();
 
 public:
 	NETNix();
