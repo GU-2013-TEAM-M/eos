@@ -24,7 +24,7 @@ daemonManager::daemonManager() {
 #endif
 	std::cout << "CPP MACRO: " << __cplusplus << std::endl;
 	connToServer = new outClient();
-	connToServer->init("ws://eos.sytes.net/wsdaemon");
+	connToServer->init("ws://127.0.0.1:8080/wsdaemon");
 	toServerThread = new boost::thread(boost::bind(&outClient::run, connToServer));
 
 	while (!connToServer->ready) {
