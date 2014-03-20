@@ -139,7 +139,7 @@ void daemonManager::handleServerMessage(std::string msg) {
 			"\",\"daemon_platform\": \""+os+"\","+
 			"\"daemon_all_parameters\":[\"cpu\",\"ram\",\"net\"],"+
 			"\"daemon_monitored_parameters\":[\"cpu\",\"ram\",\"net\"]," +
-			 "ram_total: \""+totalRAM+"\"}}");
+			"\"ram_total\": \""+totalRAM+"\"}}");
 		connToServer->send(identString);
 	//	daemonID = stoll(idString);
 	}
