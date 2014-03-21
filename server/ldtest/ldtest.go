@@ -121,6 +121,8 @@ func runSimulation() {
     startD := make(chan int)
     stopD := make(chan int, nd)
 
+    timeStart := time.Now().UnixNano()
+
     fmt.Println("Starting daemons")
     // create all the daemons
     for _, d := range(daemons) {
@@ -161,6 +163,10 @@ func runSimulation() {
         stopD <- 1
     }
     fmt.Println("Daemons have been stopped")
+
+    fmt.Println("------------------------------------------")
+    totalTime := float64(time.Now().UnixNano() - timeStart) / 1000000.0
+    fmt.Println("Tests took", totalTime, "ms")
 }
 
 // removes all the stub data from the database
