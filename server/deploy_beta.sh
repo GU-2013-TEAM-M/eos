@@ -17,3 +17,12 @@ echo "tests have been run"
 # copying executable
 cp $GOPATH/bin/server ../../beta/
 echo "the application has been deployed!"
+
+# compiling go for ldtest
+cd ..
+go install eos/server/ldtest
+echo "load test compiled"
+
+# copying executable
+cp $GOPATH/bin/ldtest ../beta/
+echo "the ldtest has been deployed to beta stage!"
