@@ -108,7 +108,7 @@ func generateDaemon(org *db.Organisation) *db.Daemon {
             Time: time.Now().Unix() - int64(rand.Intn(1000)),
             Value: float64(rand.Intn(100)),
         }
-        db.AddTemp("monitoring_of_" + d.Name, dp)
+        db.AddTemp("monitoring_of_" + d.Id.Hex(), dp)
     }
     daemons = append(daemons, d)
     return d
@@ -170,20 +170,23 @@ func runSimulation() {
     fmt.Println("------------------------------------------")
     totalTime := float64(time.Now().UnixNano() - timeStart) / 1000000.0
     fmt.Println("Tests w/o setup took", totalTime, "ms")
+    fmt.Println("------------------------------------------")
 }
 
 // removes all the stub data from the database
 func cleanTheDB() {
+    fmt.Println("Cleaning up the DB, don't turn off...")
     // delete all the users
     db.DelTemps("users")
     // all the monitoring information
     for _, d := range daemons {
-        db.C("monitoring_of_" + d.Name).DropCollection()
+        db.C("monitoring_of_" + d.Id.Hex()).DropCollection()
     }
     // all the daemons
     db.DelTemps("daemons")
     // all the orgs
     db.DelTemps("organisations")
+    fmt.Println("Bye!")
 }
 
 // simulating the user behaviour
@@ -300,13 +303,21 @@ func simulateDaemon(d *db.Daemon, startD, stopD chan int) {
 }
 
 func checkResponse(ws *websocket.Conn, c chan int, resStr string) bool {
-    var msg = make([]byte, 5096)
-    if _, err := ws.Read(msg); err != nil {
-        ws.Close()
-        c <- 0
-        return false
+    var msg = make([]byte, 4096)
+    var fullmsg = make([]byte, 0, 4096)
+    var err error
+    var n int
+    var lastC byte = 'i'
+    for lastC != '}' {
+        if n, err = ws.Read(msg); err != nil || n == 0 {
+            ws.Close()
+            c <- 0
+            return false
+        }
+        fullmsg = append(fullmsg, msg...)
+        lastC = msg[n-1]
     }
-    if !bytes.Contains(msg, []byte(resStr)) {
+    if !bytes.Contains(fullmsg, []byte(resStr)) {
         ws.Close()
         c <- 0
         return true
