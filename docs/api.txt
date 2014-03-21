@@ -80,7 +80,7 @@ login:
     "type": "login",
     "data": {
         "email": "user's email address instead of login",
-        "password": "currently unencrypted",
+        "password": "currently unencrypted"
     }
 }
 
