@@ -59,6 +59,7 @@ func main() {
 
 // populates the database with stub data to match the counts
 func setupDBStub(norg, nu, nd int) {
+    fmt.Println("Setting up the database, might take a while")
     for i := 0; i < norg; i++ {
         org := &db.Organisation{ Name: strconv.FormatInt(rand.Int63(), 10) }
         db.AddTemp("organisations", org)
@@ -71,7 +72,9 @@ func setupDBStub(norg, nu, nd int) {
         }
         // saving for the future reference:
         o2d[org.Id] = ds
+        fmt.Printf(".")
     }
+    fmt.Println("\nDatabase is ready!\n")
 }
 
 // create a user for that organisation
@@ -166,7 +169,7 @@ func runSimulation() {
 
     fmt.Println("------------------------------------------")
     totalTime := float64(time.Now().UnixNano() - timeStart) / 1000000.0
-    fmt.Println("Tests took", totalTime, "ms")
+    fmt.Println("Tests w/o setup took", totalTime, "ms")
 }
 
 // removes all the stub data from the database
