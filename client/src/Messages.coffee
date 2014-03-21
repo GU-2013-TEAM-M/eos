@@ -15,7 +15,7 @@ class Messages
 			control:
 				data: ["daemon_id", "operation"]
 			monitoring:
-				data: ["daemon_id", "start", "end", "param"]
+				data: ["daemon_id", "from", "to", "parameter"]
 		in:
 			loginCheck: 
 				data: ["status"],
@@ -46,7 +46,7 @@ class Messages
 				processCallback: (data) ->
 					processMonitoring data
 			history:
-				data: ["daemon_id", "start", "end", "param", "point_distance", "points"]
+				data: ["daemon_id", "parameter", "values"]
 				processCallback: (data) ->
 					processHistory data
 			not_implemented:
@@ -148,7 +148,7 @@ class Messages
 			# 	existing.setDaemonProperties {"daemon_name": daemon_name, "daemon_state": daemon_state}
 			# else 
 				# daemons.add(new Daemon({"daemon_id": daemon_id, "daemon_name": daemon_name, "daemon_state": daemon_state}))
-			daemons.add(new Daemon({"daemon_id": daemon_id, "daemon_name": daemon_name, "daemon_state": daemon_state}))				
+			daemons.add(new Daemon({"daemon_id": daemon_id, "daemon_name": daemon_name, "daemon_state": daemon_state}))
 
 			
 			message = MessageProcessor.createMessage "daemon", daemon_id: daemon_id
@@ -161,7 +161,7 @@ class Messages
 		daemon = data 
 		daemon_id = daemon.daemon_id
 		# daemon_address = daemon.daemon_address
-		daemon_address = "ws://31.220.209.68:9005"
+		daemon_address = "ws://localhost:9005"
 		daemon_platform = daemon.daemon_platform
 		daemon_all_parameters = daemon.daemon_all_parameters
 		daemon_monitored_parameters = daemon.daemon_monitored_parameters		
@@ -190,12 +190,16 @@ class Messages
 	# Processes daemon monitoring data
 	# Params:	data
 	processMonitoring = (data) ->
+		if data.values
+			processHistory data
+			return
+
 		daemon_id = data.daemon_id
 		mon = data.data
 		str = ""
 		for own key, value of mon
 			str += key + ": " + value + "; " 
-		console.log "Monitoring for " + daemon_id + ". " + str
+		# console.log "Monitoring for " + daemon_id + ". " + str
 		
 
 		daemon = daemons.find (model) ->
@@ -214,7 +218,7 @@ class Messages
 		end = data.end
 		param = data.param
 		console.log "history for " + daemon_id + " param " + param + " for period from " + start + " to " + end
-		# processHistory data
+		historyData data
 
 
 	# Processes not implemented message

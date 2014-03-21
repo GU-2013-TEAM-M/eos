@@ -24,7 +24,7 @@ daemonManager::daemonManager() {
 #endif
 	std::cout << "CPP MACRO: " << __cplusplus << std::endl;
 	connToServer = new outClient();
-	connToServer->init("ws://eos.sytes.net/wsdaemon");
+	connToServer->init("ws://127.0.0.1:8080/wsdaemon");
 	toServerThread = new boost::thread(boost::bind(&outClient::run, connToServer));
 
 	while (!connToServer->ready) {
@@ -93,16 +93,15 @@ void daemonManager::loop() {
 				"} }] } }");
 			serverPayloads.push_back(netP);
 		}
+		//Remove final ","
 		usagePayload = usagePayload.substr(0,usagePayload.length()-1);
 		usagePayload.append("}}}");
 	//	std::cout<<usagePayload<<std::endl;
-		//connToServer->send(usagePayload);
+		for (std::string payload : serverPayloads) {
+			connToServer->send(payload);
+		}
 		if (connToClient->open) {
 			connToClient->send(usagePayload);
-
-			for (std::string payload : serverPayloads) {
-				connToServer->send(payload);
-			}
 		}
 	}
 }

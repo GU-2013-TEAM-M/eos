@@ -19,7 +19,7 @@ class MessageProcessor
 		data = messageEvent.data
 		target = messageEvent.target
 
-		console.log "Incoming message: " + data
+		# console.log "Incoming message: " + data
 		
 		message = JSON.parse data
 		if @checkMessage message, "in"

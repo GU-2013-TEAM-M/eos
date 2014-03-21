@@ -9,14 +9,19 @@
 	<script src="./static/js/backbone.marionette/backbone.js"></script>
 	<script src="./static/js/backbone.marionette/backbone.marionette.js"></script>	
 
+	
+	
+
 	<script type="text/javascript" src="./static/lib/client.js"></script>
 
 	<link type="text/css" rel="stylesheet" href="./static/css/styles.css">
-
+	<link type="text/css" rel="stylesheet" href="./static/css/datepicker.css">
 
 
 	<link type="text/css" rel="stylesheet" href="./static/css/bootstrap.css">
 	<script src="./static/js/bootstrap.js"></script>	
+
+	<script src="./static/js/bootstrap-datepicker.js"></script>	
 
 	<title>EOS</title>
 
@@ -99,11 +104,11 @@
 
 	<script type="text/template" id="home-tab-layout">
 		<div class="row">
-			<div class="col-md-4">
+			<div class="col-md-3">
 				<div id="daemonList">
 				</div>
 			</div>
-			<div class="col-md-8">
+			<div class="col-md-6">
 				<div id="daemonInfo">
 				</div>			
 			</div>
@@ -111,11 +116,16 @@
 	</script>
 
 	<script type="text/template" id="history-tab-layout">
-		<div id="daemonList">
-		</div>
+		<div class="row">
+			<div class="col-md-3">
+				<div id="daemonList">
+				</div>
+			</div>
+			<div class="col-md-6">
 		<div id="historyContent">
-			<h1>HISTORY CONTENT</h1>
-		</div>
+		</div>		
+			</div>
+		</div>		
 	</script>
 
 	<script type="text/template" id="alerts-tab-layout">
@@ -184,7 +194,11 @@
 
 
 		<div id="graphs">
-		</div>		
+			<div id="cpuGraph"></div>
+			<div id="ramGraph"></div>
+			<div id="netGraph"></div>
+			<div id="hddGraph"></div>
+		</div>
 	</script>	
 
 	<script type="text/template" id="daemon-info-template-empty">
@@ -220,9 +234,44 @@
 	<!-- HISTORY TEMPLATES -->
 	
 	<script type="text/template" id="history-content-template">
-		<div id="historyContent">
+		<h3>
+			<%= daemon_name %> (<%= daemon_id %>)
+		</h3>
+		
+		<div class="daemonState">
+			State: <%= daemon_state %>
+		</div>
+
+		<div class="daemonAddress">
+			Address: <%= daemon_address %>: <%= daemon_port %>
+		</div>
+		
+		<div class="daemonPlatform">
+			Platform: <%= daemon_platform %>
+		</div>
+
+		<input type="text" class="span2" value="" id="dp_start">
+		<input type="text" class="span2" value="" id="dp_end">
+
+		<button id="requestHistory"> Request </button>
+
+		<select>
+		  <option value="cpu">CPU</option>
+		  <option value="ram">RAM</option>
+		  <option value="net">Net</option>
+		</select>
+
+
+		<div id="history_graph">
 		</div>
 	</script>
+
+	<script type="text/template" id="history-content-template-empty">
+		<h3>
+			There are no daemons
+		</h3>
+	</script>
+	
 	
 	
 

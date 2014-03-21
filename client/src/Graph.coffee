@@ -6,7 +6,9 @@ Graph = Backbone.Model.extend {
 	}
 
 	initialize: () ->
-		canvas = "<canvas id='graph_" + @cid + "' width='400' height='400'></canvas>"
+		w = arguments[0].options.width || 200
+		h = arguments[0].options.height || 200
+		canvas = "<canvas id='graph_" + @cid + "' width='"+w+"' height='"+h+"'></canvas>"
 		@set("canvas", canvas)
 
 	show: () ->

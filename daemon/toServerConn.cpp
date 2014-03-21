@@ -1,4 +1,4 @@
-#include "outclient.h"
+#include "toServerConn.h"
 
 outClient::outClient() {
 	ready = false;
@@ -14,12 +14,10 @@ outClient::outClient() {
 	m_client.init_asio();
 
 	// Bind the handlers we are using
-	using websocketpp::lib::placeholders::_1;
-	using websocketpp::lib::bind;
-	m_client.set_open_handler(bind(&outClient::on_open,this,::_1));
-	m_client.set_close_handler(bind(&outClient::on_close,this,::_1));
-	m_client.set_fail_handler(bind(&outClient::on_fail,this,::_1));
-	m_client.set_message_handler(bind(&outClient::on_message,this,::_1,::_2));
+	m_client.set_open_handler(websocketpp::lib::bind(&outClient::on_open,this,websocketpp::lib::placeholders::_1));
+	m_client.set_close_handler(websocketpp::lib::bind(&outClient::on_close,this,websocketpp::lib::placeholders::_1));
+	m_client.set_fail_handler(websocketpp::lib::bind(&outClient::on_fail,this,websocketpp::lib::placeholders::_1));
+	m_client.set_message_handler(websocketpp::lib::bind(&outClient::on_message,this,websocketpp::lib::placeholders::_1,websocketpp::lib::placeholders::_2));
 }
 
 void outClient::init( const std::string & uri) {

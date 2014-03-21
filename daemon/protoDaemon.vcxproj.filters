@@ -27,9 +27,6 @@
     <ClInclude Include="cpucycles.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="outclient.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="mainmanager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -40,9 +37,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="cpuwin.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="inserver.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="memwatcher.h">
@@ -63,15 +57,18 @@
     <ClInclude Include="netnix.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="toClientsConn.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="toServerConn.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
       <Filter>Resource Files\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="cpucycles.cpp">
-      <Filter>Resource Files\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="outclient.cpp">
       <Filter>Resource Files\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="mainmanager.cpp">
@@ -87,9 +84,6 @@
       <Filter>Resource Files\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="cpuwin.cpp">
-      <Filter>Resource Files\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="inserver.cpp">
       <Filter>Resource Files\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="memwatcher.cpp">
@@ -108,6 +102,12 @@
       <Filter>Resource Files\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="netnix.cpp">
+      <Filter>Resource Files\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="toClientsConn.cpp">
+      <Filter>Resource Files\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="toServerConn.cpp">
       <Filter>Resource Files\Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -2,16 +2,19 @@ GraphNET_2 = Graph.extend {
 	defaults: {
 		type: "net"
 		maxNet: null
-		pointNumber: 10
+		pointNumber: 20
 		lastPoints: null
 	}
 
 	initialize: () ->
 		Graph.prototype.initialize.apply(@, arguments)
 
-
 		maxNet = @get("options").maxNet
 		@set("maxNet", maxNet)
+
+		pn = @get("options").pointNumber
+		if pn
+			@set("pointNumber", pn)		
 
 		pointNumber = @get("pointNumber")
 
@@ -21,9 +24,13 @@ GraphNET_2 = Graph.extend {
 
 		@set("lastPoints", lastPoints)
 
-		@graphOptions = {animation : false, scaleOverride : true, scaleSteps : maxNet/2048, scaleStepWidth : 2048, scaleStartValue : 0}
+		# @graphOptions = {animation : false, scaleOverride : true, scaleSteps : maxNet/2048, scaleStepWidth : 2048, scaleStartValue : 0}
+		@graphOptions = {animation : false}
 
-		labels = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+		labels = []
+		for  i in [0...pointNumber-1]
+			# labels[i] = i+1		
+			labels[i] = ""
 
 		data = 
 			labels: labels
@@ -47,12 +54,23 @@ GraphNET_2 = Graph.extend {
 		if (data)
 			for i in [1...pointNumber]
 				lastPoints[i-1] = lastPoints[i]
-			lastPoints[pointNumber-1] = data
+			lastPoints[pointNumber-1] = Math.random()*1000#data
 			graphData = @get("data")
 			graphData.datasets[0].data = lastPoints
 		else 
 			graphData = @get("data")
-			graphData.datasets[0].data = lastPoints			
+			graphData.datasets[0].data = lastPoints		
+
+	setFullData: (data) ->
+		graphData = @get("data")
+
+
+		array = []
+		for x in [0...@get("pointNumber")]
+			array.push Math.random() * 10000
+			# array.push 100
+
+		graphData.datasets[0].data = array			
 
 	update: (data) ->
 		@setData(data)

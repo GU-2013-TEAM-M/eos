@@ -11,6 +11,7 @@ loginCheckSuccessful = () ->
 	message = MessageProcessor.createMessage "daemons";
 	if message
 		serverSocket.sendMessage message
+	
 
 
 # Callback for unsuccessfull login check. All the UI stuff should be done here
@@ -69,8 +70,31 @@ monitoringData = (data) ->
 		else
 			console.error "There is no graph associated with daemon: " + daemon_id + " for attribute: " + key
 
-processHistory = (data) ->
-# TODO:
+historyData = (data) ->
+	daemon_id = data.daemon_id
+	parameter = data.parameter
+	values = data.values
+
+	array = []
+	for own key, value of values
+		array.push(value)
+
+	arrayData = array.slice(array.length-100, array.length)	
+
+	graph = {}
+	switch parameter
+		when "cpu"
+			graph = new GraphCPU_2({daemon_id: daemon_id, options: {cpuCount: 1, width: 500, pointNumber: arrayData.length} })
+		when "ram"
+			graph = new GraphRAM_2({daemon_id: daemon_id, options: {totalRam: 32768, width: 500, pointNumber: arrayData.length} })
+		when "net"
+			graph = new GraphNET_2({daemon_id: daemon_id, options: {maxNet: 10000, width: 500, pointNumber: arrayData.length} })
+
+	$("#history_graph").empty()
+	$("#history_graph").append(graph.get("canvas"))
+	graph.set("context", $("#history_graph", @el))
+	graph.setFullData(arrayData)
+	graph.createGraph()
 
 notImplemented = (data) ->
 # TODO:

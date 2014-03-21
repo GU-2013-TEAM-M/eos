@@ -2,16 +2,19 @@ GraphRAM_2 = Graph.extend {
 	defaults: {
 		type: "ram"
 		totalRam: null
-		pointNumber: 10
+		pointNumber: 20
 		lastPoints: null
 	}
 
 	initialize: () ->
 		Graph.prototype.initialize.apply(@, arguments)
 
-
 		totalRam = @get("options").totalRam
 		@set("totalRam", totalRam)
+
+		pn = @get("options").pointNumber
+		if pn
+			@set("pointNumber", pn)		
 
 		pointNumber = @get("pointNumber")
 
@@ -21,9 +24,13 @@ GraphRAM_2 = Graph.extend {
 
 		@set("lastPoints", lastPoints)
 
-		@graphOptions = {animation : false, scaleOverride : true, scaleSteps : totalRam/2048, scaleStepWidth : 2048, scaleStartValue : 0}
+		# @graphOptions = {animation : false, scaleOverride : true, scaleSteps : totalRam/2048, scaleStepWidth : 2048, scaleStartValue : 0}
+		@graphOptions = {animation : false}
 
-		labels = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+		labels = []
+		for  i in [0...pointNumber-1]
+			# labels[i] = i+1
+			labels[i] = ""
 
 		data = 
 			labels: labels
@@ -52,7 +59,11 @@ GraphRAM_2 = Graph.extend {
 			graphData.datasets[0].data = lastPoints
 		else 
 			graphData = @get("data")
-			graphData.datasets[0].data = lastPoints			
+			graphData.datasets[0].data = lastPoints	
+
+	setFullData: (data) ->
+		graphData = @get("data")
+		graphData.datasets[0].data = data					
 
 	update: (data) ->
 		@setData(data/1048576)
