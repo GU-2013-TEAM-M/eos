@@ -93,7 +93,7 @@ func generateDaemon(org *db.Organisation) *db.Daemon {
     d := &db.Daemon{
         OrgId: org.Id,
         Password: strconv.FormatInt(rand.Int63(), 10),
-        Name: strconv.FormatInt(rand.Int63(), 10),
+        Name: strconv.FormatInt(time.Now().UnixNano(), 10),
         Status: "Running",
         Platform: "Linux",
         Parameters: []string{ "cpu" },
@@ -206,7 +206,7 @@ func simulateUser(u *db.User, c chan int) {
         }
     }`
     if _, err := ws.Write([]byte(loginMsg)); err != nil {
-        c <- 0
+        c <- 0; ws.Close()
         return
     }
     if !checkResponse(ws, c, "session_id") {
@@ -216,7 +216,7 @@ func simulateUser(u *db.User, c chan int) {
     // daemons
     daemonsMsg := `{"type": "daemons", "data": {}}`
     if _, err := ws.Write([]byte(daemonsMsg)); err != nil {
-        c <- 0
+        c <- 0; ws.Close()
         return
     }
     if !checkResponse(ws, c, "list") {
@@ -230,7 +230,7 @@ func simulateUser(u *db.User, c chan int) {
             "daemon_id": "` + d.Id.Hex() + `"
         }}`
         if _, err := ws.Write([]byte(daemonMsg)); err != nil {
-            c <- 0
+            c <- 0; ws.Close()
             return
         }
         if !checkResponse(ws, c, "daemon_platform") {
@@ -246,7 +246,7 @@ func simulateUser(u *db.User, c chan int) {
             "to": ` + strconv.FormatInt(time.Now().Unix(), 10) + `
         }}`
         if _, err := ws.Write([]byte(monitoringMsg)); err != nil {
-            c <- 0
+            c <- 0; ws.Close()
             return
         }
         if !checkResponse(ws, c, "values") {
@@ -279,7 +279,7 @@ func simulateDaemon(d *db.Daemon, startD, stopD chan int) {
         }
     }`
     if _, err := ws.Write([]byte(loginMsg)); err != nil {
-        startD <- 0
+        startD <- 0; ws.Close()
         return
     }
     if !checkResponse(ws, startD, `"id"`) {
@@ -293,17 +293,21 @@ func simulateDaemon(d *db.Daemon, startD, stopD chan int) {
     // some unelegant way of stopping the daemon
     schr := <-stopD
     if schr != 0 {
+        ws.Close()
         return
     }
+    ws.Close()
 }
 
 func checkResponse(ws *websocket.Conn, c chan int, resStr string) bool {
     var msg = make([]byte, 5096)
     if _, err := ws.Read(msg); err != nil {
+        ws.Close()
         c <- 0
         return false
     }
     if !bytes.Contains(msg, []byte(resStr)) {
+        ws.Close()
         c <- 0
         return true
     }
