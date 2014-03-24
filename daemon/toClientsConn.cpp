@@ -1,4 +1,4 @@
-#include "inserver.h"
+#include "toClientsConn.h"
 
 serveToClient::serveToClient() {
 	open = false;
@@ -14,9 +14,9 @@ void serveToClient::run() {
 		s.init_asio();
 
 		// Register our message handler
-		s.set_message_handler(bind(&serveToClient::on_message,this,::_1,::_2));
-		s.set_open_handler(bind(&serveToClient::on_open,this,::_1));
-		s.set_close_handler(bind(&serveToClient::on_close,this,::_1));
+		s.set_message_handler(websocketpp::lib::bind(&serveToClient::on_message,this,websocketpp::lib::placeholders::_1,websocketpp::lib::placeholders::_2));
+		s.set_open_handler(websocketpp::lib::bind(&serveToClient::on_open,this,websocketpp::lib::placeholders::_1));
+		s.set_close_handler(websocketpp::lib::bind(&serveToClient::on_close,this,websocketpp::lib::placeholders::_1));
 
 		// Listen on port 9005
 		s.listen(9005);
@@ -40,23 +40,28 @@ void serveToClient::on_message( websocketpp::connection_hdl hdl, websocketpp::se
 }
 
 void serveToClient::on_open( websocketpp::connection_hdl hdl) {
-	handler = hdl;
-	std::cout<<"set handler"<<std::endl;
+	handlers.insert(hdl);
+	std::cout<<"Got client connection"<<std::endl;
 	open=true;
 }
 
 void serveToClient::on_close( websocketpp::connection_hdl hdl) {
-	std::cout<<"conn handler to client lost"<<std::endl;
-	open=false;
+	handlers.erase(hdl);
+	std::cout<<"Client connection lost/closed"<<std::endl;
+	open = !handlers.empty();
 }
 
+//send given payload to all connected clients
 void serveToClient::send(std::string payload) {
 	websocketpp::lib::error_code ec;
-	try {
-		s.send(handler, payload, websocketpp::frame::opcode::text);
-	} catch (const websocketpp::lib::error_code& e) {
-		std::cout << "Sending failed: " << e << "(" << e.message() << ")" << std::endl;
+	for (websocketpp::connection_hdl handler : handlers) {
+		try {
+			s.send(handler, payload, websocketpp::frame::opcode::text);
+		} catch (const websocketpp::lib::error_code& e) {
+			std::cout << "Sending failed: " << e << "(" << e.message() << ")" << std::endl;
+		}
 	}
+
 }
 
 

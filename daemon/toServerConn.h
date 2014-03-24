@@ -1,6 +1,7 @@
 #ifndef outclient_h__
 #define outclient_h__
 
+#define _VARIADIC_MAX 10
 #include <websocketpp/config/asio_no_tls_client.hpp>
 
 //Include this when devel-level debug logs are required
@@ -17,6 +18,7 @@ class outClient {
 private:
 	typedef websocketpp::client<websocketpp::config::asio_client> client;
 	typedef websocketpp::lib::lock_guard<websocketpp::lib::mutex> scoped_lock;
+
 	std::function<void(std::string)> msgRecv;
 	client m_client;
 	websocketpp::connection_hdl m_hdl;

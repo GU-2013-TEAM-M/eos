@@ -23,7 +23,7 @@ func DaemonHandler(cmd *CmdMessage) error {
     daemons := cmd.Conn.owner.GetOrg().Daemons
     daemon, ok := daemons[daemonId]
     if !ok {
-        return errors.New("daemon not found")
+        return errors.New("daemon not found: " + daemonId)
     }
 
     sendDaemonMessage(daemon.owner.(*Daemon), cmd.Conn)

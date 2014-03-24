@@ -93,16 +93,15 @@ void daemonManager::loop() {
 				"} }] } }");
 			serverPayloads.push_back(netP);
 		}
+		//Remove final ","
 		usagePayload = usagePayload.substr(0,usagePayload.length()-1);
 		usagePayload.append("}}}");
 	//	std::cout<<usagePayload<<std::endl;
-		//connToServer->send(usagePayload);
+		for (std::string payload : serverPayloads) {
+			connToServer->send(payload);
+		}
 		if (connToClient->open) {
 			connToClient->send(usagePayload);
-
-			for (std::string payload : serverPayloads) {
-				connToServer->send(payload);
-			}
 		}
 	}
 }
