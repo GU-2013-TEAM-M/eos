@@ -16,8 +16,15 @@ class Service
 	# Params:	key - cookie name
 	# Return:	cookie value or null if the cookie was not found
 	@getCookie = (key) ->
-		key = key + "="
-		for c in document.cookie.split(';')
-			c.substring(1, c.length) while c.charAt(0) is ' '
-			return c.substring(key.length, c.length) if c.indexOf(key) == 0
-		return null
+		# key = key + "="
+		# for c in document.cookie.split(';')
+		# 	c.substring(1, c.length) while c.charAt(0) is ' '
+		# 	return c.substring(key.length, c.length) if c.indexOf(key) == 0
+		# return null
+		name = key + "="
+		ca = document.cookie.split(';')
+		for i in [0...ca.length]
+			c = ca[i].trim()
+			if c.indexOf(name) == 0
+				return c.substring(name.length,c.length)
+		return ""
