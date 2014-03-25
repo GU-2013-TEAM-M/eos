@@ -7,6 +7,8 @@
 \documentclass{l3proj}
 \usepackage{graphicx}
 \usepackage{float}
+\usepackage{hyperref}
+\usepackage[toc,page]{appendix}
 \begin{document}
 \title{Remote Performance Monitoring Using Websockets}
 \author{Maksim Solovjov \\
@@ -14,48 +16,15 @@
         Sean Jakobsen \\
         Gabriel Alexandru Susanu \\
         Supanat Auengsirirat}
-\date{16 March 2014}
+\date{25 March 2014}
 \maketitle
 \begin{abstract}
 
-The goal of this project is to create a web application that allows users in or outside of the Univeristy of Glasgow to monitor the performance of their servers remotely and in real time. Our application consists of a web client to be used inside a browser, a server written in Go - currently hosted ourselves - and daemons that the user will install on any and all machines they wish to monitor.
+The goal of this project is to create a web application that allows users in or outside of the Univeristy of Glasgow to monitor the performance of their servers remotely and in real time. Our application consists of a web client to be used inside a browser, a server written in Go -- currently hosted ourselves -- and daemons that the user will install on any and all machines they wish to monitor.
 
 \end{abstract}
 \educationalconsent
 \tableofcontents
-
-%===============================================================================================================================================
-
-%===============================================================================================================================================
-
-\chapter{Preliminaries}
-\label{prelim}
-
-(THIS IS A GLOSSARY, WHICH SHOULD BE AN APPENDIX)
-
-Here are the necessary terms that a reader may not be familiar with. More knowledgeable readers may feel free to skip this section of the report.
-
-\textbf{Performance monitoring} – observing the statistics of some system, which relate to how well the system runs. For example monitoring the CPU load in order to ensure that it does not exceed some healthy threshold.
-
-\textbf{Cloud-based solution} – the program that is provided as a service on some external machines (which might be owned by a separate organisation) accessible via internet.
-
-\textbf{Client (Application)} – in our case, a user-facing application, running in a user’s browser.
-
-\textbf{Server} – a computation-intensive application that serves the client application to the user and provides the gateway to the database.
-
-\textbf{Daemon} – a monitoring application, running on the machine that is to be monitored, storing the performance metrics and sending them to the Server and Client.
-
-\textbf{Relational database} – a database, modelled by creating entities and expressing their relationships to each other. Interaction with the stored data is governed by relational algebra.
-
-\textbf{NoSQL database} – an alternative to the relational database, which allows easy horizontal scaling (can accommodate more data), in our case (MongoDB) expressed via collections of documents with no enforced schema (blueprint).
-
-\textbf{WebSocket} – a protocol, that allows simultaneous bidirectional communication over a single TCP connection. To put it in simple terms, it lets a user to both send and receive data in real-time without the overhead of making multiple ``internet'' connections.
-
-\textbf{Concurrency} – splitting work into independent chunks, that can be done in any particular order, allowing switching from one task to another should the first one temporarily stall.
-
-\textbf{Parallelism} – executing multiple concurrent tasks at the same time. 
-
-\textbf{Refactor} – rewrite, in order to improve the quality of the code without changing its output.
 
 %===============================================================================================================================================
 
@@ -132,20 +101,106 @@ Web Sockets would allow a server-side performance metrics storage system to push
 This system will allow other systems to add performance metrics and allow users to view tables and charts through the browser without need for third party plug-ins. Investigation should take place to evaluate if Web Sockets would be performant enough to deliver this information in real-time and update charting without refreshing the page.
 \end{quotation}
 
-\section{Our Interpretation}
+%-----------------------------------------------------------------------------------------------------------------------------------------------
+
+\section{Our interpretation}
 
 %How we understood the problem
 
 From the problem description in Section ~\ref{section:problem} we understood the problem to be a case of monitoring system level metrics and allowing a user to view these statistics remotely. Moreover, there is emphasis on utilising web sockets for their ability to send and receive data in real time, indeed, this would be the ultimate focus of our solution: real time performance monitoring.
 
-\section{Market Research}
+%-----------------------------------------------------------------------------------------------------------------------------------------------
+
+\section{Market research}
 \label{section:MarketResearch}
 
 %A study of existing solutions
 
-(YOU NEED TO DO A PROPER SURVEY - COMPARE \& CONTRAST THEIR FEATURES. HAVE SCREENSHOTS, URLS, LISTS OF FEATURES)
-
 Our goal to create a system that allows for the monitoring of real time server system data is not unique. In fact several well established companies are already doing much of what we want to and, on occasion, do so on a scale multiple times that of which we initially thought our own could be. Looking into these competitors has refined what we hope to achieve with our own system, grounded our expectations and will hopefully fuel creativity.
+
+\subsection{Nagios XI}
+
+\url{http://www.nagios.com/products/nagiosxi}
+
+Nagios call themselves the industry standard in IT monitoring. This paid for solution has a professional looking interface that gives power to the user, while maintaining a clean and useful front end.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=110mm]{Competitors/NagiosXI_dashboard1.png}
+\caption{Nagios XI's main dashboard view}
+\end{figure}
+
+Their dashboard keeps information clear for the most part, blue font on red backbround aside, and it is user customisable, so the user can choose what they see at the forefront of the application. This is a very useful feature, as Nagios boast many, many features and allowing the user to cherry pick the ones most useful to themselves make the burden of wading through these feaures slightly less tedious after a while. But that is still a potential problem. For a user to discover useful functionality, they still have to find it first.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=110mm]{Competitors/NagiosXI_alertcloud.png}
+\caption{Nagios XI's alert cloud view can't be much more than another bullet point}
+\label{fig:NagiosAlertCloud}
+\end{figure}
+
+What does this alert cloud in figure \ref{fig:NagiosAlertCloud} show? If, like the example pictured, you rely on IP addresses while monitoring, good luck untangling one set of numbers from the rest and then deciphering what its size and colour depict. Apart from being pretty like all alert clouds, this seems nothing more than a bullet point to pad out Nagios' extensive list of features.  It is unnecessary, and can confuse customers.
+
+\subsection{SolarWinds Server \& Application Monitor}
+
+\url{http://www.solarwinds.com/server-application-monitor.aspx}
+
+Another moentised solution we explored was from SolarWinds. This takes the extensive feature set requirement from Nagios XI and builds upon it with a cluttered and frustrating looking user interface.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=110mm]{Competitors/SolarWinds_AppView.jpg}
+\caption{SolarWinds' cluttered application view}
+\label{fig:SWAppView}
+\end{figure}
+
+Screens are heavy on tables and have large numbers of rows each fighting for attention. Colour is used very sparingly, see in the top-right of Figure \ref{fig:SWAppView} that green and red, along with shape, are used in very small icons to signify applications that are okay or `down'. But being so small, shape can be hard to distinguish, and following one coloured icon's row in a block of similar icons could be confusing. The inspiration for our own interface so far has come from Nagios' solution.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=110mm]{Competitors/SolarWinds_EventFiltering.jpg}
+\caption{SolarWinds' filtering relies on the user scrolling through long lists of checkboxes}
+\label{fig:SWFiltering}
+\end{figure}
+
+In Figure \ref{fig:SWFiltering}, see how SolarWinds promotes the ability to filter events, but asks the user to scroll through a long list of checkboxes in a rather small section of the screen in order to do this. Again, similar to Nagios XI, functionality has been thrown at the application and usability has been sacrificed as a result. Where Nagios XI has features that may not be useful, but seem to be implemented well, SolarWinds just overcomplicates what seems to be a powerful solution.
+
+However, when reading reviews of the software, one user made an effort to emphasise that they really liked ‘Expert Knowledge’. Many performance counters gave a definition of the metric, an explanation of what the possible problem may be and suggestions of how to remedy the issue. This reviewer would be one of our own audiences; someone who may not know the ins and outs of their machines, but needs help when it comes to finding and rectifying problems. This kind of 'helper' or 'assistant' functionality could expand our potential user base to people such as this reviewer who aren't as knowledgable as the power users of some of these more expensive solutions.
+
+\subsection{Monitor.us}
+
+\url{http://www.monitor.us}
+
+Monitor.us differs from the previous competitors rather significantly. For one, like our own will be, this is free and hence more of a direct competitor. Second, it emphasises a mobile interface.\footnote{\raggedright{}Monitor.us' site did not supply screenshots for its desktop server monitoring solution. A side effect of this was the discovery of its mobile solution that became an interesting juxtaposition to the desktop solutions dicussed previously. However, as a consequence, some interface functionality is being implied from the screenshots.}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=55mm]
+{Competitors/MonitorUS_iPhoneAlerts.png}
+\caption{Monitor.us, a free monitoring solution, has a simple interface}
+\label{fig:MUSiPhone1}
+\end{figure}
+
+Phone interfaces must be simple. With less real estate to work with it is essential that everything displayed is clear and imperative that it be useful. While on a different platform, this mantra follows through to our own desired solution.
+
+In Figure \ref{fig:MUSiPhone1} you can see an interface for displaying recent alerts to the user. Before evaluating the interface, it should be notified that alerts were a feature not thought about by the team until conducting this survey. Indeed, many of our competitors promoted alerts - notifications that a system metric has gone outwith a user defined 'safety band' - and it quickly became a feature we wanted to implement, making our own product even more useful.
+
+The screenshot of Monitor.us displaying these alerts makes it instantly apparent that they have taken into account the smaller screen size. The number of alerts shown is limited to 10, so as not to bombard the user with information, and a drop-down selector can change this number. Also, to save scrolling, a search bar can be used to filter results without the kind of effort required in SolarWinds' filtering interface described in Figure \ref{fig:SWFiltering}.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=55mm]{Competitors/MonitorUS_iPhone2.png}
+\caption{Monitor.us uses its limited space well, in-line graphs allow for helpful info at a glance}
+\label{fig:MUSiPhone2}
+\end{figure}
+
+The more standard view in Figure \ref{fig:MUSiPhone2} shows how a user might view the current status of any systems they wish to monitor. Screen size remains a design thought, with small - but readable - graphs showing past data that allow the user to get instant context concerning a system's recent history, and spot any anomalies they wish to look into further, most likely with a simple tap of the concerning icon.
+
+However, being a free solution, Monitor.us does not promote real time data monitoring, but then neither did a lot of competitors. It would seem that this is a feature that not many large companies have broached and again enforces that this be a key feature in our own product.
+
+Ultimately, this prophet of simplicity, and our greatest competitor, would stress our aforementioned goals of simplicity and usabilty, keeping us focused on what is absolutely essential for our end users.
+
+\section{Market research findings}
 
 \textbf{What should we monitor?}
 
@@ -165,13 +220,11 @@ A more complex issue that links into the idea of alerts would be the ability for
 
 \textbf{Potential for guidance if not automatic action}
 
-One system had a review stating that many performance counters gave a definition of the metric, an explanation of what the possible problem may be and suggestions of how to remedy the issue. With our system aiming at smaller set ups, it’s very likely that our user base will consist of novices, and such a feature could be highly useful. This of course presents the problem of showing information when it is needed to users who may not know about it, while also preventing it from becoming a nuisance, or making it hideable to experts.
-
-(TOO VAGUE)
+SolarWinds had a review stating that many performance counters gave a definition of the metric, an explanation of what the possible problem may be and suggestions of how to remedy the issue. With our system aiming at smaller set ups, it’s very likely that our user base will consist of novices, and such a feature could be highly useful. This of course presents the problem of showing information when it is needed to newer users, while also preventing it from becoming a nuisance to experts. This is a complex requirement, requiring an investment in time for both writing some sort of help documentation and then implementing it at a user interface level, allowing users to see this information on a metric-by-metric basis - be that tooltips or an interactive first-steps guide.
 
 \textbf{Closest competition has poor refresh rate}
 
-Our seemingly closest competitor is a free solution that boasts a refresh rate of 30 minutes, it’s premium flavour reducing that to 1 or 5 minutes depending on how it is set up. Also boasting simplicity, it could be one to dig into more closely in order to discover how it handles its interface, a one dashboard view.
+Our seemingly closest competitor, Monitor.us, is a free solution that boasts a refresh rate of 30 minutes, its premium flavour reducing that to 1 or 5 minutes depending on how it is set up. Also boasting simplicity, it could be one to dig into more closely in order to discover how it handles its interface, a one dashboard view.
 
 \textbf{We should promote simplicity at all stages}
 
@@ -192,17 +245,17 @@ From team discussions, as well as our market research, we constructed a list of 
 
 %Requirements discovered that focus on a user's interaction with the saystem
 
-\subsection{Requirements Table}
+\subsection{Requirements table}
 
-\subsection{Use Case Diagrams}
+\subsection{Use case diagrams}
 
-\subsection{User Requirements Details}
+\subsection{User requirements details}
 
-\section{Non-Functional Requirements}
+\section{Non-functional requirements}
 
 %Requirements discovered that focus on how the system should perform while being used
 
-\subsection{Server Requirements}
+\subsection{Server requirements}
 
 The emphasis for the server is on the horizontal scalability. It has to provide concurrent access for multiple users from multiple organisations to multiple daemons. In order to make this requirement testable, we have decided to translate it to the following numerical equivalent:
 \begin{enumerate}
@@ -213,7 +266,7 @@ The emphasis for the server is on the horizontal scalability. It has to provide 
 
 We feel that these requirements outline a reasonable scenario describing a moderate usage by a hundred middle-sized companies. The server must support them while still running on a single machine, otherwise the server should probably be deployed on an elastic cloud, rather than a single PC.
 
-\subsection{Daemon Requirements}
+\subsection{Daemon requirements}
 
 Due to the fact that the daemon is meant to run constantly in the background on monitored machines, the focus was on keeping it small and very fast while providing all the required monitoring and communication features.
 Furthermore, due to the variety of platforms clients would like to monitor, the daemon must be easy to deploy and develop for most platforms.
@@ -230,7 +283,7 @@ Gabriel - how does daemon sending data affect the performance of the system it's
 \chapter{Design}
 \label{design}
 
-(HAVE AN INTRODUCTORY `SIGNPOST' PARAGRAPH AT START OF EACH CHAPTER.)
+The following chapter discusses initial ideas and decisions that would go on to effect our implementation strategy. We will provide you with the architectural details as well as the motivation for certain choices.
 
 %-----------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -243,18 +296,12 @@ We decided that the best way to tackle this problem was to split it into three m
 \begin{figure}[H]
 \centering
 \includegraphics[width=110mm]{images/ArchitectureDiagram.png}
-\caption{Architecture Diagram}
+\caption{Overall Architecture Diagram: Main Components}
 \end{figure}
-
-(MORE SPECIFIC CAPTION)
 
 At the center we have a single web Server. It acts as a broker between the Client and the Daemon in order for them to establish a connection, as well as storing historical monitoring data that the Daemon sends. All the control messages that the Client might want to issue to the Daemon will also go through the Server.
 
-(WHAT IS A CLIENT? EXPLAIN HERE)
-
-A Server can support multiple Clients and Daemons communicating at the same time. They will be organised in the organisations they belong to, more on that later.
-
-The client is a web application that shows real time performance data from the Daemons. In order to do so, it directly establishes a websocket connection to one or many Daemons, with the help of Server. It can also retrieve historical data for any given Daemon that it has access to from the Database through the Server.
+The Client is a web application that shows real time performance data from the Daemons. In order to do so, it directly establishes a websocket connection to one or many Daemons, with the help of Server. It can also retrieve historical data for any given Daemon that it has access to from the Database through the Server.
 
 A Daemon is a small application that runs on the machine and monitors its performance. It sends the data that it gathers to one or many Clients in real time using websockets, and it also stores sparser data points in the Database through the Server. It can be told to monitor different things, and these commands come through the Server.
 
@@ -262,7 +309,13 @@ Such separation of concerns flows naturally from the description of the task. It
 
 A key to success in this case is the communication API. All three components implement the fully documented API, which ensures painless integration of the components, as long as the API is developed before them.
 
-\subsection{The Technology}
+\subsection{API}
+
+We have decided on a common \texttt{json} API, that had to be used for the communication between different components. All three of them had different commands, because of different functionality that they were implementing, but the commands themselves followed similar pattern of a command name and the data object, containing specifics. We attach the full description of the API in the Appendix. 
+
+We have chosen \texttt{json}, since it is much more consise than \texttt{XML} and is supported in \texttt{JavaScript} natively, as opposed to \texttt{YAML}, both of whom were other alternatives. It also had really good libraries for \texttt{Go} and \texttt{C++}, reducing the cost of development. Moreover, it seems that \texttt{json} has become an industry standard for data interchange, pushing out \texttt{XML} hegemony\footnote{\raggedright{}JSON vs XML: \url{http://www.json.org/xml.html}}. 
+
+\subsection{The technology}
 
 The Client is a web-based application written in HTML5, CSS3, and CoffeeScript. The libraries used are Backbone.js, Marionette.js, jQuery, Chart.js and Bootstrap.
 
@@ -270,7 +323,7 @@ The Server runs on Linux and is written in Go. It uses a MongoDB database for st
 
 Daemon can be compiled to target multiple platforms and is written in C++.
 
-\subsection{Motivation For The Choice Of Technologies}
+\subsection{Motivation for the choice of technologies}
 
 (GIVE REFERENCES --- MAYBE URLS OR ARTICLES?)
 
@@ -288,17 +341,17 @@ Daemon can be compiled to target multiple platforms and is written in C++.
 
 \textbf{Bootstrap} gives us a fast way to make the application look similar on every platform. Also, it makes the user interface absolutely platfom-independent, both on mobile and desktop devices.
 
-\textbf{Go} was chosen for its potential to scale horizontaly. It has an extremely nice concurrency based on goroutines, which are sort of managed lightweight threads. It also features extremely fast compilation times, serving as a boost to development speed. Additionally, even though it is statically typed, it has a runtime that allows easy type assertion, and garbage collection, making writing Go almost as fast as using scripting languages (for those who know Go). Its closest opponent was Rust, which is a much more linguistically exciting language, but we decided to refrain from using it, seeing it as less mature.
+\textbf{Go}\footnote{\raggedright{}Frequently asked questions about Go: \url{http://golang.org/doc/faq}} was chosen for its potential to scale horizontaly\footnote{\raggedright{}A good summary of Go's advantages and disadvantages in one place: \url{http://stackoverflow.com/questions/2198529/what-are-the-advantages-and-disadvantages-of-go-programming-language}}. It has an extremely nice concurrency based on goroutines, which are sort of managed lightweight threads. It also features extremely fast compilation times, serving as a boost to development speed. Additionally, even though it is statically typed, it has a runtime that allows easy type assertion, and garbage collection, making writing Go almost as fast as using scripting languages (for those who know Go). Its closest opponent was Rust, which is a much more linguistically exciting language, but we decided to refrain from using it, seeing it as less mature.
 
-\textbf{MongoDB} is a NoSQL database, which was once again chosen due to its immense horizontal scaling abilities. It is relatively mature at this point with an ever increasing online community and good documentation, thus it seemed to be a fair choice, knowing that we will have vast amounts of loosely structured data to deal with.
+\textbf{MongoDB}\footnote{\raggedright{Project's page explaining key MongoDB features: \url{https://www.mongodb.org/}}} is a NoSQL database, which was once again chosen due to its immense horizontal scaling abilities. It is relatively mature at this point with an ever increasing online community and good documentation, thus it seemed to be a fair choice, knowing that we will have vast amounts of loosely structured data to deal with.
 
 %-----------------------------------------------------------------------------------------------------------------------------------------------
 
-\section{Client Application}
+\section{Client application}
 
 \subsection{Goal}
 
-The web application has to provide an intuitive way of viewing how the remote machines are using their resources. The client does not have to know anything about the monitored machine - he/she just needs to see the information about it. The user interface should provide an opportunity to display this information in real time as well as the history of usage for a specified period of time.
+The web application has to provide an intuitive way of viewing how the remote machines are using their resources. The client does not have to know anything about the monitored machine -- he/she just needs to see the information about it. The user interface should provide an opportunity to display this information in real time as well as the history of usage for a specified period of time.
 
 On top of this data-centric display, the application should be capable of providing some implicit information. For example, if the daemon does not appear in the list of registered daemons, or it states that it is not active at the moment, the user should know somehow in order to check if the machine is running correctly, or if it has an internet connection. One useful feature of the system would be the ability to send alerts to the user, an alert popping up whenever an abnormal activity is detected, most likely this could be implemented as an automated email. The application must also provide an easy process of new user and daemon registration, with users potentially neeind to perform this operation multiple times.
 
@@ -331,7 +384,7 @@ All the components can be split in groups:
   \item Communication component (Messages, Message Processor and Sockets)
 \end{itemize}
 
-\subsection{Concept Designs}
+\subsection{Concept designs}
 
 Prototyping our user interface was an obvious task before doubling down on development. With the user experience such a prominent focus to the team, this would enable us to put ideas down on paper very quickly and inexpensively in order to achieve a clear and singular design vision in everyone's minds before proper development started. If executed properly, these designs should fulfill our user requirements of simplicity and usabilty, while also making development more focused and planned out.
 
@@ -415,9 +468,9 @@ Figure \ref{fig:MiscDesign} highlights some of the less feature-focused design c
 \label{fig:ServerDesign}
 \end{figure}
 
-(PROVIDE A KEY --- WHAT ARE THE ``TYPES'' FOR EACH SHAPE?\\BE CONSISTENT THROUGHOUT ALL DIAGRAMS)
+While on first glance Figure \ref{fig:ServerDesign}, depicting the design of the server, might look very complicated, this is not really the case. The convention is that the rectangles represent key places in code, and the circles are entities (connections). Double circles just show that there are quite a few of them. 
 
-While on first glance Figure \ref{fig:ServerDesign}, depicting the design of the server, might look very complicated, this is not really the case. Everything begins in the main application. This starts all the other parts, and this relationship is not shown to avoid cluttering the diagram. The main application registers handlers, tells (WHAT) how to serve static content, starts the connection hub and provides entry points for clients and daemons to connect to. Most of these things live in their own goroutines afterwards, and the main application just sits there, waiting for them to stop. In the following sections we will describe each of the components in the rough order of dataflow.
+Everything begins in the main application. This starts all the other parts, and this relationship is not shown to avoid cluttering the diagram. The main application registers handlers, starts an internal static content server (so that the client application can be reached), starts the connection hub and provides entry points for clients and daemons to connect to. Most of these things live in their own goroutines afterwards, and the main application just sits there, waiting for them to stop. In the following sections we will describe each of the components in the rough order of dataflow.
 
 \subsection{Static content}
 
@@ -429,9 +482,7 @@ There are two entry points to this application, mapped to two different routes: 
 
 \subsection{Connections}
 
-Connections are objects holding an open websocket, sending channel and an owner, which is either User or Daemon. There is a one-to-one relationship between owners and their connections. Once created, they result in two goroutines, one of which listens for the incomming messages and broadcasts them to the hub, and another sends messages back from the server to the client or daemon, depending on who created it.
-
-(HAVE YOU DEFINED WHAT A GOROUTINE ACTUALLY IS? --- LIKE AN ACTIVATION/CALLBACK)
+Connections are objects holding an open websocket, sending channel and an owner, which is either User or Daemon. There is a one-to-one relationship between owners and their connections. Once created, they result in two goroutines (see Preliminaries), one of which listens for the incomming messages and broadcasts them to the hub, and another sends messages back from the server to the client or daemon, depending on who created it.
 
 \subsection{Connection hub}
 
@@ -487,8 +538,8 @@ Generally, the structure of each watcher is similar: they begin running in paral
 \subsection{Connections}
 There are two asynchronous connection managers. The first one opens the connection to the main server, and allows any data to be sent to it from the main daemon manager, and the second accepts any number of connections from clients, and can simultaneously send data to all connected clients through the main manager.
 
-\subsection{Manager}
-The component that initializes and ties everything together. It synchronizes the refresh rates of the watchers, and sends messages to the server and clients through the connections.
+\subsection{Main Manager}
+This is the component that initializes and ties everything together. It synchronizes the refresh rates of the watchers, and sends messages to the server and clients through the connections.
 
 %===============================================================================================================================================
 
@@ -497,13 +548,15 @@ The component that initializes and ties everything together. It synchronizes the
 \chapter{Implementation}
 \label{impl}
 
-In this chapter, we describe the low level details of how the high level designs discussed in the previous chapters were used to construct our product.
+In this chapter, we describe the low level details of how the high level designs discussed in the previous chapters were used to construct our product. It will also feature some reflections on the overall development process.
 
 %-----------------------------------------------------------------------------------------------------------------------------------------------
 
-\section{Initial Steps \& Coordination}
+\section{Initial steps \& coordination}
 
-\subsection{Team Organisation}
+\subsection{Team organisation}
+
+(MOVE? APPENDIX?)
 
 At the beginning of the project we thought that we would have a laissez faire approach to development within our team, however, soon some specific roles formed within it, influenced by the very modular design of the whole system. We had one person driving the design and helping with the client side, one person working on a client side solely, one person working on the server side, one person working on daemons, and finally one person on the user manual duty. These roles then stayed for the duration of the whole project.
 
@@ -511,25 +564,24 @@ We would usually have three formal weekly meetings in our team: on Tuesdays to d
 
 In addition to that, we have used plenty of other communication media. We had a facebook group where we would post current headlines. During the intensive phases of the development process we would use skype conference calls if we were working remotely. In order to keep track of current issues we had a Kanban board online. Finally, we had exchanged our phone numbers with each other so that we could be contacted directly in case of emergency.
 
-\subsection{Developing an API}
-
-The first and most important step was
-
-\subsection{Technology Prototypes}
+\subsection{Technology prototypes}
 
 % Our first attempts at creating a simple echo server, getting all the components to talk to each other...
+
+Our first steps were directed at researching whether the technology choice was valid and would allow us to achieve the desired functionality. Based on our previous experience we decided that the trickiest part was to make all three components to communicate. We were unsure, whether the \texttt{WebSocket} protocol will be supported well enough in our target languages. Hence, we have decided to carry out a technology spike, if you like, and build a working prototype that does just that.
+
+In the core of it laid an echo-server, multiple examples of which were found on the internet. The echo-server simply retranslates the message it receives, thus it is useful to see whether the connection comes through. To make it suitable for our tasks, we have added the ability to distinguish between the daemons and users, as well as to redirect the flow to each one of them. Most of that code was later reused for the Server part of the real application, and that is where the concepts of connections and the connection hub, explained in the design chapter, come from.
+
 
 ALEX
 
 GABRIEL
 
-MAKSIM
-
 %-----------------------------------------------------------------------------------------------------------------------------------------------
 
-\section{Implementation Of The Client Application}
+\section{Implementation of the client application}
 
-\subsection{User Interface}
+\subsection{User interface}
 
 User interface implementation is fully based on the approaches provided by Backbone.js framework. Every logical part of the UI is implemented as an independent Backbone model and a corresponding view. For example, a daemon is an extended Backbone model that implements a high level of daemon abstraction. It has some methods for controlling the daemon (starting, stopping, changing the metrics to monitor, etc). All the daemons are stored in a standard Backbone Collection. There is a View definition that is implemented as a Marionette ItemView that controls the way a single daemon is rendered on the page. The rendering is done by creating a template which describes what information has to be shown to the user. Also, the ItemView contains some event listeners that implement the processing of user actions (such as selection). Finally, there is a CompositeView (which is a part of Marionette) that describes how the whole collection of daemons is rendered. It has a template as well.
 
@@ -552,7 +604,7 @@ Actually, do we have to show the examples of code? It can take A LOT of space.
 
 \subsection{Communication}
 
-One of the most important parts of the application is the communication component. It consists of the definitions of all the types of the messages (which includes the data format and the callbacks for all types of requests), the message parser and validator. Every incoming/outcoming message is checked to be well-formatted before processing/sending. (MORE DETAILS) On an event of receiving a well-formatted message it is processed by an appropriate callback function which does the low-level data manipulations and then passes control to a higher level listeners and processors. For example, if the user wants to send a "control" message to the server (the message specifies the id of controlled daemon and the action) the following things happen:
+One of the most important parts of the application is the communication component. It consists of the definitions of all the types of the messages (which includes the data format and the callbacks for all types of requests), the message parser and validator. Every incoming/outcoming message is checked to be well-formatted before processing/sending. (MORE DETAILS) On an event of receiving a well-formatted message it is processed by an appropriate callback function which does the low-level data manipulations and then passes control to a higher level listeners and processors. For example, if the user wants to send a ``control'' message to the server (the message specifies the id of controlled daemon and the action) the following things happen:
 \begin{itemize}
   \item The message is created by a message processor which accepts the message type and its data, packs it into a JSON object, validates and returns it.
   \item The message is passed to the server's websocket send function that send it using the native approach.
@@ -563,7 +615,7 @@ One of the most important parts of the application is the communication componen
 
 \subsection{Sockets}
 
-There are two types of sockets in the client application. The first one is the ServerSocket. It implements the interface provided by the standard WebSocket object. It is used as is without any wrappers. The second type is the DaemonSocket. It is implemented in the same manner as the first one except it has a bi-directional link with a corresponding daemon (which means that it "lives" inside the Daemon object and is meaningless without it). This socket also can be used to send data but this functionality is not used as our design assumes that all the client-daemon messages have to be deligated to the server. This improves the consistency of the states.
+There are two types of sockets in the client application. The first one is the ServerSocket. It implements the interface provided by the standard WebSocket object. It is used as is without any wrappers. The second type is the DaemonSocket. It is implemented in the same manner as the first one except it has a bi-directional link with a corresponding daemon (which means that it ``lives'' inside the Daemon object and is meaningless without it). This socket also can be used to send data but this functionality is not used as our design assumes that all the client-daemon messages have to be deligated to the server. This improves the consistency of the states.
 
 \subsection{Charts}
 
@@ -571,24 +623,24 @@ There are two types of sockets in the client application. The first one is the S
 
 Charts are drawn on the HTML5 canvases that are passed as parameters for the Chart.js chart constructor. Each chart is capable of showing a history of a custom length. For real-time charts this is 20 points. For the history this value varies heavily as it depends on the data period selected.
 
-Generally, there is a class called Graph which implements an abstract chart. There are classes for cpu, hdd, net and ram charts that extend the functionality of the base class. On every incoming "monitoring" message the graphs are updated.
+Generally, there is a class called Graph which implements an abstract chart. There are classes for cpu, hdd, net and ram charts that extend the functionality of the base class. On every incoming ``monitoring'' message the graphs are updated.
 
 \subsection{States}
 
 (USE TELETYPE FONT /\ texttt FOR CODE ENTITIES WHEN YOU DESCRIBE THEM)
 
-The components of the application and their different view should use shared data (for example, the current daemon). This could be done by introducing a number of global variables. Backbone offers a better approach. In our case an instance of AppState model is responsible for storing all the shared data. It does not only store the information, it is also responsible for listening to the change of the data and firing all the necessary updates. For example, when the user logs in, the is user "logged in flag" is set to true in the controller. This event is immediately caught by an according listener and the current view changes. Here another component comes to the action and it is called Router.
+The components of the application and their different view should use shared data (for example, the current daemon). This could be done by introducing a number of global variables. Backbone offers a better approach. In our case an instance of AppState model is responsible for storing all the shared data. It does not only store the information, it is also responsible for listening to the change of the data and firing all the necessary updates. For example, when the user logs in, the is user ``logged in flag'' is set to true in the controller. This event is immediately caught by an according listener and the current view changes. Here another component comes to the action and it is called Router.
 
 \subsection{Routing}
 
-Router is a standard method for handling the routes. In the use case described above, the Router's method ``navigate" is called. The AppState's listener passes the name of the page that has to be shown and two things happen. Firstly, routes changes the hash of the window's location object. This change is added to the history stack so the user is able to use the history object (which implies an opportunity of browsing the application using back and forward buttons). This also guarantees that the page can be bookmarked. Secondly, the Router executes a callback that is associated with the name of the requested page. In our case, when a user requests for the "app" page, the AppState's variable called "current state layout" is set to the new value. Here AppState's listeners again start doing their job - as the value has changed, an according action is performed - the page layout is set to the app's home view. Routing, together with objects like AppState, are extremely efficient in dealing with routing and shared data.
+Router is a standard method for handling the routes. In the use case described above, the Router's method ``navigate" is called. The AppState's listener passes the name of the page that has to be shown and two things happen. Firstly, routes changes the hash of the window's location object. This change is added to the history stack so the user is able to use the history object (which implies an opportunity of browsing the application using back and forward buttons). This also guarantees that the page can be bookmarked. Secondly, the Router executes a callback that is associated with the name of the requested page. In our case, when a user requests for the ``app'' page, the AppState's variable called ``current state layout'' is set to the new value. Here AppState's listeners again start doing their job - as the value has changed, an according action is performed - the page layout is set to the app's home view. Routing, together with objects like AppState, are extremely efficient in dealing with routing and shared data.
 
 \subsection{Service}
 
 There is a service component that provide some helper methods for working with cookies and some other things.
 
 
-\subsection{Problems During Development}
+\subsection{Problems during development}
 
 (DEALING WITH UNFORSEEN CHALLENGES IS A \textbf{KEY} PART OF A GOOD PROJECT --- EMPHASISE YOUR CHALLENGES \& SOLUTIONS)
 
@@ -609,9 +661,9 @@ The most important part that has to be tested is the communication. This is done
 
 \section{Implementation of the Server side}
 
-\subsection{Creating an echo server}
+\subsection{The base}
 
-One of the first steps in building a server was to test how it handles websockets and using them integrates with client and daemon. We have taken an echo server as a good starting point, and modified it, so that it accepts and differentiates between users and daemons. It would simply retranslate messages to everyone connected, however it had means of directing the flow specifically to daemons or users, or to stop echoing back. We have connected it to the initial implementations of users and clients and in this way we got assured, that the tri-way websocket connections will work. Knowing that we have proceeded to the next development stages.
+The server inherited the core functionality from its echo-server prototype, such as the ability to receive the connections and serve static files. The code was cleaned-up slightly, to enhance the integration of two connection types (user and daemon) as opposed to single. Other than that it was ready to be developed upon.
 
 \subsection{Developing tools for testing}
 
@@ -619,23 +671,43 @@ We were developing three different parts to the whole system in parallel, and th
 
 Go comes with a testing framework, not unlike JUnit, out of box. It is implemented in the spirit of table testing, but table testing was of little help in this application. The application mostly communicates via messages and changes its internal state, so an enhanced ability to stub things would have helped. Unfortunately, Go lacked of this ability, thus we had to create workarounds, mostly consisting of altering the real application state to create a specific environment, and then restoring it back to pre-test condition. We have devised ways to insert temporary objects into the database, create stub handlers, and interceipt sent messages during the testing. All of this allowed us to introduce acceptable levels of testing.
 
-One controversary addition to the test harness was the Assert() method, that would abstract away the clumsiness of Go test framework and provide rspec/jasmine style coloured output. We felt that colour-coding success and failure messages in the test harness made the whole process more robust, (THIS SEEMS A TRIVIAL POINT TO ME!) however abstracting away Log() and Error() calls meant that the test harness could no longer tell on which line did the error occured. It was still fine, knowing that every single Assert() message was unique-ish; nonetheless, if we had substantially more test cases this drawback might have slowed us down.
+One controversary addition to the test harness was the Assert() method, that would abstract away the clumsiness of Go test framework and provide rspec/jasmine style coloured output. While it made the work with the test harness much more robust and pleasurable, abstracting away Log() and Error() calls meant that the test harness could no longer tell on which line did the error occured. It was still fine, knowing that every single Assert() message was unique-ish; nonetheless, if we had substantially more test cases this drawback might have slowed us down.
 
-Yet another issue was that we could not separate away test files from the main code, because that would have created some probles with namespaces. We could not resolve it at the time and we have felt that this made the sourcecode less clean, but this is more of an annoyance than a real problem.
+Yet another issue was that we could not separate away test files from the main code, because that would have created some problems with namespaces. We could not resolve it at the time and we have felt that this made the sourcecode less clean, but this is more of an annoyance than a real problem.
 
-Overall, introducing tests was a great success. Go extremely fast compilation speed and performant testing framework allowed us to run tests before each deployment, and we have written scripts to do so. As a result of TDD we have a fair test coverage, (CAN YOU QUANTIFY IT?) and the integration process with the rest of the codebase was indeed relatively painless.
+Overall, introducing tests was a great success. Go extremely fast compilation speed and performant testing framework allowed us to run tests before each deployment, and we have written scripts to do so. As a result of TDD we feel that we have a fair test coverage. While we did not run any test coverage tools (since they are officially supported starting from the Go 1.2, and for the Go 1.1 that we have used there is only a few broken ones to choose from), we cannot present a formal report on that, however here are some fun statistics instead: 48\% of lines of code in the server package are in the test files and 11 out of 17 code files have tests. The remaining 6 files mostly feature old echo-server code, that was produced using StackOverflow-driven development, hence no tests. 
+
+The tests vary in how much do they follow unit test ideology: for controllers they are very much unit tests, but for handlers they are sometimes some sort of integration/regression/acceptance hybrids that are occasionally complicated, but other times just a variety of a smoke test. That is because we have clearly needed all of them, but did not have enough time to split them effectively. The usual development pattern was that we would TDD the code with unit tests, but after fixing some bugs that have slipped away, instead of developing real regression tests, we would transform unit tests into such, which we realise is all sorts of flawed in long term and ideologically punishable, however it did gave us immediate results with the least amount of effort. Also, I am yet to stumble upon an ideologically-correct project that features all these types of tests in perfect isolation while being developed in a chaotic agile fashion.
+
+Despite all these problems, tests have done their job and the integration process with the rest of the codebase was indeed relatively painless. Hence, they were indeed a worthy investment, even though this is an university project.
 
 \subsection{Creating the controller}
 
 We have decided that handler pattern would be the most suitable for our needs. The different API calls seemed to be quite independent from each other semantically (while sometimes required to be called in a particular order), and their list was by no means final. Having means to register handlers allowed us to be extremely flexible on the development of them.
 
-The Controller part was re;latively simple to write, since it turned out to be extremely testable. Being able to write comprehensive tests, we could develop it relatively quickly, rapidly fixing any arising problems. 
+The Controller part was relatively simple to write, since it turned out to be extremely testable. Being able to write comprehensive tests, we could develop it relatively quickly, rapidly fixing any arising problems. 
 
 \subsection{Implementing each separate handler}
 
-Each handler was developed separately. The most problems have arisen due to Go being a strongly typed language, while JavaScript, that was producing json requests, is not, and hence it was sometimes difficult to parse the message into correct types. In fact, this error was so common, that we had to abandon idealogically unit tests and expand them to cover parsing from actual json (which was tested in the Controller and was definitely working), for the parsed result was sometimes now what we would have expected.
+Each handler was developed separately. The most problems have arisen due to Go being a strongly typed language, while JavaScript, that was producing json requests, is not, and hence it was sometimes difficult to parse the message into correct types. In fact, this error was so common, that we had to abandon idealogically unit tests and expand them to cover parsing from actual json (which was tested in the Controller and was definitely working), for the parsed result was sometimes not what we would have expected, leading to the aforementioned ideological mess.
 
 Aside from that another problem of handlers is that there is a lot of boring typecheck code in them, there should have been a way to avoid this. Possible solution would be to move that code away, creating a type of framework for even fuller parsing of requests. However, due to the time constrains we have decided to skip this improvement for now.
+
+\subsection{The database}
+
+The \texttt{mgo} library, that allows to use \texttt{MongoDB} in \texttt{Go}, is a beautiful piece of code, and in words of a 10gen employee: it might as well be the most advanced \texttt{MongoDB} driver out there\footnote{\raggedright{}As boasted by the mgo website: \url{http://labix.org/mgo}}. Thus, the integration with the database was painless: we had to create data structures that would represent different types of documents inside of the collections and then we could use them easily with \texttt{mgo} calls. In our opinion, the key to success of \texttt{mgo} was its documentation. It was of the highest quality, and almost completely eliminated any necessity to search anywhere outside of it.
+
+An interesting observation was that the \texttt{Go} being statically-typed, and thus its structures following the described pattern, while \texttt{MongoDB} is schemaless, was not a big disadvantage. In fact, since \texttt{Go} would just ommit the unrecognised fields in the documents, we could easily inject testing information there, creating ``stub'' objects in the database that could be easily deleted via single query, while to \texttt{Go} they would seem real, allowing us to carry out extensive testing.
+
+If by this time it feels that there is a disproportionate focus on testing in the chapter about implementation, it is intended, as it reflects the reality: making the code testable was the hardest part of writing the server.
+
+\subsection{WebSockets}
+
+Once again, the \texttt{Go websocket} library made the using this technology for the most part seamless. It was expected, since at the current stage the application has only the most basic utilisation of websockets: it does not go beyond standard send/receive scenario with default parameters. This was acceptable for the immediate goals of the application, since the security was not a priority.
+
+During the development of the echo-server prototype, the Server connected to the Client easily. However, there were problems with Server-Daemon connection: we were not able to establish it. Our first thoughts were that the aforementioned library did not send the required headers, since after inspecting its source code we have found quite a few TODOs in the code that was responsible for this. It turned out that we were wrong, and the problem was actually in the \texttt{Websockets++} library. In any case, this outlined the typical problem of using unstable bleeding edge technologies -- separation of concerns does not apply here, and you might have to dive into debugging external code.
+
+The network related code was not automatically tested, because such tests are usually relatively complex. Even \texttt{JavaScript} does not make life easy in these cases, not to mention \texttt{Go}. Hence, we have used manual testing for all connection-related tests.
 
 %-----------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -696,15 +768,15 @@ The network watcher implementation on windows uses the PDH interface in a simila
 
 (DO THIS)
 
-We evaluated the project by...
+Evaluating our project was necessary to ensure we had both met our brief, and developed a usable product. This involved meeting with the project proposers to discuss functionality, and ensuring our components could handle the stress of potentially hundreds of organisations using this as a solution.
 
 %-----------------------------------------------------------------------------------------------------------------------------------------------
 
-\section{First Client Feedback}
+\section{First client feedback}
 
 Our first visit to J.P Morgan
 
-\section{Final Client Feedback}
+\section{Final client feedback}
 
 TBD
 
@@ -724,7 +796,7 @@ We have reused the capabilities of our testing framework to create a working env
 
 \chapter{Conclusion}
 
-We da bomb!
+We are satisfied that a user can install a platform specific daemon on their machine and then monitor CPU, RAM and disk usage remotely and in real-time.
 
 %-----------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -734,27 +806,82 @@ We da bomb!
 
 \section{Future Work}
 
-Implementation of Alerts
+\subsection{Future of the Client}
 
-Maksim's server stuff
+\subsection{Server refactoring}
 
-More metrics to monitor?
+The Server was developed from the echo-server, and some of its core functionality was poorly migrated. In particular, there is no sane reason for the connections to broadcast the message to the hub, from where it is then sent to controller. It is in fact just a useless bottleneck; the connections should send the message directly to the controller, keeping things concurrent. We expect this to be a very significant boost in performance.
+
+The handlers receive commands as Go structures, but they are ultimately responsible for checking, whether the command is valid. This includes many typechecks that in a sense polute the code. Such checks should be avoidable by introducing a machine-readable documentation of the API, so that, in addition to parsing the \texttt{json}, \texttt{Go} could verify the command syntax. In addition to making the code more readable, this would allow current handler tests to be reduced to proper unit tests without loosing too much in working guarantees.
+
+There are virtually no security considerations in the current implementation, aside from minimum precautions against server being broken completely by a bad command. In the real product, this, of course, should be changed. Passwords have to be hashed, and there has to be some precautions taken against spamming the server with messages. Currently, if daemon chooses to send the server a message every 5 ms, it will gladly accept the message and store it in the database, wasting the space. And in general, there is no limit to how much pressure to the server can a connection apply, creating opportunity for even simplest DDOS attacks to succeed. 
+
+One additional interesting improvement that was planned, yet scrapped due to the lack of time, was introducing the different data resolutions for the historical monitoring information. It would manifest in server storing older datapoints scarcer. For example, the present data might be stored in the 5 minute intervals, while yesterday's information might be reduced to one datapoint every hour and so on. This would make the application actually feasible in the long run. It requires periodical data transfer to a lower resolution collections, or, preferably, merging the old documents in the same collection, since this would require no other code change.
+
+\subsection{Implementation of missing Server functionality}
+
+The server lacks the support of generating alerts, that can be easily introduced. It also does not provide the functionality that we deemed too obvious to focus on, like registering your company or a user within one. While not particularly interesting, these features are essential to any real product and hence have to be implemented in one.
+
+\subsection{Further Daemon development}
 
 %-----------------------------------------------------------------------------------------------------------------------------------------------
 
 \section{Contributions}
 
-Here we explain that Sean Jakobsen coordinated the rdissertation writing, conducted market research, drew the design prototypes and worked on the client application. 
+\textbf{Sean Jakobsen} coordinated the dissertation writing, conducted market research, drew the design prototypes and worked on the client application. 
 
-Maksim Solovjov conducted market research, liasoned with our clients at J.P Morgan and wrote the Go server and database components.
+\textbf{Maksim Solovjov} conducted market research, liasoned with our clients at J.P Morgan and wrote the Go server and database components.
 
-Aleksandrs Sidlovskis drew up our architectural diagram and worked heavily on the client application.
+\textbf{Aleksandrs Sidlovskis} drew up our architectural diagram, drafted the API and worked heavily on the client application.
 
-Gabriel Alexandru Susanu developed the platform-specific daemons and their ability to monitor the different metrics needed.
+\textbf{Gabriel Alexandru Susanu} developed the platform-specific daemons and their ability to monitor the different metrics needed.
 
-Supanat Auengsirirat wrote our help manual and assisted with some daemon functionality.
+\textbf{Supanat Auengsirirat} wrote our help manual and assisted with some daemon functionality.
 
 %===============================================================================================================================================
+
+%===============================================================================================================================================
+
+\begin{appendices}
+
+\chapter{Preliminaries}
+\label{prelim}
+
+Here are the necessary terms that a reader may not be familiar with. More knowledgeable readers may feel free to skip this section of the report.
+
+\textbf{Performance monitoring} -- observing the statistics of some system, which relate to how well the system runs. For example monitoring the CPU load in order to ensure that it does not exceed some healthy threshold.
+
+\textbf{Cloud-based solution} -- the program that is provided as a service on some external machines (which might be owned by a separate organisation) accessible via internet.
+
+\textbf{Client (Application)} -- in our case, a user-facing application, running in a user’s browser.
+
+\textbf{Server} -- a computation-intensive application that serves the client application to the user and provides the gateway to the database.
+
+\textbf{Daemon} -- a monitoring application, running on the machine that is to be monitored, storing the performance metrics and sending them to the Server and Client.
+
+\textbf{Relational database} -- a database, modelled by creating entities and expressing their relationships to each other. Interaction with the stored data is governed by relational algebra.
+
+\textbf{NoSQL database} -- an alternative to the relational database, which allows easy horizontal scaling (can accommodate more data), in our case (MongoDB) expressed via collections of documents with no enforced schema (blueprint).
+
+\textbf{WebSocket} -- a protocol, that allows simultaneous bidirectional communication over a single TCP connection. To put it in simple terms, it lets a user to both send and receive data in real-time without the overhead of making multiple ``internet'' connections.
+
+\textbf{Concurrency} -- splitting work into independent chunks, that can be done in any particular order, allowing switching from one task to another should the first one temporarily stall.
+
+\textbf{Parallelism} -- executing multiple concurrent tasks at the same time. 
+
+\textbf{Goroutine} -- a concept in Go, lightweight thread of sorts. The ``physical'' threads in the OS execute program instructions concurrently. A goroutine represents such a thread, but it is actually mapped to one by the Go runtime that manages a thread pool. Hence, Go is an example of managed concurrency.
+
+\textbf{Runtime} implements core language functionality, and sometimes serves higher level functions.
+
+\textbf{Refactor} -- rewrite, in order to improve the quality of the code without changing its output.
+
+%===============================================================================================================================================
+
+%===============================================================================================================================================
+
+\chapter{Full API documentation}
+
+\end{appendices}
 
 %===============================================================================================================================================
 
