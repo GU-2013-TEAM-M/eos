@@ -2,7 +2,7 @@
 
 # exporting flags for no reason
 # but generally because it doesn't seem to get them
-export GOPATH=$HOME/workplace
+export GOPATH=/home/eos
 export PATH=$PATH:$GOPATH/bin
 
 # compiling go

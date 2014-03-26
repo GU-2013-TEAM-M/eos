@@ -194,10 +194,38 @@
 
 
 		<div id="graphs">
-			<div id="cpuGraph"></div>
-			<div id="ramGraph"></div>
-			<div id="netGraph"></div>
-			<div id="hddGraph"></div>
+			<div id="cpuGraph">
+				<%
+				chart = mon_charts.find(function(model) {
+					if (model.get("type") == "cpu") {
+						return model
+					}
+				})
+				%>
+				<%= chart.get("canvas").outerHTML%>
+			</div>
+				
+			<div id="ramGraph">
+				<%
+				chart = mon_charts.find(function(model) {
+					if (model.get("type") == "ram") {
+						return model
+					}
+				})
+				%>
+				<%= chart.get("canvas").outerHTML%>
+			</div>
+
+			<div id="netGraph">
+				<%
+				chart = mon_charts.find(function(model) {
+					if (model.get("type") == "net") {
+						return model
+					}
+				})
+				%>
+				<%= chart.get("canvas").outerHTML%>
+			</div>			
 		</div>
 	</script>	
 

@@ -51,7 +51,7 @@ MyApp.addInitializer (options) ->
 	    { name: "Home", tab: new HomeTabLayout() },
 	    { name: "History", tab: new HistoryTabLayout() },
 	    # { name: "Alerts", tab: new AlertsTabLayout() },
-	    { name: "User", tab: new UserTabLayout() },
+	    # { name: "User", tab: new UserTabLayout() },
 	]
 
 

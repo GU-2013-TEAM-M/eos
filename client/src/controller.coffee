@@ -1,21 +1,19 @@
 isUserLoggedIn = false
-
-cookieExpiryDays = 3 #Why 3 days? Maybe it should be specified in response?
-
+cookieExpiryDays = 3
 daemons = []
 
 # Callback for successfull login check. All the UI stuff should be done here
 loginCheckSuccessful = () ->
 	appState.set "is_user_logged_in", true
-
+	router.navigate("app", {trigger: true})
 	message = MessageProcessor.createMessage "daemons";
 	if message
 		serverSocket.sendMessage message
-	
 
 
 # Callback for unsuccessfull login check. All the UI stuff should be done here
 loginCheckUnsuccessful = () ->
+	router.navigate("login", {trigger: true})
 	appState.set "is_user_logged_in", false
 
 # Callback for successfull login. All the UI stuff should be done here
@@ -27,8 +25,6 @@ loginSuccessful = (session_id) ->
 	if message
 		serverSocket.sendMessage message
 
-
-
 # Callback for unsuccessfull login. All the UI stuff should be done here
 loginUnsuccessful = () ->
 	appState.set "is_user_logged_in", false
@@ -38,7 +34,6 @@ loginUnsuccessful = () ->
 logoutSuccessful = () ->
 	appState.set "is_user_logged_in", false
 	Service.setCookie "session_id", null, cookieExpiryDays		
-	# daemons = []
 
 logoutError = () ->
 # TODO:
@@ -75,26 +70,42 @@ historyData = (data) ->
 	parameter = data.parameter
 	values = data.values
 
-	array = []
-	for own key, value of values
-		array.push(value)
+	daemon = daemons.find (model) =>
+		model.get("daemon_id") == daemon_id
 
-	arrayData = array.slice(array.length-100, array.length)	
+	if daemon
+		chart = null
 
-	graph = {}
-	switch parameter
-		when "cpu"
-			graph = new GraphCPU_2({daemon_id: daemon_id, options: {cpuCount: 1, width: 500, pointNumber: arrayData.length} })
-		when "ram"
-			graph = new GraphRAM_2({daemon_id: daemon_id, options: {totalRam: 32768, width: 500, pointNumber: arrayData.length} })
-		when "net"
-			graph = new GraphNET_2({daemon_id: daemon_id, options: {maxNet: 10000, width: 500, pointNumber: arrayData.length} })
+		if appState.attributes.current_tab.el.id.length > 0
+			chart = daemon.get("mon_charts").find (model) =>
+				model.get("type") == parameter
 
-	$("#history_graph").empty()
-	$("#history_graph").append(graph.get("canvas"))
-	graph.set("context", $("#history_graph", @el))
-	graph.setFullData(arrayData)
-	graph.createGraph()
+			data = []
+			if chart
+				for own key, value of values
+					data.push {"label": key, "value": value}
+
+				chart.setData data
+
+				chart.createGraph()
+
+			if !daemon.get("socket")
+				daemon.createSocket()
+		else 
+			chart = daemon.get("his_charts").find (model) =>
+				model.get("type") == parameter
+
+			data = []
+			if chart
+				for own key, value of values
+					data.push {"label": key, "value": value}
+
+				chart.setData data
+
+				$("#history_graph").empty()
+				$("#history_graph").append(chart.get("canvas"))
+
+				chart.createGraph()
 
 notImplemented = (data) ->
 # TODO:
