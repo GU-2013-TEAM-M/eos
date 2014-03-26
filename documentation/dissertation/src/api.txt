@@ -1,0 +1,261 @@
+Here is a document, outlining the communication API used in all the parts.
+
+//---------------------------------------------------------------------
+DAEMON -> SERVER
+//---------------------------------------------------------------------
+login:
+{
+    "type": "login",
+    "data": {
+        "name": "user defined",
+        "password": "user defined, currently unencrypted",
+        "org_id": "user defined, will be shown in client"
+    }
+}
+
+daemon:
+{
+    "type": "daemon",
+    "data": {
+        "daemon_id": "id of the daemon",
+        "daemon_platform": "OS",
+        "daemon_all_parameters": ["CPU", "RAM", "etc."],
+        "daemon_monitored_parameters": ["CPU", "RAM"],
+        // FIXME: add additional info about the system
+    }
+}
+
+monitoring:
+{
+    "type": "monitoring",
+    "data": {
+        "list": [{
+            "parameter": "cpu",
+            "values": {
+                "1104...unix time": 12.5
+            }
+        }]
+    }
+}
+
+//---------------------------------------------------------------------
+SERVER -> DAEMON
+//---------------------------------------------------------------------
+login:
+{
+    "type": "login",
+    "data": {
+        "id": "daemon id from the database"
+    }
+}
+
+control: // it is just a forwarded message from the client
+{
+    "type": "control",
+    "data": {
+        "daemon_id": "id received from the server",
+        "operation": {
+            "start": ["cpu"],
+            "stop": ["cpu"],
+            "start": true, // start all
+            "stop": true // stop all
+        }
+    }
+}
+
+error:
+{
+    "type": "error",
+    "data": {
+        "msg": "Error message",
+        "handler": "Name of the handler that triggered the error"
+    }
+}
+
+//---------------------------------------------------------------------
+CLIENT -> SERVER
+//---------------------------------------------------------------------
+login:
+{
+    "type": "login",
+    "data": {
+        "email": "user's email address instead of login",
+        "password": "currently unencrypted"
+    }
+}
+
+login_check:
+{
+    "type": "loginCheck",
+    "data": {
+        "session_id": "session id from the previous log in"
+    }
+}
+
+logout:
+{
+    "type": "logout",
+    "data": {
+    }
+}
+
+control:
+{
+    "type": "control",
+    "data": {
+        "daemon_id": "id received from the server",
+        "operation": {
+            "start": ["cpu"],
+            "stop": ["cpu"],
+            "start": true, // start all
+            "stop": "true // stop all
+        }
+    }
+}
+
+daemons:
+{
+    "type": "daemons",
+    "data": {
+    }
+}
+
+daemon:
+{
+    "type": "daemon",
+    "data": {
+        "daemon_id": "id received from the server",
+    }
+}
+
+monitoring:
+{
+    "type": "monitoring",
+    "data": {
+        "daemon_id": "id of the daemon",
+        "parameter": "cpu",
+        "from": 110... unix time,
+        "to": 110... unix time
+    }
+}
+
+// to trigger an alert and send the emails
+alert:
+{
+    "type": "alert",
+    "data": {
+        "daemon_id": "id of the daemon",
+        "parameter": "ram",
+        "value": 9001
+    }
+}
+
+// to get the list of all previous alerts
+alerts:
+{
+    "type": "alerts",
+    "data": {
+        "daemon_id": "id of the daemon",
+    }
+}
+
+//---------------------------------------------------------------------
+SERVER -> CLIENT
+//---------------------------------------------------------------------
+login:
+{
+    "type": "login",
+    "data": {
+        "id": "user id from the database",
+        "session_id": "for subsequent authentification from cookies",
+        "org_id": "id of organisation, to be shown, in order to setup
+            daemons manually"
+    }
+}
+
+login_check:
+{
+    "type": "login_check",
+    "data": {
+        "status": "OK or UNAUTHORIZED, latter might be redundant, since
+            client will also receive a usual error"
+    }
+}
+
+logout:
+{
+    "type": "logout",
+    "data": {
+        "status": "OK"
+    }
+}
+
+control:
+{
+    "type": "control",
+    "data": {
+        "status": "OK"
+    }
+}
+
+daemons:
+{
+    "type": "daemons",
+    "data": {
+        "list": [
+            {
+                "daemon_id": "id of the daemon",
+                "daemon_name": "the name of the daemon",
+                "daemon_state": "current state of the daemon (ACTIVE, etc.)"
+            }
+        ]
+    }
+}
+
+daemon:
+{
+    "type": "daemon",
+    "data": {
+        "daemon_id": "id of the daemon",
+        "daemon_address": "ip address together with protocol and the port",
+        "daemon_platform": "OS",
+        "daemon_all_parameters": ["CPU", "RAM", "etc."],
+        "daemon_monitored_parameters": ["CPU", "RAM"]
+    }
+}
+
+error:
+{
+    "type": "error",
+    "data": {
+        "msg": "Error message",
+        "handler": "Name of the handler that triggered the error"
+    }
+}
+
+monitoring:
+{
+    "type": "monitoring",
+    "data": {
+        "daemon_id": "id of the daemon",
+        "parameter": "cpu",
+        "values": {
+            "110...unix time": 12.5,
+            "110...unix time": 13.1
+        }
+    }
+}
+
+// to send the list of all previous alerts
+alerts:
+{
+    "type": "alerts",
+    "data": {
+        "daemon_id": "id of the daemon",
+        "list": [{
+            "parameter": "ram",
+            "value": 9001,
+            "date": "yyyy-mm-dd hh:mm:ss"
+    }
+}
+
