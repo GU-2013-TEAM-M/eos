@@ -1,4 +1,16 @@
-One ring to rule them all, one ring to find them,
-One ring to bring them all and in the darkness bind them.
+*** Performance Monitoring using WebSockets README, way-too-tired edition ***
 
-Hello World
+** Foreword **
+Here be a repository of Team M, proud students of the University of Glasgow, that have created it in the Anno Domini 2013. In our scholarly pursuit we worked to teach a machine, powered by lightning, to watch over the other machines, also powered by lightning, in the hope that they will serve faithfully to their respectful owners. We welcome thou, a brave wanderer, to gasp upon our creation, and we hope that thou will find what thou seek.
+
+** What is contained here **
+Though many crates are kept in these mouldy vaults, only four of them do actually matter. In one that is labeled *documentation* thou will find our dissertation consealed. Then there are three that store the three heads of our teaching to the machines. The *client*, *daemon* and *server* are they called. Combine those heads into one being thou shall do, to beatheth life to them and to embrace upon their rightful nature.
+
+** How to bring this teaching to machines **
+By this point I run out of improvised broken literary English, so just to get to the point: Installation notes.
+
+The Client will become accessible on the 8080 port once you deploy the Server.
+
+To run the Server one has to install Go, starting from the version 1.1 upwards. It is better to do so manually from the http://golang.org website. Then you need all the dependencies, for them there is a server/server/shell/server_install.sh, however, edit it and comment out 4th line that installs Go. Technically, this script should do *all* the work, but at the moment of writing Go package is too old on the ubuntu repositories. One has to copy this whole project (starting from the folder 'eos') into a directory called src. The one has to setup a GOPATH variable, or change it in the "deploy_" scripts to point to the folder *containing src* (not including src in the path). After that server/deploy_beta.sh script should work, and it will create a server in the beta direcotry. Just run ./server from there, and you will get both Server and the Client running.
+
+To install the Daemon one has to run a make command in the daemon directory and hopefully that will be enough.
