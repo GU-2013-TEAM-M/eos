@@ -10,6 +10,7 @@
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp>
 #include <unordered_map>
+#include <fstream>
 
 #include "cpuwatcher.h"
 #include "memwatcher.h"
@@ -27,7 +28,6 @@
 #include "netnix.h"
 
 #elif defined _WIN32 || defined _WIN64
-#define WIN32_LEAN_AND_MEAN
 #include "cpuwin.h"
 #include "memwin.h"
 #include "netwin.h"
@@ -43,9 +43,9 @@ private:
 	NETWatcher * mainNetMon;
 	std::unordered_map<std::string,bool> watcherStatus;
 	outClient * connToServer;
-	serveToClient * connToClient;
-	boost::thread * toClientThread, * toServerThread;
-	boost::chrono::milliseconds refresh;
+	serveToClient *connToClient;
+	boost::thread *toClientThread, *toServerThread, *serverLoop, *clientLoop;
+	boost::chrono::milliseconds refreshRT, refreshS;
 	std::string daemonID, os, totalRAM;
 	bool run;
 
@@ -53,8 +53,8 @@ private:
 public:
 	daemonManager();
 	~daemonManager();
-	void loop();
-	
+	void loopS();
+	void loopRT();
 };
 
 #endif // mainmanager_h__
