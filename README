@@ -1,12 +1,16 @@
-*** Performance Monitoring using WebSockets README, way-too-tired edition ***
+Performance Monitoring using WebSockets README, way-too-tired edition
+=======================
 
-** Foreword **
+Foreword
+-----------------------
 Here be a repository of Team M, proud students of the University of Glasgow, that have created it in the Anno Domini 2013. In our scholarly pursuit we worked to teach a machine, powered by lightning, to watch over the other machines, also powered by lightning, in the hope that they will serve faithfully to their respectful owners. We welcome thou, a brave wanderer, to gasp upon our creation, and we hope that thou will find what thou seek.
 
-** What is contained here **
+What is contained here
+-----------------------
 Though many crates are kept in these mouldy vaults, only four of them do actually matter. In one that is labeled *documentation* thou will find our dissertation consealed. Then there are three that store the three heads of our teaching to the machines. The *client*, *daemon* and *server* are they called. Combine those heads into one being thou shall do, to beatheth life to them and to embrace upon their rightful nature.
 
-** How to bring this teaching to machines **
+How to bring this teaching to machines
+-----------------------
 By this point I run out of improvised broken literary English, so just to get to the point: Installation notes.
 
 The Client will become accessible on the 8080 port once you deploy the Server.
