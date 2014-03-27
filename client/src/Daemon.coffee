@@ -9,7 +9,37 @@ Daemon = Backbone.Model.extend {
 		daemon_all_parameters: null
 		daemon_monitored_parameters: null
 		socket: null
+		mon_charts: new Graphs()
+		his_charts: new Graphs()
 	}
+
+	addMonChart: (type) ->
+		switch type
+			when "cpu"
+				@get("mon_charts").add new GraphCPU_2({daemon_id: @get("daemon_id")})
+			when "ram"
+				@get("mon_charts").add new GraphRAM_2({daemon_id: @get("daemon_id")})
+			when "net"
+				@get("mon_charts").add new GraphNET_2({daemon_id: @get("daemon_id")})
+
+	addHisChart: (type) ->
+		switch type
+			when "cpu"
+				@get("his_charts").add new GraphCPU_2({daemon_id: @get("daemon_id")})
+			when "ram"
+				@get("his_charts").add new GraphRAM_2({daemon_id: @get("daemon_id")})
+			when "net"
+				@get("his_charts").add new GraphNET_2({daemon_id: @get("daemon_id")})
+
+	getMonChart: (type) ->
+		chart = mon_charts.find (model) =>
+			model.get("type") == type
+		return chart
+
+	getHisChart: (type) ->
+		chart = his_charts.find (model) =>
+			model.get("type") == type
+		return chart			
 
 	createSocket: () ->
 		new DaemonSocket(@)
@@ -38,7 +68,6 @@ Daemon = Backbone.Model.extend {
 
 		message = MessageProcessor.createMessage "control", daemon_id: @get("daemon_id"), operation: operation
 		if message
-			# @get("socket").sendMessage message
 			serverSocket.sendMessage message
 
 
@@ -46,18 +75,27 @@ Daemon = Backbone.Model.extend {
 		if monitored.indexOf(parameter) == -1 
 			monitored.push parameter
 
+		chart = @get("mon_charts").find (model) =>
+			model.get("type") == parameter
+
+		$(chart.get("canvas")).show()			
+
 	unmonitor: (parameter) ->
 		operation = 
 			"stop": [parameter]
 
 		message = MessageProcessor.createMessage "control", daemon_id: @get("daemon_id"), operation: operation
 		if message
-			# @get("socket").sendMessage message
 			serverSocket.sendMessage message
 
 		monitored = @get "daemon_monitored_parameters"
 		index = monitored.indexOf(parameter)
 		monitored.splice index, 1
+
+		chart = @get("mon_charts").find (model) =>
+			model.get("type") == parameter
+
+		$(chart.get("canvas")).hide()
 
 	toggleMonitor: (parameter) ->
 		monitored = @get "daemon_monitored_parameters"
@@ -68,13 +106,12 @@ Daemon = Backbone.Model.extend {
 
 	processMonitoring: (data) ->
 		for own key, value of data
-			graph = graphs.find (model) =>
-				model.get("daemon_id") == @get("daemon_id") && model.get("type") == key
+			graph = @get("mon_charts").find (model) =>
+				model.get("type") == key
 			if graph
-				graph.update(parseFloat value)
+				val = parseFloat value
+				graph.appendData({"label": (Math.floor((new Date()).getTime()/1000)).toString(), "value": val})
+				graph.createGraph()
 			else
-				console.log "No graph found"			
-			
-
-
+				console.log "No graph found"
 }

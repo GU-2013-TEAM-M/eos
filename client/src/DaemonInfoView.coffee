@@ -17,35 +17,10 @@ DaemonInfoView = Backbone.Marionette.ItemView.extend {
 			appState.set("current_daemon", @model)
 	
 	onRender: () ->
-		if @model
-			monitoredParams = @model.get("daemon_monitored_parameters")
-			for param in monitoredParams
-				graph = graphs.find (model) =>
-					model.get("daemon_id") == @model.get("daemon_id") && model.get("type") == param
-				if !graph
-					switch param.toLowerCase()
-						when "cpu"
-							# graph = new GraphCPU({daemon_id: @model.get("daemon_id"), options: {cpuCount: 1} })
-							graph = new GraphCPU_2({daemon_id: @model.get("daemon_id"), options: {cpuCount: 1} })
-						when "ram"
-							graph = new GraphRAM_2({daemon_id: @model.get("daemon_id"), options: {totalRam: 32768} })
-						when "hdd"
-							graph = new GraphHDD({daemon_id: @model.get("daemon_id"), options: {totalHdd: 4096} })
-						when "net"
-							graph = new GraphNET_2({daemon_id: @model.get("daemon_id"), options: {maxNet: 100000} })							
-					if graph
-						graphs.add graph
-
-
-
-				$("#"+graph.get("type")+"Graph", @el).append(graph.get("canvas"))
-				graph.set("context", $("#"+graph.get("type")+"Graph", @el))
-				graph.reset()
-
-			$("li", @el).on('click', (event) =>
-				el = event.target
-				param = $(el).text().trim()
-				@model.toggleMonitor(param)
-				@render()
-			)
+		$("li", @el).on('click', (event) =>
+			el = event.target
+			param = $(el).text().trim()
+			@model.toggleMonitor(param)
+			@render()
+		)
 }

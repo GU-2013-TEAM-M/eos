@@ -1,0 +1,14 @@
+ws://eos.sytes.net/wsdaemon
+Anekharat
+derp
+52f2bf8521db4a04d5000001
+60000
+5000
+
+#File format:
+#Line 1: Server address
+#Line 2: Daemon/machine name
+#Line 3: Daemon password
+#Line 4: User/Organization ID
+#Line 5: server (archvival) data refresh rate
+#Line 6: watcher/client (realtime) refresh rate

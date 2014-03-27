@@ -29,9 +29,6 @@ void NETWin::init() {
 	LPTSTR buffer = new TCHAR[90000];
 	pdhStatus = PdhExpandWildCardPath(NULL,L"\\Network Interface(*)\\Bytes Received/sec",buffer,&pathSize,NULL);
 	std::cout<<GetLastError();
-	std::wstring test;
-	test.append(buffer);
-	std::wcout<<test.c_str();
 	std::cout<<PdhAddCounter(netQuery, buffer, NULL, &netTotal)<<std::endl;
 	PdhCollectQueryData(netQuery);
 }
